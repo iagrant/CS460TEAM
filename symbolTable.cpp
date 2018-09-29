@@ -5,34 +5,45 @@
 //
 
 #include <iostream>
-#include <stack>
+#include <vector>
 #include <map>
-#include <strings>
+#include <string>
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
+class Node {
+  private:
+    Node* ptr;
+
+  public:
+    Node* getPtr() {return ptr;}
+
+};
+
 class SymbolTable {
 
-    private stack<map> my_stack;
+  private:
+    vector<map<string,Node>> stVector;
+  public:
 
-    // Default Constructor
-    SymbolTable (stack<map my_stack, map<int> initial_tree) {
-        this.my_stack = my_stack;
-        my_stack.push(initial_tree);
+    // Paramitized Constructor LMAO
+    SymbolTable (vector<map<string,Node>> inVector, map<string,Node> initialTree) {
+        stVector = inVector;
+        stVector.push_back(initialTree);
     }
 
     // removeSymbol
     // returns a tree from the top of the stack
-    map<int> removeSymbol () {
-        return my_stack.pop();
+    map<string,Node> removeSymbol () {
+        return stVector.back();
     }
 
     // insertSymbol
     // puts a tree on the top of the stack
-    void insertSymbol (map<int> new_map) {
-        my_stack.push(new_map);
+    void insertSymbol (map<string,Node> newMap) {
+        stVector.push_back(newMap);
     }
 
     // writeFile
@@ -42,7 +53,7 @@ class SymbolTable {
             // Create the file pointer
         ofstream myfile;
             // Open the file for writing
-        myfile.open (filename);
+        myfile.open(filename);
             // Replace this with actual implementation
         myfile << "Writing this to a file.\n";
             // Close the file pointer
@@ -51,8 +62,11 @@ class SymbolTable {
 
     // searchTree
     // Searches for a symbol on the stack
-    map<int>* searchTree () {
-
+    map<string,Node>* searchTree (String input) {
+      map<string,Node>* = &stVector.back();
+      return tree;
 
     }
-}
+    vector<map<string,Node>>* getStPtr() {return &stVector;}
+
+};
