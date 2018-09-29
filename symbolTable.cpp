@@ -23,15 +23,15 @@ class SymbolTable {
         my_stack.push(initial_tree);
     }
 
-    // popTree
+    // removeSymbol
     // returns a tree from the top of the stack
-    map<int> popTree () {
+    map<int> removeSymbol () {
         return my_stack.pop();
     }
 
-    // pushTree
+    // insertSymbol
     // puts a tree on the top of the stack
-    void pushTree (map<int> new_map) {
+    void insertSymbol (map<int> new_map) {
         my_stack.push(new_map);
     }
 
@@ -47,6 +47,12 @@ class SymbolTable {
         myfile << "Writing this to a file.\n";
             // Close the file pointer
         myfile.close();
-        return 0;
+    }
+
+    // searchTree
+    // Searches for a symbol on the stack
+    map<int>* searchTree () {
+
+
     }
 }
