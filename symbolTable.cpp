@@ -14,12 +14,21 @@
 using namespace std;
 
 class Node {
-  private:
-    Node* ptr;
-
   public:
-    Node* getPtr() {return ptr;}
+    Node () {
+    }
 
+};
+
+class idNode : public Node {
+  public:
+  string identifier;
+  idNode (string id) {identifier=id;}
+
+};
+class forNode : public Node { 
+  public:
+    //not sure what  to have it contain
 };
 
 class SymbolTable {
@@ -49,6 +58,7 @@ class SymbolTable {
     // writeFile
     // opens a file for writing writes the contents
     // of the symbol table to a file.
+    // why?
     void writeFile (string filename) {
             // Create the file pointer
         ofstream myfile;
@@ -63,7 +73,7 @@ class SymbolTable {
     // searchTree
     // Searches for a symbol on the stack
     map<string,Node>* searchTree (String input) {
-      map<string,Node>* = &stVector.back();
+
       return tree;
 
     }
