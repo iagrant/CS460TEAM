@@ -27,10 +27,10 @@ SIZEOF
 PTR_OP
 ++ return INC_OP
 -- return DEC_OP
-LEFT_OP
-RIGHT_OP
-< return LE_OP
-> return GE_OP
+<< return LEFT_OP
+>> return RIGHT_OP
+<= return LE_OP
+>= return GE_OP
 == return EQ_OP
 != return NE_OP
 && return AND_OP
