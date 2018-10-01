@@ -13,8 +13,11 @@
 #define
 #define
 
+let [a-Z]
+
 %%
-w[w_]*w|w (return IDENTIFIER;)
+\!\![a-Z] return DEBUG;
+let[let_]*let|let return IDENTIFIER;
 INTEGER_CONSTANT
 FLOATING_CONSTANT
 CHARACTER_CONSTANT
