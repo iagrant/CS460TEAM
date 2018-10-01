@@ -18,8 +18,8 @@ let [a-Z]
 %%
 \!\![a-Z] return DEBUG;
 let[let_]*let|let return IDENTIFIER;
-INTEGER_CONSTANT
-FLOATING_CONSTANT
+[0-9]+ return INTEGER_CONSTANT
+[0-9]+\.?[0-9]* return FLOATING_CONSTANT
 CHARACTER_CONSTANT
 ENUMERATION_CONSTANT
 STRING_LITERAL
@@ -29,21 +29,21 @@ PTR_OP
 -- return DEC_OP
 LEFT_OP
 RIGHT_OP
-<= return LE_OP
->= return GE_OP
+< return LE_OP
+> return GE_OP
 == return EQ_OP
 != return NE_OP
 && return AND_OP
 || return OR_OP
-\*= return MUL_ASSIGN
-/= return DIV_ASSIGN
-\%= return MOD_ASSIGN
-\+= return ADD_ASSIGN
--= return SUB_ASSIGN
-<<= return LEFT_ASSIGN
->>= return RIGHT_ASSIGN
-&= return AND_ASSIGN
-|= return OR_ASSIGN
+* return MUL_ASSIGN
+/ return DIV_ASSIGN
+% return MOD_ASSIGN
++ return ADD_ASSIGN
+- return SUB_ASSIGN
+<< return LEFT_ASSIGN
+>> return RIGHT_ASSIGN
+& return AND_ASSIGN
+| return OR_ASSIGN
 TYPEDEF_NAME
 \; return SEMI
 \: return COLON
