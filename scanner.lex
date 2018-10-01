@@ -24,70 +24,69 @@ CHARACTER_CONSTANT
 ENUMERATION_CONSTANT
 STRING_LITERAL
 SIZEOF
-PTR_OP;
-INC_OP
-DEC_OP
+PTR_OP
+++ return INC_OP
+-- return DEC_OP
 LEFT_OP
 RIGHT_OP
-LE_OP
-GE_OP
-EQ_OP
-NE_OP
-AND_OP
-OR_OP
-MUL_ASSIGN
-DIV_ASSIGN
-MOD_ASSIGN
-ADD_ASSIGN
-SUB_ASSIGN
-LEFT_ASSIGN
-RIGHT_ASSIGN
-AND_ASSIGN
-XOR_ASSIGN
-OR_ASSIGN
+< return LE_OP
+> return GE_OP
+== return EQ_OP
+!= return NE_OP
+&& return AND_OP
+|| return OR_OP
+* return MUL_ASSIGN
+/ return DIV_ASSIGN
+% return MOD_ASSIGN
++ return ADD_ASSIGN
+- return SUB_ASSIGN
+<< return LEFT_ASSIGN
+>> return RIGHT_ASSIGN
+& return AND_ASSIGN
+| return OR_ASSIGN
 TYPEDEF_NAME
-[;] return SEMI;
-COLON
-CURLYOPEN
-CURLYCLOSE
-BRACKETOPEN
-BRACKETCLOSE
-COMMA
-PERIOD
-EQUALS
-OPEN
-CLOSE
-STAR
-QUESTION
-BAR
-CARROT
-AMP
-LESS_OP
-GREAT_OP
-PLUS
-MINUS
-FORSLASH
-PERCENT
-BANG
-TILDA
+\; return SEMI;
+\: return COLON;
+\{ return CURLYOPEN
+\} return CURLYCLOSE
+\[ return BRACKETOPEN
+\] return BRACKETCLOSE
+, return COMMA
+. return PERIOD
+= return EQUALS
+( return OPEN
+) return CLOSE
+* return STAR
+? return QUESTION
+| return BAR
+^ return CARROT
+& return AMP
+< return LESS_OP
+> return GREAT_OP
++ return PLUS
+- return MINUS
+\\ return FORSLASH
+\% return PERCENT
+\! return BANG
+\~ return TILDA
 TYPEDEF
-EXTERN
-STATIC
-AUTO
-REGISTER
-CHAR
-SHORT
-INT
-LONG
-SIGNED
-UNSIGNED
-FLOAT
-DOUBLE
-CONST
-VOLATILE
-VOID
-STRUCT
-UNION
+extern return EXTERN
+static return STATIC
+auto return AUTO
+register return REGISTER
+char return CHAR
+short return SHORT
+int return INT
+long return LONG
+signed return SIGNED
+unsigned return UNSIGNED
+float return FLOAT
+double return DOUBLE
+const return CONST
+volatile return VOLATILE
+void return VOID
+struct return STRUCT
+union return UNION
 ENUM
 ELIPSIS
 RANGE
@@ -99,8 +98,8 @@ SWITCH
 WHILE
 DO
 FOR
-GOTO
-CONTINUE
-BREAK
-RETURN
+goto return GOTO
+continue return CONTINUE
+break return BREAK
+return return RETURN
 %%
