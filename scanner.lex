@@ -45,26 +45,26 @@ RIGHT_OP
 & return AND_ASSIGN
 | return OR_ASSIGN
 TYPEDEF_NAME
-\; return SEMI;
-\: return COLON;
+\; return SEMI
+\: return COLON
 \{ return CURLYOPEN
 \} return CURLYCLOSE
 \[ return BRACKETOPEN
 \] return BRACKETCLOSE
-, return COMMA
-. return PERIOD
-= return EQUALS
-( return OPEN
-) return CLOSE
-* return STAR
-? return QUESTION
-| return BAR
-^ return CARROT
-& return AMP
-< return LESS_OP
-> return GREAT_OP
-+ return PLUS
-- return MINUS
+\, return COMMA
+\. return PERIOD
+\= return EQUALS
+\( return OPEN
+\) return CLOSE
+\* return STAR
+\? return QUESTION
+\| return BAR
+\^ return CARROT
+\& return AMP
+\< return LESS_OP
+\> return GREAT_OP
+\+ return PLUS
+\- return MINUS
 \\ return FORSLASH
 \% return PERCENT
 \! return BANG
@@ -89,7 +89,6 @@ struct return STRUCT
 union return UNION
 ENUM
 ELIPSIS
-RANGE
 CASE
 DEFAULT
 IF

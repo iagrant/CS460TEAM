@@ -15,11 +15,20 @@ using namespace std;
 
 class Node {
   public:
+    string type;
+    int numOfPtrs;
     Node () {
+      type="";
+      numOfPtrs=0;
+    }
+    Node(string typeIn, int numIn) {
+      type=typeIn;
+      numOfPtrs=numIn;
     }
 
 };
 
+/*
 class idNode : public Node {
   public:
   string identifier;
@@ -30,6 +39,7 @@ class forNode : public Node {
   public:
     //not sure what  to have it contain
 };
+*/
 
 class SymbolTable {
 
@@ -72,7 +82,8 @@ class SymbolTable {
 
     // searchTree
     // Searches for a symbol on the stack
-    map<string,Node>* searchTree (String input) {
+    map<string,Node>* searchTree (Node node) {
+
 
       return tree;
 

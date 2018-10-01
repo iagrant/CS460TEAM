@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+#yacc and lex garb
+*.tab.c
+*.tab.o
+
 # Compiled Object files
 *.slo
 *.lo
@@ -30,5 +34,6 @@
 *.exe
 *.out
 *.app
+
 #Bastard not using vim
 .idea
