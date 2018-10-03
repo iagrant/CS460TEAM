@@ -1,3 +1,15 @@
+%{
+  #include <string.h>  
+%}
+
+%union {
+  int ival;
+  char cval;
+  string sval;
+  double dval;
+  float fval;
+}
+
 %token IDENTIFIER 
 %token INTEGER_CONSTANT FLOATING_CONSTANT CHARACTER_CONSTANT ENUMERATION_CONSTANT 
 %token STRING_LITERAL 
