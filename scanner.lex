@@ -35,15 +35,15 @@ PTR_OP
 != return NE_OP
 && return AND_OP
 || return OR_OP
-* return MUL_ASSIGN
-/ return DIV_ASSIGN
-% return MOD_ASSIGN
-+ return ADD_ASSIGN
-- return SUB_ASSIGN
-<< return LEFT_ASSIGN
->> return RIGHT_ASSIGN
-& return AND_ASSIGN
-| return OR_ASSIGN
+*= return MUL_ASSIGN
+/= return DIV_ASSIGN
+%= return MOD_ASSIGN
++= return ADD_ASSIGN
+-= return SUB_ASSIGN
+<<= return LEFT_ASSIGN
+>>= return RIGHT_ASSIGN
+&= return AND_ASSIGN
+|= return OR_ASSIGN
 TYPEDEF_NAME
 \; return SEMI
 \: return COLON
