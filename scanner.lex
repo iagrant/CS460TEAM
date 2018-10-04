@@ -14,6 +14,9 @@
 let [a-Z]
 
 %%
+[ \t\n]		{ /* skip white space */ }
+"/*"(\n|.)*"*/"	{ /* skip comment */ }
+"//".*\n	{ /* skip comment */ }
 \!\![A-z] {yylval.sval = yytext; return DEBUG;}
 let[let_]*let|let return IDENTIFIER;
 [0-9]+ {yylval.int = atoi(yytext); return INTEGER_CONSTANT;}
