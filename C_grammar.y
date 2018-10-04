@@ -9,7 +9,7 @@
 %union {
   int ival;
   char cval;
-  string sval;
+  std::string sval;
   double dval;
   float fval;
 }
@@ -41,82 +41,82 @@
 %%
 
 translation_unit
-	: external_declaration {if (printProductions) {std::cout << "" << std::endl;}}
-	| translation_unit external_declaration {if (printProductions) {std::cout << "" << std::endl;}}
+	: external_declaration {if (printProductions) {std::cout << "translational_unit -> external_declaration" << std::endl;}}
+	| translation_unit external_declaration {if (printProductions) {std::cout << "translational_unit -> translational_unit external_declaration" << std::endl;}}
 	;
 
 external_declaration
-	: function_definition {if (printProductions) {std::cout << "" << std::endl;}}
-	| declaration {if (printProductions) {std::cout << "" << std::endl;}}
+	: function_definition {if (printProductions) {std::cout << "external_declaration -> function definition" << std::endl;}}
+	| declaration {if (printProductions) {std::cout << "external_declaration -> declaration" << std::endl;}}
 	;
 
 function_definition
-	: declarator compound_statement {if (printProductions) {std::cout << "" << std::endl;}}
-	| declarator declaration_list compound_statement {if (printProductions) {std::cout << "" << std::endl;}}
-	| declaration_specifiers declarator compound_statement {if (printProductions) {std::cout << "" << std::endl;}}
-	| declaration_specifiers declarator declaration_list compound_statement {if (printProductions) {std::cout << "" << std::endl;}}
+	: declarator compound_statement {if (printProductions) {std::cout << "function_definition -> declarator compound_statment" << std::endl;}}
+	| declarator declaration_list compound_statement {if (printProductions) {std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;}}
+	| declaration_specifiers declarator compound_statement {if (printProductions) {std::cout << "function_definition -> declaration_specifiers declarator compound_statement" << std::endl;}}
+	| declaration_specifiers declarator declaration_list compound_statement {if (printProductions) {std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;}}
 	;
 
 declaration
-	: declaration_specifiers SEMI {if (printProductions) {std::cout << "" << std::endl;}}
-	| declaration_specifiers init_declarator_list SEMI {if (printProductions) {std::cout << "" << std::endl;}}
+	: declaration_specifiers SEMI {if (printProductions) {std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;}}
+	| declaration_specifiers init_declarator_list SEMI {if (printProductions) {std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;}}
 	;
 
 declaration_list
-	: declaration {if (printProductions) {std::cout << "" << std::endl;}}
-	| declaration_list declaration {if (printProductions) {std::cout << "" << std::endl;}}
+	: declaration {if (printProductions) {std::cout << "declaration_list -> declaration" << std::endl;}}
+	| declaration_list declaration {if (printProductions) {std::cout << "declaration_list -> declaration list declaration" << std::endl;}}
 	;
 
 declaration_specifiers
-	: storage_class_specifier {if (printProductions) {std::cout << "" << std::endl;}}
-	| storage_class_specifier declaration_specifiers {if (printProductions) {std::cout << "" << std::endl;}}
-	| type_specifier {if (printProductions) {std::cout << "" << std::endl;}}
-	| type_specifier declaration_specifiers {if (printProductions) {std::cout << "" << std::endl;}}
-	| type_qualifier  {if (printProductions) {std::cout << "" << std::endl;}}
-	| type_qualifier declaration_specifiers {if (printProductions) {std::cout << "" << std::endl;}}
+	: storage_class_specifier {if (printProductions) {std::cout << "declaration_specifiers -> storage_class_specifier" << std::endl;}}
+	| storage_class_specifier declaration_specifiers {if (printProductions) {std::cout << "declaration_specifiers -> storage_class_specifier declaration_specifiers" << std::endl;}}
+	| type_specifier {if (printProductions) {std::cout << "declaration_specifiers -> type_specifier" << std::endl;}}
+	| type_specifier declaration_specifiers {if (printProductions) {std::cout << "declaration_specifiers -> type_specifier declaration_specifiers" << std::endl;}}
+	| type_qualifier  {if (printProductions) {std::cout << "declaration_specifiers ->  type_qualifier" << std::endl;}}
+	| type_qualifier declaration_specifiers {if (printProductions) {std::cout << "declaration_specifiers -> type_qualifier declaration_specifiers" << std::endl;}}
 	;
 
 storage_class_specifier
-	: AUTO {if (printProductions) {std::cout << "" << std::endl;}}
-	| REGISTER {if (printProductions) {std::cout << "" << std::endl;}}
-	| STATIC {if (printProductions) {std::cout << "" << std::endl;}}
-	| EXTERN {if (printProductions) {std::cout << "" << std::endl;}}
-	| TYPEDEF {if (printProductions) {std::cout << "" << std::endl;}}
+	: AUTO {if (printProductions) {std::cout << "storage_class_specifier -> AUTO" << std::endl;}}
+	| REGISTER {if (printProductions) {std::cout << "storage_class_specifier -> REGISTER" << std::endl;}}
+	| STATIC {if (printProductions) {std::cout << "storage_class_specifier -> STATIC" << std::endl;}}
+	| EXTERN {if (printProductions) {std::cout << "storage_class_specifier -> EXTERN" << std::endl;}}
+	| TYPEDEF {if (printProductions) {std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;}}
 	;
 
 type_specifier
-	: VOID {if (printProductions) {std::cout << "" << std::endl;}}
-	| CHAR {if (printProductions) {std::cout << "" << std::endl;}}
-	| SHORT {if (printProductions) {std::cout << "" << std::endl;}}
-	| INT {if (printProductions) {std::cout << "" << std::endl;}}
-	| LONG {if (printProductions) {std::cout << "" << std::endl;}}
-	| FLOAT  {if (printProductions) {std::cout << "" << std::endl;}}
-	| DOUBLE {if (printProductions) {std::cout << "" << std::endl;}}
-	| SIGNED {if (printProductions) {std::cout << "" << std::endl;}}
-	| UNSIGNED {if (printProductions) {std::cout << "" << std::endl;}}
-	| struct_or_union_specifier {if (printProductions) {std::cout << "" << std::endl;}}
-	| enum_specifier {if (printProductions) {std::cout << "" << std::endl;}}
-	| TYPEDEF_NAME {if (printProductions) {std::cout << "" << std::endl;}}
+	: VOID {if (printProductions) {std::cout << "type_specifier -> VOID" << std::endl;}}
+	| CHAR {if (printProductions) {std::cout << "type_specifier -> CHAR" << std::endl;}}
+	| SHORT {if (printProductions) {std::cout << "type_specifier -> SHORT" << std::endl;}}
+	| INT {if (printProductions) {std::cout << "type_specifier -> INT" << std::endl;}}
+	| LONG {if (printProductions) {std::cout << "type_specifier -> LONG" << std::endl;}}
+	| FLOAT  {if (printProductions) {std::cout << "type_specifier -> FLOAT" << std::endl;}}
+	| DOUBLE {if (printProductions) {std::cout << "type_specifier -> DOUBLE" << std::endl;}}
+	| SIGNED {if (printProductions) {std::cout << "type_specifier -> SIGNED" << std::endl;}}
+	| UNSIGNED {if (printProductions) {std::cout << "type_specifier -> UNSIGNED" << std::endl;}}
+	| struct_or_union_specifier {if (printProductions) {std::cout << "type_specifier -> struct_or_union_specifier" << std::endl;}}
+	| enum_specifier {if (printProductions) {std::cout << "type_specifier -> enum_specifier" << std::endl;}}
+	| TYPEDEF_NAME {if (printProductions) {std::cout << "type_specifier ->TYPEDEF_NAME" << std::endl;}}
 	;
 
 type_qualifier
-	: CONST {if (printProductions) {std::cout << "" << std::endl;}}
-	| VOLATILE {if (printProductions) {std::cout << "" << std::endl;}}
+	: CONST {if (printProductions) {std::cout << "type_qualifier -> CONST" << std::endl;}}
+	| VOLATILE {if (printProductions) {std::cout << "type_qualifier -> VOLATILE" << std::endl;}}
 	;
 
 struct_or_union_specifier
-	: struct_or_union identifier CURLYOPEN struct_declaration_list CURLYCLOSE {if (printProductions) {std::cout << "" << std::endl;}}
-	| struct_or_union CURLYOPEN struct_declaration_list CURLYCLOSE {if (printProductions) {std::cout << "" << std::endl;}}
-	| struct_or_union identifier {if (printProductions) {std::cout << "" << std::endl;}}
+	: struct_or_union identifier CURLYOPEN struct_declaration_list CURLYCLOSE {if (printProductions) {std::cout << "struct_or_union_specifier ->struct_or_union identifier CURLYOPEN struct_declaration_list CURLYCLOSE " << std::endl;}}
+	| struct_or_union CURLYOPEN struct_declaration_list CURLYCLOSE {if (printProductions) {std::cout << "struct_or_union_specifier -> struct_or_union CURLYOPEN struct_declaration_list CURLYCLOSE" << std::endl;}}
+	| struct_or_union identifier {if (printProductions) {std::cout << "struct_or_union_specifier -> struct_or_union identifier " << std::endl;}}
 	;
 
 struct_or_union
-	: STRUCT {if (printProductions) {std::cout << "" << std::endl;}}
-	| UNION {if (printProductions) {std::cout << "" << std::endl;}}
+	: STRUCT {if (printProductions) {std::cout << "struct_or_union -> STRUCT" << std::endl;}}
+	| UNION {if (printProductions) {std::cout << "struct_or_union -> UNION" << std::endl;}}
 	;
 
 struct_declaration_list
-	: struct_declaration {if (printProductions) {std::cout << "" << std::endl;}}
+	: struct_declaration {if (printProductions) {std::cout << "struct_declaration_list -> " << std::endl;}}
 	| struct_declaration_list struct_declaration {if (printProductions) {std::cout << "" << std::endl;}}
 	;
 

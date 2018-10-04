@@ -1,5 +1,5 @@
-CC	= cc
-LEX	= flex
+CC	= g++
+LEX	= flex++
 YACC	= bison
 LIBS	= -L/usr/local/lib -lfl 
 
@@ -12,16 +12,15 @@ C_grammmar: $(OBJS)
 testscan: $(TESTOBJS) C_grammar.tab.h
 	$(CC) -o $@ $(TESTOBJS) $(LIBS)
 
-C_grammar.tab.c: C_grammar.y
+C_grammar.tab.cc: C_grammar.y
 	$(YACC) -d -t $<
 
-lex.yy.c: scanner.lex C_grammar.tab.c
+lex.yy.cc: scanner.lex C_grammar.tab.cc
 	$(LEX) $<
 
 clean:
 	-rm -f lex.yy.* C_grammar.tab.* *.o C_grammar testscan *~
 
-.SUFFIXES: .c .o
+.SUFFIXES: .cc .o
 
-.c.o:
-	$(CC) -c $< -o $@
+.cc.o: $(CC) -c $< -o $@

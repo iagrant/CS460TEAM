@@ -6,24 +6,24 @@
 // Purpose: This file is the scanner that performs lexical analysis on the tokens 
 //			of the input stream and program.
 */
-	#include <stdio.h>
-  #include <string.h>
-	
+#include <stdio.h>
+#include <string>
+#include "C_grammar.tab.h"	
 %}
 
 let [a-Z]
 
 %%
 [ \t\n]		{ /* skip white space */ }
-"/*"(\n|.)*"*/"	{ /* skip comment */ }
-"//".*\n	{ /* skip comment */ }
+"\*"(\n|.)*"*/"	{ /* skip comment */ }
+"//".*\n{ /* skip comment */ }
 \!\![A-z] {yylval.sval = yytext; return DEBUG;}
 let[let_]*let|let return IDENTIFIER;
-[0-9]+ {yylval.int = atoi(yytext); return INTEGER_CONSTANT;}
-[0-9]+\.?[0-9]* {yylval.fval = stof(yytext); return FLOATING_CONSTANT;}
+[0-9]+ {yylval.ival = atoi(yytext); return INTEGER_CONSTANT;}
+[0-9]+\.?[0-9]* {yylval.fval = atof(yytext); return FLOATING_CONSTANT;}
 CHARACTER_CONSTANT {yylval.cval = yytext; return CHARACTER_CONSTANT;}
 ENUMERATION_CONSTANT return ENUMERATION_CONSTANT;
-STRING_LITERAL {yylval.sval = strcat(yytext,"\0"); return STRING_LITERAL;}
+STRING_LITERAL {yylval.sval = strcat(yytext, '\0'); return STRING_LITERAL;}
 SIZEOF return SIZEOF;
 PTR_OP return PTR_OP;
 \+\+ return INC_OP;
@@ -90,7 +90,7 @@ struct return STRUCT;
 union return UNION;
 ENUM return ENUM;
 ELIPSIS return ELIPSIS;
-CASE return CASe;
+CASE return CASE;
 DEFAULT return DEFAULT;
 IF return IF;
 ELSE return ELSE;
