@@ -4,6 +4,8 @@
 #yacc and lex garb
 *.tab.c
 *.tab.o
+lex.yy.c
+lex.yy.cc
 
 # Compiled Object files
 *.slo
