@@ -8,12 +8,15 @@
 */
 #include <stdio.h>
 #include <string>
-#include "C_grammar.tab.h"	
+#include "C_grammar.tab.h"
+int yyline = 0;
+int yycol = 0;	
 %}
 
 let [a-Z]
 
 %%
+\n yyline++;
 [ \t\n]		{ /* skip white space */ }
 "\*"(\n|.)*"*/"	{ /* skip comment */ }
 "//".*\n{ /* skip comment */ }
