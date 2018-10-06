@@ -26,7 +26,7 @@ number  {num1}|{num2}
 
 %%
 \n {std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl; lineNum++; colNum = 0;}
-[ ]	{colNum += 1; /* skip white space */ }
+[ ]	{colNum++; /* skip white space */ }
 "/*"    {
         int c;
 
@@ -129,7 +129,7 @@ goto            {if(printToken) {std::cout << "GOTO" << std::endl;} colNum += yy
 continue        {if(printToken) {std::cout << "CONTINUE" << std::endl;} colNum += yyleng;}
 break           {if(printToken) {std::cout << "BREAK" << std::endl;} colNum += yyleng;}
 return          {if(printToken) {std::cout << "RETURN" << std::endl;} colNum += yyleng;}
-{name}          {if(printToken) {std::cout << "IDENTIFIER" << std::endl;}}
+{name}          {if(printToken) {std::cout << "IDENTIFIER" << std::endl;} colNum +=yyleng;}
 .               {if(printToken) {std::cout << "ERROR" << std::endl;}}
 %%
 
