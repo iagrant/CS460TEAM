@@ -1,11 +1,10 @@
 %{
-  #include <stdio.h> 
-  #include <string.h>  
+  #include <stdio.h>
+  #include <string.h>
   #include <bool.h>
 
-  extern bool printProductions = true; 
+  extern bool printProductions = true;
 %}
-
 %union {
   int ival;
   char cval;
@@ -14,19 +13,18 @@
   float fval;
 }
 
-%token <sval> IDENTIFIER 
-%token INTEGER_CONSTANT FLOATING_CONSTANT CHARACTER_CONSTANT ENUMERATION_CONSTANT 
-%token <sval> STRING_LITERAL 
+%token <sval> IDENTIFIER
+%token INTEGER_CONSTANT FLOATING_CONSTANT CHARACTER_CONSTANT ENUMERATION_CONSTANT
+%token <sval> STRING_LITERAL
 %token SIZEOF
-%token PTR_OP 
-%token INC_OP DEC_OP 
-%token LEFT_OP RIGHT_OP 
+%token INC_OP DEC_OP
+%token LEFT_OP RIGHT_OP
 %token LE_OP GE_OP EQ_OP NE_OP
-%token AND_OP OR_OP 
-%token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN 
-%token LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN 
+%token AND_OP OR_OP
+%token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN
+%token LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %token TYPEDEF_NAME
-%token SEMI COLON CURLYOPEN CURLYCLOSE BRACKETOPEN BRACKETCLOSE COMMA PERIOD EQUALS 
+%token SEMI COLON CURLYOPEN CURLYCLOSE BRACKETOPEN BRACKETCLOSE COMMA PERIOD EQUALS
 %token OPEN CLOSE STAR QUESTION BAR CARROT AMP LESS_OP GREAT_OP PLUS MINUS FORSLASH
 %token PERCENT BANG TILDA
 %token TYPEDEF EXTERN STATIC AUTO REGISTER
@@ -34,7 +32,7 @@
 %token STRUCT UNION ENUM ELIPSIS RANGE
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-%token ERROR
+%token ERROR DEBUG
 
 %type <sval> string identifier
 
@@ -430,7 +428,7 @@ postfix_expression
 	| postfix_expression OPEN CLOSE {if (printProductions) {std::cout << "" << std::endl;}}
 	| postfix_expression OPEN argument_expression_list CLOSE {if (printProductions) {std::cout << "" << std::endl;}}
 	| postfix_expression PERIOD identifier {if (printProductions) {std::cout << "" << std::endl;}}
-	| postfix_expression PTR_OP identifier {if (printProductions) {std::cout << "" << std::endl;}}
+	| postfix_expression STAR identifier {if (printProductions) {std::cout << "" << std::endl;}}
 	| postfix_expression INC_OP {if (printProductions) {std::cout << "" << std::endl;}}
 	| postfix_expression DEC_OP {if (printProductions) {std::cout << "" << std::endl;}}
 	;
@@ -474,4 +472,3 @@ char *s;
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
 }
-

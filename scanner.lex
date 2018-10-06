@@ -7,14 +7,13 @@
 //			of the input stream and program.
 */
 #include <stdio.h>
-#include <string.h>
-//#include "C_grammar.tab.h"
+#include <iostream>
+#include <string>
+#include "C_grammar.tab.h"
 int yyline = 0;
 int colNum = 0;	
 bool printToken = true;
 %}
-
-let [a-Z]
 
 %%
 \n {yyline++; colNum = 0;}
@@ -22,15 +21,14 @@ let [a-Z]
 [\t] {colNum += yyleng;}
 "\*"(\n|.)*"*/"	{ /* skip comment */ }
 "//".* { /* skip comment */ }
-\!\![A-z] {yylval.sval = yytext; if(printToken) {std::cout << "DEBUG" << std::endl;} return DEBUG;}
+\!\![A-z] {yylval.sval = yytext[0] + "\0"; if(printToken) {std::cout << "DEBUG" << std::endl;} return DEBUG;}
 let[let_]*let|let {colNum += yyleng; if(printToken) {std::cout << "IDENTIFIER" << std::endl;} return IDENTIFIER;}
 [0-9]+ {yylval.ival = atoi(yytext); colNum += yyleng; if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;} return INTEGER_CONSTANT;}
-[0-9]+\.?[0-9]* {yylval.fval = atof(yytext); colNum += yyleng; if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;} return FLOATING_CONSTANT;}
-CHARACTER_CONSTANT {yylval.cval = yytext; colNum += yyleng; if(printToken) {std::cout << "CHARACTER_CONSTANT" << std::endl;} return CHARACTER_CONSTANT;}
-ENUMERATION_CONSTANT {colNum += yyleng; if(printToken) {std::cout << "ENUMERATION_CONSTANT" << std::endl;} return ENUMERATION_CONSTANT;}
-STRING_LITERAL {yylval.sval = strcat(yytext, '\0'); colNum += yyleng; if(printToken) {std::cout << "STRING_LITERAL" << std::endl;} return STRING_LITERAL;}
+[0-9]+\.?[0-9]* {yylval.fval = stof(yytext); colNum += yyleng; if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;} return FLOATING_CONSTANT;}
+\'(\\.|.)\' {yylval.cval = yytext[0]; colNum += yyleng; if(printToken) {std::cout << "CHARACTER_CONSTANT" << std::endl;} return CHARACTER_CONSTANT;}
+"ENUM" ENUMERATION_CONSTANT {colNum += yyleng; if(printToken) {std::cout << "ENUMERATION_CONSTANT" << std::endl;} return ENUMERATION_CONSTANT;}
+\"[A-z]+\" {yylval.sval = yytext + "\0"; colNum += yyleng; if(printToken) {std::cout << "STRING_LITERAL" << std::endl;} return STRING_LITERAL;}
 SIZEOF {colNum += yyleng; if(printToken) {std::cout << "SIZEOF" << std::endl;} return SIZEOF;}
-PTR_OP {colNum += yyleng; if(printToken) {std::cout << "PTR_OP" << std::endl;} return PTR_OP;}
 \+\+ {colNum += yyleng; if(printToken) {std::cout << "INC_OP" << std::endl;} return INC_OP;}
 -- {colNum += yyleng; if(printToken) {std::cout << "DEC_OP" << std::endl;} return DEC_OP;}
 \<\< {colNum += yyleng; if(printToken) {std::cout << "LEFT_OP" << std::endl;} return LEFT_OP;}
@@ -41,15 +39,15 @@ PTR_OP {colNum += yyleng; if(printToken) {std::cout << "PTR_OP" << std::endl;} r
 != {colNum += yyleng; if(printToken) {std::cout << "NE_OP" << std::endl;} return NE_OP;}
 && {colNum += yyleng; if(printToken) {std::cout << "AND_OP" << std::endl;} return AND_OP;}
 \|\| {colNum += yyleng; if(printToken) {std::cout << "OR_OP" << std::endl;} return OR_OP;}
-\* {colNum += yyleng; if(printToken) {std::cout << "MUL_ASSIGN" << std::endl;} return MUL_ASSIGN;}
-\/ {colNum += yyleng; if(printToken) {std::cout << "DIV_ASSIGN" << std::endl;} return DIV_ASSIGN;}
-% {colNum += yyleng; if(printToken) {std::cout << "MOD_ASSIGN" << std::endl;} return MOD_ASSIGN;}
-\+ {colNum += yyleng; if(printToken) {std::cout << "ADD_ASSIGN" << std::endl;} return ADD_ASSIGN;}
-- {colNum += yyleng; if(printToken) {std::cout << "SUB_ASSIGN" << std::endl;} return SUB_ASSIGN;}
-'<<' {colNum += yyleng; if(printToken) {std::cout << "LEFT_ASSIGN" << std::endl;} return LEFT_ASSIGN;}
-'>>' {colNum += yyleng; if(printToken) {std::cout << "RIGHT_ASSIGN" << std::endl;} return RIGHT_ASSIGN;}
-& {colNum += yyleng; if(printToken) {std::cout << "AND_ASSIGN" << std::endl;} return AND_ASSIGN;}
-\| {colNum += yyleng; if(printToken) {std::cout << "OR_ASSIGN" << std::endl;} return OR_ASSIGN;}
+\*= {colNum += yyleng; if(printToken) {std::cout << "MUL_ASSIGN" << std::endl;} return MUL_ASSIGN;}
+\/= {colNum += yyleng; if(printToken) {std::cout << "DIV_ASSIGN" << std::endl;} return DIV_ASSIGN;}
+%= {colNum += yyleng; if(printToken) {std::cout << "MOD_ASSIGN" << std::endl;} return MOD_ASSIGN;}
+\+= {colNum += yyleng; if(printToken) {std::cout << "ADD_ASSIGN" << std::endl;} return ADD_ASSIGN;}
+-= {colNum += yyleng; if(printToken) {std::cout << "SUB_ASSIGN" << std::endl;} return SUB_ASSIGN;}
+'<<=' {colNum += yyleng; if(printToken) {std::cout << "LEFT_ASSIGN" << std::endl;} return LEFT_ASSIGN;}
+'>>=' {colNum += yyleng; if(printToken) {std::cout << "RIGHT_ASSIGN" << std::endl;} return RIGHT_ASSIGN;}
+&= {colNum += yyleng; if(printToken) {std::cout << "AND_ASSIGN" << std::endl;} return AND_ASSIGN;}
+\|= {colNum += yyleng; if(printToken) {std::cout << "OR_ASSIGN" << std::endl;} return OR_ASSIGN;}
 TYPEDEF_NAME {colNum += yyleng; if(printToken) {std::cout << "TYPEDEF_NAME" << std::endl;} return TYPEDEF_NAME;}
 \; {colNum += yyleng; if(printToken) {std::cout << "SEMI" << std::endl;} return SEMI;}
 \: {colNum += yyleng; if(printToken) {std::cout << "COLON" << std::endl;} return COLON;}
@@ -107,5 +105,5 @@ goto {colNum += yyleng; if(printToken) {std::cout << "GOTO" << std::endl;} retur
 continue {colNum += yyleng; if(printToken) {std::cout << "CONTINUE" << std::endl;} return CONTINUE;}
 break {colNum += yyleng; if(printToken) {std::cout << "BREAK" << std::endl;} return BREAK;}
 return {colNum += yyleng; if(printToken) {std::cout << "RETURN" << std::endl;} return RETURN;}
-. { std::cout << "\n" << (std::string(colNum, "-") << "^ INVALID TOKEN"; return ERROR;}
+. { std::cout << "\n" << (std::string(colNum, "-")) << "^ INVALID TOKEN"; return ERROR;}
 %%

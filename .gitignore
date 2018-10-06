@@ -4,6 +4,7 @@
 #yacc and lex garb
 *.tab.c
 *.tab.o
+*.tab.h
 lex.yy.c
 lex.yy.cc
 
