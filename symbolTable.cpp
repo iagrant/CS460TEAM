@@ -35,7 +35,7 @@ class idNode : public Node {
   idNode (string id) {identifier=id;}
 
 };
-class forNode : public Node { 
+class forNode : public Node {
   public:
     //not sure what  to have it contain
 };
