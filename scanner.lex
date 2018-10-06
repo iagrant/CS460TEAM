@@ -7,6 +7,7 @@
 //			of the input stream and program.
 */
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include "C_grammar.tab.h"
@@ -21,13 +22,13 @@ bool printToken = true;
 [\t] {colNum += yyleng;}
 "\*"(\n|.)*"*/"	{ /* skip comment */ }
 "//".* { /* skip comment */ }
-\!\![A-z] {yylval.sval = yytext[0] + "\0"; if(printToken) {std::cout << "DEBUG" << std::endl;} return DEBUG;}
+\!\![A-z] {yylval.sval = yytext[0] += "\0"; if(printToken) {std::cout << "DEBUG" << std::endl;} return DEBUG;}
 let[let_]*let|let {colNum += yyleng; if(printToken) {std::cout << "IDENTIFIER" << std::endl;} return IDENTIFIER;}
-[0-9]+ {yylval.ival = atoi(yytext); colNum += yyleng; if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;} return INTEGER_CONSTANT;}
-[0-9]+\.?[0-9]* {yylval.fval = atof(yytext); colNum += yyleng; if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;} return FLOATING_CONSTANT;}
+[0-9]+ {yylval.ival = std::stoi((yytext+="\0")); colNum += yyleng; if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;} return INTEGER_CONSTANT;}
+[0-9]+\.?[0-9]* {yylval.dval = std::stod(yytext); colNum += yyleng; if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;} return FLOATING_CONSTANT;}
 \'(\\.|.)\' {yylval.cval = yytext[0]; colNum += yyleng; if(printToken) {std::cout << "CHARACTER_CONSTANT" << std::endl;} return CHARACTER_CONSTANT;}
-"ENUM" ENUMERATION_CONSTANT {colNum += yyleng; if(printToken) {std::cout << "ENUMERATION_CONSTANT" << std::endl;} return ENUMERATION_CONSTANT;}
-\"[A-z]+\" {yylval.sval = yytext + "\0"; colNum += yyleng; if(printToken) {std::cout << "STRING_LITERAL" << std::endl;} return STRING_LITERAL;}
+"ENUM" {colNum += yyleng; if(printToken) {std::cout << "ENUMERATION_CONSTANT" << std::endl;} return ENUMERATION_CONSTANT;}
+\"[A-z]+\" {yylval.sval = yytext += "\0"; colNum += yyleng; if(printToken) {std::cout << "STRING_LITERAL" << std::endl;} return STRING_LITERAL;}
 SIZEOF {colNum += yyleng; if(printToken) {std::cout << "SIZEOF" << std::endl;} return SIZEOF;}
 \+\+ {colNum += yyleng; if(printToken) {std::cout << "INC_OP" << std::endl;} return INC_OP;}
 -- {colNum += yyleng; if(printToken) {std::cout << "DEC_OP" << std::endl;} return DEC_OP;}
