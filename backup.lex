@@ -13,6 +13,13 @@
 #include <string>
 //#include "C_grammar.tab.h"
 
+#define POS_INT_MAX 2147483646
+#define NEG_INT_MAX -2147483647
+/*
+#define POS_DOUBLE_MAX 1.7E+308
+#define NEG_DOUBLE_MAX 2.3E-308
+*/
+
 int lineNum = 1;
 int colNum = 1;
 bool printToken = false;
@@ -20,7 +27,12 @@ bool printSymbol = false;
 bool printProductions = false;
 std::string buffer = "";
 std::string srcFile = "";
+std::string outSrcFile = "";
+ostream consoleOut (cout.rdbuf());
+ostream fileOut;
+
 void printError (int colNum,std::string errorTok);
+void printConsole (std::string token);
 
 %}
 
@@ -82,6 +94,9 @@ number  {num1}|{num2}
 [-]?[0-9]+      {
                     if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;}
                     colNum += yyleng;
+                    std::cout << yytext << endl;
+                    if (std::atoi(yytext) > POS_INT_MAX || std::atoi(yytext) < NEG_INT_MAX)
+                        std::cout << "POSSIBLE INT OVERFLOW" << std::endl;
                     ////return INTEGER_CONSTANT;
                 }
 [0-9]+\.?[0-9]* {
@@ -518,6 +533,10 @@ void printError (int colNum, std::string errorTok) {
     //remeber to close file pointer lmao
 }
 
+void printConsole (std::string token) {
+    std::cout << token << std::endl;
+}
+
 int main (int argc, char** argv)
 {
     std::string tokenFlag = "-dl";
@@ -525,6 +544,7 @@ int main (int argc, char** argv)
 	std::string fhFlag = "-fh";
 	std::string productionFlag = "-p";
     std::string inputFlag = "-i";
+    std::string outputFlag = "-o";
     extern std::string srcFile;
     extern std::string buffer;
 
@@ -548,11 +568,21 @@ int main (int argc, char** argv)
 		}
         if ((inputFlag.compare(argv[i]))==0)
         {
-            if (i++ < argc)
+            if (i+1 < argc)
                 srcFile = argv[i++];
             else
             {
                 std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
+                return 0;
+            }
+        }
+        if ((outputFlag.compare(argv[i]))==0)
+        {
+            if (i+1 < argc)
+                outSrcFile = argv[i++];
+            else
+            {
+                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
                 return 0;
             }
         }
