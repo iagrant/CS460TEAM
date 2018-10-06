@@ -20,7 +20,7 @@ bool printSymbol = false;
 bool printProductions = false;
 std::string buffer = "";
 std::string srcFile = "";
-void printError (int colNum);
+void printError (int colNum,std::string errorTok);
 
 %}
 
@@ -56,29 +56,27 @@ number  {num1}|{num2}
 \/\/.* 			/*skipping single line comments */
 \!\![A-z]       {
                     if(printToken) {std::cout << "DEBUG" << std::endl;}
-                    /* change to ifs
-                    switch(yytext) {
-                        case "!!dl": //dump local tokens
-                            if (printToken)
-                                printToken = false;
-                            else
-                                printToken = true;
-                            break;
-                        case "!!dp": //dump local productions
-                            if (printProductions)
-                                printProductions = false;
-                            else
-                                printProductions = true;
-                            break;
-                        case "!!ds":
-                            if (printSymbol)
-                                printSymbol = false;
-                            else
-                                printSymbol = true;
-                            break;
-                        //case "!!fh":
+                    if (yytext == "!!dl")
+                    {
+                        if(printToken)
+                            printToken = false;
+                        else
+                            printToken = true;
                     }
-                    */
+                    if (yytext == "!!dp")
+                    {
+                        if(printProductions)
+                            printProductions = false;
+                        else
+                            printProductions = true;
+                    }
+                    if (yytext == "!!ds")
+                    {
+                        if(printSymbol)
+                            printSymbol = false;
+                        else
+                            printSymbol = true;
+                    }
                     ////return DEBUG;
                 }
 [-]?[0-9]+      {
@@ -503,21 +501,19 @@ return          {
                 }
 .               {
                     if(printToken) {std::cout << "ERROR" << std::endl;}
-                    printError(colNum);
-                    //printError(colNum,"Unidentifed Token");
+                    printError(colNum,yytext);
                     //return ERROR;
                 }
 %%
-void printError (int colNum) {
-    extern char yytext[];
+void printError (int colNum, std::string errorTok) {
     std::ifstream srcFileP(srcFile);
     for (int i = 0; i < lineNum; i++)
     {
         std::getline(srcFileP,buffer);
     }
     std::cout << buffer << std::endl;
-    std::cout << std::string(colNum - 1,'-') << "\033[1;31m^ Unidentifed Token:\033[0m"
-    		  << yytext << " on Line: " << lineNum
+    std::cout << std::string(colNum - 1,'-') << "\033[1;91m^ Unidentifed Token: \033[0m\033[4;33m"
+    		  << errorTok << "\033[0m on Line: " << lineNum
     		  << " and Column: " << colNum <<std::endl;
     //remeber to close file pointer lmao
 }
