@@ -25,14 +25,14 @@ int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
 bool printProductions = false;
-bool printFile = false;
+bool printFile = true;
 std::string buffer = "";
 std::string srcFile = "";
-std::string outSrcFile = "";
+std::string outSrcFile = "a.out";
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
-void printFile (std::string token);
+void printToFile (std::string token);
 
 %}
 
@@ -68,7 +68,7 @@ number  {num1}|{num2}
 \/\/.* 			/*skipping single line comments */
 \!\![A-z]       {
                     if(printToken) {printConsole("DEBUG");}
-                    if(printFile) {printFile("DEBUG");}
+                    if(printFile) {printToFile("DEBUG");}
                     if (yytext == "!!dl")
                     {
                         if(printToken)
@@ -94,7 +94,7 @@ number  {num1}|{num2}
                 }
 [-]?[0-9]+      {
                     if(printToken) {printConsole("INTEGER_CONSTANT");}
-                    if(printFile) {printFile("INTEGER_CONSTANT");}
+                    if(printFile) {printToFile("INTEGER_CONSTANT");}
                     colNum += yyleng;
                     std::cout << yytext << std::endl;
                     if (yyleng > 9)
@@ -103,493 +103,493 @@ number  {num1}|{num2}
                 }
 [0-9]+\.?[0-9]* {
                     if(printToken) {printConsole("FLOATING_CONSTANT");}
-                    if(printFile) {printFile("FLOATING_CONSTANT");}
+                    if(printFile) {printToFile("FLOATING_CONSTANT");}
                     colNum += yyleng;
                     ////return FLOATING_CONSTANT;
                 }
 \'(\\.|.)\'     {
                     if(printToken) {printConsole("CHARACTER_CONSTANT");}
-                    if(printFile) {printFile("CHARACTER_CONSTANT");}
+                    if(printFile) {printToFile("CHARACTER_CONSTANT");}
                     colNum += yyleng;
                     ////return CHARACTER_CONSTANT;
                 }
 "ENUM"          {
                     if(printToken) {printConsole("ENUMERATION_CONSTANT");}
-                    if(printFile) {printFile("ENUMERATION_CONSTANT");}
+                    if(printFile) {printToFile("ENUMERATION_CONSTANT");}
                     colNum += yyleng;
                     ////return ENUMERATION_CONSTANT;
                 }
 \"[A-z]+\"      {
                     if(printToken) {printConsole("STRING_LITERAL");}
-                    if(printFile) {printFile("STRING_LITERAL");}
+                    if(printFile) {printToFile("STRING_LITERAL");}
                     colNum += yyleng;
                     ////return STRING_LITERAL;
                 }
 sizeof          {
                     if(printToken) {printConsole("SIZEOF");}
-                    if(printFile) {printFile("SIZEOF");}
+                    if(printFile) {printToFile("SIZEOF");}
                     colNum += yyleng;
                     ////return SIZEOF;
                 }
 \+\+            {
                     if(printToken) {printConsole("INC_OP");}
-                    if(printFile) {printFile("INC_OP");}
+                    if(printFile) {printToFile("INC_OP");}
                     colNum += yyleng;
                     ////return INC_OP;
                 }
 --              {
                     if(printToken) {printConsole("DEC_OP");}
-                    if(printFile) {printFile("DEC_OP");}
+                    if(printFile) {printToFile("DEC_OP");}
                     colNum += yyleng;
                     ////return DEC_OP;
                 }
 \<\<            {
                     if(printToken) {printConsole("LEFT_OP");}
-                    if(printFile) {printFile("LEFT_OP");}
+                    if(printFile) {printToFile("LEFT_OP");}
                     colNum += yyleng;
                     ////return LEFT_OP;
                 }
 >>              {
                     if(printToken) {printConsole("RIGHT_OP");}
-                    if(printFile) {printFile("RIGHT_OP");}
+                    if(printFile) {printToFile("RIGHT_OP");}
                     colNum += yyleng;
                     ////return RIGHT_OP;
                 }
 \<=             {
                     if(printToken) {printConsole("LE_OP");}
-                    if(printFile) {printFile("LE_OP");}
+                    if(printFile) {printToFile("LE_OP");}
                     colNum += yyleng;
                     ////return LE_OP;
                 }
 >=              {
                     if(printToken) {printConsole("GE_OP");}
-                    if(printFile) {printFile("GE_OP");}
+                    if(printFile) {printToFile("GE_OP");}
                     colNum += yyleng;
                     ////return GE_OP;
                 }
 ==              {
                     if(printToken) {printConsole("EQ_OP");}
-                    if(printFile) {printFile("EQ_OP");}
+                    if(printFile) {printToFile("EQ_OP");}
                     colNum += yyleng;
                     ////return EQ_OP;
                 }
 !=              {
                     if(printToken) {printConsole("NE_OP");}
-                    if(printFile) {printFile("NE_OP");}
+                    if(printFile) {printToFile("NE_OP");}
                     colNum += yyleng;
                     //return NE_OP;
                 }
 &&              {
                     if(printToken) {printConsole("AND_OP");}
-                    if(printFile) {printFile("AND_OP");}
+                    if(printFile) {printToFile("AND_OP");}
                     colNum += yyleng;
                     //return AND_OP;
                 }
 \|\|            {
                     if(printToken) {printConsole("OR_OP");}
-                    if(printFile) {printFile("OR_OP");}
+                    if(printFile) {printToFile("OR_OP");}
                     colNum += yyleng;
                     //return OR_OP;
                 }
 \*=             {
                     if(printToken) {printConsole("MUL_ASSIGN");}
-                    if(printFile) {printFile("MUL_ASSIGN");}
+                    if(printFile) {printToFile("MUL_ASSIGN");}
                     colNum += yyleng;
                     //return MUL_ASSIGN;
                 }
 \/=             {
                     if(printToken) {printConsole("DIV_ASSIGN");}
-                    if(printFile) {printFile("DIV_ASSIGN");}
+                    if(printFile) {printToFile("DIV_ASSIGN");}
                     colNum += yyleng;
                     //return DIV_ASSIGN;
                 }
 %=              {
                     if(printToken) {printConsole("MOD_ASSIGN");}
-                    if(printFile) {printFile("MOD_ASSIGN");}
+                    if(printFile) {printToFile("MOD_ASSIGN");}
                     colNum += yyleng;
                     //return MOD_ASSIGN;
                 }
 \+=             {
                     if(printToken) {printConsole("ADD_ASSIGN");}
-                    if(printFile) {printFile("ADD_ASSIGN");}
+                    if(printFile) {printToFile("ADD_ASSIGN");}
                     colNum += yyleng;
                     //return ADD_ASSIGN;
                 }
 -=              {
                     if(printToken) {printConsole("SUB_ASSIGN");}
-                    if(printFile) {printFile("SUB_ASSIGN");}
+                    if(printFile) {printToFile("SUB_ASSIGN");}
                     colNum += yyleng;
                     //return SUB_ASSIGN;
                 }
 '<<='           {
                     if(printToken) {printConsole("LEFT_ASSIGN");}
-                    if(printFile) {printFile("LEFT_ASSIGN");}
+                    if(printFile) {printToFile("LEFT_ASSIGN");}
                     colNum += yyleng;
                     //return LEFT_ASSIGN;
                 }
 '>>='           {
                     if(printToken) {printConsole("RIGHT_ASSIGN");}
-                    if(printFile) {printFile("RIGHT_ASSIGN");}
+                    if(printFile) {printToFile("RIGHT_ASSIGN");}
                     colNum += yyleng;
                     //return RIGHT_ASSIGN;
                 }
 &=              {
                     if(printToken) {printConsole("AND_ASSIGN");}
-                    if(printFile) {printFile("AND_ASSIGN");}
+                    if(printFile) {printToFile("AND_ASSIGN");}
                     colNum += yyleng;
                     //return AND_ASSIGN;
                 }
 \|=             {
                     if(printToken) {printConsole("OR_ASSIGN");}
-                    if(printFile) {printFile("OR_ASSIGN");}
+                    if(printFile) {printToFile("OR_ASSIGN");}
                     colNum += yyleng;
                     //return OR_ASSIGN;
                 }
 \;              {
                     if(printToken) {printConsole("SEMI");}
-                    if(printFile) {printFile("SEMI");}
+                    if(printFile) {printToFile("SEMI");}
                     colNum += yyleng;
                     //return SEMI;
                 }
 \:              {
                     if(printToken) {printConsole("COLON");}
-                    if(printFile) {printFile("COLON");}
+                    if(printFile) {printToFile("COLON");}
                     colNum += yyleng;
                     //return COLON;
                 }
 \{              {
                     if(printToken) {printConsole("CURLYOPEN");}
-                    if(printFile) {printFile("CURLYOPEN");}
+                    if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
                     //return CURLYOPEN;
                 }
 \}              {
                     if(printToken) {printConsole("CURLYCLOSE");}
-                    if(printFile) {printFile("CURLYCLOSE");}
+                    if(printFile) {printToFile("CURLYCLOSE");}
                     colNum += yyleng;
                     //return CURLYCLOSE;
                 }
 \[              {
                     if(printToken) {printConsole("BRACKETOPEN");}
-                    if(printFile) {printFile("BRACKETOPEN");}
+                    if(printFile) {printToFile("BRACKETOPEN");}
                     colNum += yyleng;
                     //return BRACKETOPEN;
                 }
 \]              {
                     if(printToken) {printConsole("BRACKETCLOSE");}
-                    if(printFile) {printFile("BRACKETCLOSE");}
+                    if(printFile) {printToFile("BRACKETCLOSE");}
                     colNum += yyleng;
                     //return BRACKETCLOSE;
                 }
 \,              {
                     if(printToken) {printConsole("COMMA");}
-                    if(printFile) {printFile("COMMA");}
+                    if(printFile) {printToFile("COMMA");}
                     colNum += yyleng;
                     //return COMMA;
                 }
 \.              {
                     if(printToken) {printConsole("PERIOD");}
-                    if(printFile) {printFile("PERIOD");}
+                    if(printFile) {printToFile("PERIOD");}
                     colNum += yyleng;
                     //return PERIOD;
                 }
 \=              {
                     if(printToken) {printConsole("EQUALS");}
-                    if(printFile) {printFile("EQUALS");}
+                    if(printFile) {printToFile("EQUALS");}
                     colNum += yyleng;
                     //return EQUALS;
                 }
 \(              {
                     if(printToken) {printConsole("OPEN");}
-                    if(printFile) {printFile("OPEN");}
+                    if(printFile) {printToFile("OPEN");}
                     colNum += yyleng;
                     //return OPEN;
                 }
 \)              {
                     if(printToken) {printConsole("CLOSE");}
-                    if(printFile) {printFile("CLOSE");}
+                    if(printFile) {printToFile("CLOSE");}
                     colNum += yyleng;
                     //return CLOSE;
                 }
 \*              {
                     if(printToken) {printConsole("STAR");}
-                    if(printFile) {printFile("STAR");}
+                    if(printFile) {printToFile("STAR");}
                     colNum += yyleng;
                     //return STAR;
                 }
 \?              {
                     if(printToken) {printConsole("QUESTION");}
-                    if(printFile) {printFile("QUESTION");}
+                    if(printFile) {printToFile("QUESTION");}
                     colNum += yyleng;
                     //return QUESTION;
                 }
 \|              {
                     if(printToken) {printConsole("BAR");}
-                    if(printFile) {printFile("BAR");}
+                    if(printFile) {printToFile("BAR");}
                     colNum += yyleng;
                     //return BAR;
                 }
 \^              {
                     if(printToken) {printConsole("CARROT");}
-                    if(printFile) {printFile("CARROT");}
+                    if(printFile) {printToFile("CARROT");}
                     colNum += yyleng;
                     //return CARROT;
                 }
 \&              {
                     if(printToken) {printConsole("AMP");}
-                    if(printFile) {printFile("AMP");}
+                    if(printFile) {printToFile("AMP");}
                     colNum += yyleng;
                     //return AMP;
                 }
 \<              {
                     if(printToken) {printConsole("LESS_OP");}
-                    if(printFile) {printFile("LESS_OP");}
+                    if(printFile) {printToFile("LESS_OP");}
                     colNum += yyleng;
                     //return LESS_OP;
                 }
 \>              {
                     if(printToken) {printConsole("GREAT_OP");}
-                    if(printFile) {printFile("GREAT_OP");}
+                    if(printFile) {printToFile("GREAT_OP");}
                     colNum += yyleng;
                     //return GREAT_OP;
                 }
 \+              {
                     if(printToken) {printConsole("PLUS");}
-                    if(printFile) {printFile("PLUS");}
+                    if(printFile) {printToFile("PLUS");}
                     colNum += yyleng;
                     //return PLUS;
                 }
 \-              {
                     if(printToken) {printConsole("MINUS");}
-                    if(printFile) {printFile("MINUS");}
+                    if(printFile) {printToFile("MINUS");}
                     colNum += yyleng;
                     //return MINUS;
                 }
 \/              {
                     if(printToken) {printConsole("FORSLASH");}
-                    if(printFile) {printFile("FORSLASH");}
+                    if(printFile) {printToFile("FORSLASH");}
                     colNum += yyleng;
                     //return FORSLASH;
                 }
 \%              {
                     if(printToken) {printConsole("PERCENT");}
-                    if(printFile) {printFile("PERCENT");}
+                    if(printFile) {printToFile("PERCENT");}
                     colNum += yyleng;
                     //return PERCENT;
                 }
 \!              {
                     if(printToken) {printConsole("BANG");}
-                    if(printFile) {printFile("BANG");}
+                    if(printFile) {printToFile("BANG");}
                     colNum += yyleng;
                     //return BANG;
                 }
 \~              {
                     if(printToken) {printConsole("TILDA");}
-                    if(printFile) {printFile("TILDA");}
+                    if(printFile) {printToFile("TILDA");}
                     colNum += yyleng;
                     //return TILDA;
                 }
 typedef         {
                     if(printToken) {printConsole("TYPEDEF");}
-                    if(printFile) {printFile("TYPEDEF");}
+                    if(printFile) {printToFile("TYPEDEF");}
                     colNum += yyleng;
                     //return TYPEDEF;
                 }
 extern          {
                     if(printToken) {printConsole("EXTERN");}
-                    if(printFile) {printFile("EXTERN");}
+                    if(printFile) {printToFile("EXTERN");}
                     colNum += yyleng;
                     //return EXTERN;
                 }
 static          {
                     if(printToken) {printConsole("STATIC");}
-                    if(printFile) {printFile("STATIC");}
+                    if(printFile) {printToFile("STATIC");}
                     colNum += yyleng;
                     //return STATIC;
                 }
 auto            {
                     if(printToken) {printConsole("AUTO");}
-                    if(printFile) {printFile("AUTO");}
+                    if(printFile) {printToFile("AUTO");}
                     colNum += yyleng;
                     //return AUTO;
                 }
 register        {
                     if(printToken) {printConsole("REGISTER");}
-                    if(printFile) {printFile("REGISTER");}
+                    if(printFile) {printToFile("REGISTER");}
                     colNum += yyleng;
                     //return REGISTER;
                 }
 char            {
                     if(printToken) {printConsole("CHAR");}
-                    if(printFile) {printFile("CHAR");}
+                    if(printFile) {printToFile("CHAR");}
                     colNum += yyleng;
                     //return CHAR;
                 }
 short           {
                     if(printToken) {printConsole("SHORT");}
-                    if(printFile) {printFile("SHORT");}
+                    if(printFile) {printToFile("SHORT");}
                     colNum += yyleng;
                     //return SHORT;
                 }
 int             {
                     if(printToken) {printConsole("INT");}
-                    if(printFile) {printFile("INT");}
+                    if(printFile) {printToFile("INT");}
                     colNum += yyleng;
                     //return INT;
                 }
 main            {
                     if(printToken) {printConsole("MAIN");}
-                    if(printFile) {printFile("MAIN");}
+                    if(printFile) {printToFile("MAIN");}
                     colNum += yyleng;
                     //return MAIN;
                 }
 long            {
                     if(printToken) {printConsole("LONG");}
-                    if(printFile) {printFile("LONG");}
+                    if(printFile) {printToFile("LONG");}
                     colNum += yyleng;
                     //return LONG;
                 }
 signed          {
                     if(printToken) {printConsole("SIGNED");}
-                    if(printFile) {printFile("SIGNED");}
+                    if(printFile) {printToFile("SIGNED");}
                     colNum += yyleng;
                     //return SIGNED;
                 }
 unsigned        {
                     if(printToken) {printConsole("UNSIGNED");}
-                    if(printFile) {printFile("UNSIGNED");}
+                    if(printFile) {printToFile("UNSIGNED");}
                     colNum += yyleng;
                     //return UNSIGNED;
                 }
 float           {
                     if(printToken) {printConsole("FLOAT");}
-                    if(printFile) {printFile("FLOAT");}
+                    if(printFile) {printToFile("FLOAT");}
                     colNum += yyleng;
                     //return FLOAT;
                 }
 double          {
                     if(printToken) {printConsole("DOUBLE");}
-                    if(printFile) {printFile("DOUBLE");}
+                    if(printFile) {printToFile("DOUBLE");}
                     colNum += yyleng;
                     //return DOUBLE;
                 }
 const           {
                     if(printToken) {printConsole("CONST");}
-                    if(printFile) {printFile("CONST");}
+                    if(printFile) {printToFile("CONST");}
                     colNum += yyleng;
                     //return CONST;
                 }
 volatile        {
                     if(printToken) {printConsole("VOLATILE");}
-                    if(printFile) {printFile("VOLATILE");}
+                    if(printFile) {printToFile("VOLATILE");}
                     colNum += yyleng;
                     //return VOLATILE;
                 }
 void            {
                     if(printToken) {printConsole("VOID");}
-                    if(printFile) {printFile("VOID");}
+                    if(printFile) {printToFile("VOID");}
                     colNum += yyleng;
                     //return VOID;
                 }
 struct          {
                     if(printToken) {printConsole("STRUCT");}
-                    if(printFile) {printFile("STRUCT");}
+                    if(printFile) {printToFile("STRUCT");}
                     colNum += yyleng;
                     //return STRUCT;
                 }
 union           {
                     if(printToken) {printConsole("UNION");}
-                    if(printFile) {printFile("UNION");}
+                    if(printFile) {printToFile("UNION");}
                     colNum += yyleng;
                     //return UNION;
                 }
 enum            {
                     if(printToken) {printConsole("ENUM");}
-                    if(printFile) {printFile("ENUM");}
+                    if(printFile) {printToFile("ENUM");}
                     colNum += yyleng;
                     //return ENUM;
                 }
 elipsis         {
                     if(printToken) {printConsole("ELIPSIS");}
-                    if(printFile) {printFile("ELIPSIS");}
+                    if(printFile) {printToFile("ELIPSIS");}
                     colNum += yyleng;
                     //return ELIPSIS;
                 }
 case            {
                     if(printToken) {printConsole("CASE");}
-                    if(printFile) {printFile("CASE");}
+                    if(printFile) {printToFile("CASE");}
                     colNum += yyleng;
                     //return CASE;
                 }
 default         {
                     if(printToken) {printConsole("DEFAULT");}
-                    if(printFile) {printFile("DEFAULT");}
+                    if(printFile) {printToFile("DEFAULT");}
                     colNum += yyleng;
                     //return DEFAULT;
                 }
 if              {
                     if(printToken) {printConsole("IF");}
-                    if(printFile) {printFile("IF");}
+                    if(printFile) {printToFile("IF");}
                     colNum += yyleng;
                     //return IF;
                 }
 else            {
                     if(printToken) {printConsole("ELSE");}
-                    if(printFile) {printFile("ELSE");}
+                    if(printFile) {printToFile("ELSE");}
                     colNum += yyleng;
                     //return ELSE;
                 }
 switch          {
                     if(printToken) {printConsole("SWITCH");}
-                    if(printFile) {printFile("SWITCH");}
+                    if(printFile) {printToFile("SWITCH");}
                     colNum += yyleng;
                     //return SWITCH;
                 }
 while           {
                     if(printToken) {printConsole("WHILE");}
-                    if(printFile) {printFile("WHILE");}
+                    if(printFile) {printToFile("WHILE");}
                     colNum += yyleng;
                     //return WHILE;
                 }
 do              {
                     if(printToken) {printConsole("DO");}
-                    if(printFile) {printFile("DO");}
+                    if(printFile) {printToFile("DO");}
                     colNum += yyleng;
                     //return DO;
                 }
 for             {
                     if(printToken) {printConsole("FOR");}
-                    if(printFile) {printFile("FOR");}
+                    if(printFile) {printToFile("FOR");}
                     colNum += yyleng;
                     //return FOR;
                 }
 goto            {
                     if(printToken) {printConsole("GOTO");}
-                    if(printFile) {printFile("GOTO");}
+                    if(printFile) {printToFile("GOTO");}
                     colNum += yyleng;
                     //return GOTO;
                 }
 continue        {
                     if(printToken) {printConsole("CONTINUE");}
-                    if(printFile) {printFile("CONTINUE");}
+                    if(printFile) {printToFile("CONTINUE");}
                     colNum += yyleng;
                     //return CONTINUE;
                 }
 break           {
                     if(printToken) {printConsole("BREAK");}
-                    if(printFile) {printFile("BREAK");}
+                    if(printFile) {printToFile("BREAK");}
                     colNum += yyleng;
                     //return BREAK;
                 }
 return          {
                     if(printToken) {printConsole("RETURN");}
-                    if(printFile) {printFile("RETURN");}
+                    if(printFile) {printToFile("RETURN");}
                     colNum += yyleng;
                     //return RETURN;
                 }
 {name}          {
                     if(printToken) {printConsole("IDENTIFIER");}
-                    if(printFile) {printFile("IDENTIFIER");}
+                    if(printFile) {printToFile("IDENTIFIER");}
                     colNum +=yyleng;
                     if (yyleng > 31)
                     {
@@ -622,10 +622,9 @@ void printConsole (std::string token) {
 }
 
 
-void printFile (std::string token) {
-    std::ofstream fileP;
-    fileP.open(outSrcFile, std::ios::out, std::ios::app);
-    std::cout << token << std::endl;
+void printToFile (std::string token) {
+    std::ofstream fileP(outSrcFile,std::ios::app);
+    fileP << token << std::endl;
     fileP.close();
 }
 
@@ -638,6 +637,7 @@ int main (int argc, char** argv)
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
     extern std::string srcFile;
+    extern std::string outSrcFile;
     extern std::string buffer;
 
     // Check command line args for debug symbols
@@ -661,7 +661,7 @@ int main (int argc, char** argv)
         if ((inputFlag.compare(argv[i]))==0)
         {
             if (i+1 < argc)
-                srcFile = argv[i++];
+                srcFile = argv[++i];
             else
             {
                 std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
@@ -671,8 +671,9 @@ int main (int argc, char** argv)
         if ((outputFlag.compare(argv[i]))==0)
         {
             if (i+1 < argc)
-                outSrcFile = argv[i++];
-                printFile = true;
+            {
+                outSrcFile = argv[++i];
+            }
             else
             {
                 std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
@@ -680,7 +681,9 @@ int main (int argc, char** argv)
             }
         }
     }
-
+    std::ofstream fileP(outSrcFile);
+    fileP << "";
+    fileP.close();
     FlexLexer* lexer = new yyFlexLexer;
     while(lexer->yylex() != 0)
     ;
