@@ -1,6 +1,11 @@
 # Prerequisites
 *.d
 
+#lex and bison files
+lex.yy.c
+*.tab.o
+*.tab.h
+
 # Compiled Object files
 *.slo
 *.lo
