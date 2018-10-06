@@ -12,7 +12,7 @@
 #include <string>
 int lineNum = 0;
 int colNum = 0;
-bool printToken = false;
+bool printToken = true;
 %}
 
 %option noyywrap
@@ -82,7 +82,7 @@ sizeof {if(printToken) {std::cout << "SIZEOF" << std::endl;}}
 \= {if(printToken) {std::cout << "EQUALS" << std::endl;}}
 \( {if(printToken) {std::cout << "OPEN" << std::endl;}}
 \) {if(printToken) {std::cout << "CLOSE" << std::endl;}}
-'*' {if(printToken) {std::cout << "STAR" << std::endl;}}
+\* {if(printToken) {std::cout << "STAR" << std::endl;}}
 \? {if(printToken) {std::cout << "QUESTION" << std::endl;}}
 \| {if(printToken) {std::cout << "BAR" << std::endl;}}
 \^ {if(printToken) {std::cout << "CARROT" << std::endl;}}
@@ -91,7 +91,7 @@ sizeof {if(printToken) {std::cout << "SIZEOF" << std::endl;}}
 \> {if(printToken) {std::cout << "GREAT_OP" << std::endl;}}
 \+ {if(printToken) {std::cout << "PLUS" << std::endl;}}
 \- {if(printToken) {std::cout << "MINUS" << std::endl;}}
-\\ {if(printToken) {std::cout << "FORSLASH" << std::endl;}}
+\/ {if(printToken) {std::cout << "FORSLASH" << std::endl;}}
 \% {if(printToken) {std::cout << "PERCENT" << std::endl;}}
 \! {if(printToken) {std::cout << "BANG" << std::endl;}}
 \~ {if(printToken) {std::cout << "TILDA" << std::endl;}}
