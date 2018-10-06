@@ -9,13 +9,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <string>
-#include "C_grammar.tab.h"
+//#include "C_grammar.tab.h"
 
 int lineNum = 1;
-int colNum = 0;
+int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
+std::string buffer = "";
+
 %}
 
 %option noyywrap
@@ -27,7 +30,7 @@ num2    [-+]?{dig}*\.{dig}+([eE][-+]?{dig}+)?
 number  {num1}|{num2}
 
 %%
-\n              {std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl; lineNum++; colNum = 0;}
+\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1;}
 [ ]	            {colNum++; /* skip white space */ }
 "/*"   			{
 			        int c;
@@ -50,417 +53,417 @@ number  {num1}|{num2}
 \/\/.* 			/*skipping single line comments */
 \!\![A-z]       {
                     if(printToken) {std::cout << "DEBUG" << std::endl;}
-                    return DEBUG;
+                    ////return DEBUG;
                 }
 [-]?[0-9]+      {
                     if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;}
                     colNum += yyleng;
-                    return INTEGER_CONSTANT;
+                    ////return INTEGER_CONSTANT;
                 }
 [0-9]+\.?[0-9]* {
                     if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;}
                     colNum += yyleng;
-                    return FLOATING_CONSTANT;
+                    ////return FLOATING_CONSTANT;
                 }
 \'(\\.|.)\'     {
                     if(printToken) {std::cout << "CHARACTER_CONSTANT" << std::endl;}
                     colNum += yyleng;
-                    return CHARACTER_CONSTANT;
+                    ////return CHARACTER_CONSTANT;
                 }
 "ENUM"          {
                     if(printToken) {std::cout << "ENUMERATION_CONSTANT" << std::endl;}
                     colNum += yyleng;
-                    return ENUMERATION_CONSTANT;
+                    ////return ENUMERATION_CONSTANT;
                 }
 \"[A-z]+\"      {
                     if(printToken) {std::cout << "STRING_LITERAL" << std::endl;}
                     colNum += yyleng;
-                    return STRING_LITERAL;
+                    ////return STRING_LITERAL;
                 }
 sizeof          {
                     if(printToken) {std::cout << "SIZEOF" << std::endl;}
                     colNum += yyleng;
-                    return SIZEOF;
+                    ////return SIZEOF;
                 }
 \+\+            {
                     if(printToken) {std::cout << "INC_OP" << std::endl;}
                     colNum += yyleng;
-                    return INC_OP;
+                    ////return INC_OP;
                 }
 --              {
                     if(printToken) {std::cout << "DEC_OP" << std::endl;}
                     colNum += yyleng;
-                    return DEC_OP;
+                    ////return DEC_OP;
                 }
 \<\<            {
                     if(printToken) {std::cout << "LEFT_OP" << std::endl;}
                     colNum += yyleng;
-                    return LEFT_OP;
+                    ////return LEFT_OP;
                 }
 >>              {
                     if(printToken) {std::cout << "RIGHT_OP" << std::endl;}
                     colNum += yyleng;
-                    return RIGHT_OP;
+                    ////return RIGHT_OP;
                 }
 \<=             {
                     if(printToken) {std::cout << "LE_OP" << std::endl;}
                     colNum += yyleng;
-                    return LE_OP;
+                    ////return LE_OP;
                 }
 >=              {
                     if(printToken) {std::cout << "GE_OP" << std::endl;}
                     colNum += yyleng;
-                    return GE_OP;
+                    ////return GE_OP;
                 }
 ==              {
                     if(printToken) {std::cout << "EQ_OP" << std::endl;}
                     colNum += yyleng;
-                    return EQ_OP;
+                    ////return EQ_OP;
                 }
 !=              {
                     if(printToken) {std::cout << "NE_OP" << std::endl;}
                     colNum += yyleng;
-                    return NE_OP;
+                    //return NE_OP;
                 }
 &&              {
                     if(printToken) {std::cout << "AND_OP" << std::endl;}
                     colNum += yyleng;
-                    return AND_OP;
+                    //return AND_OP;
                 }
 \|\|            {
                     if(printToken) {std::cout << "OR_OP" << std::endl;}
                     colNum += yyleng;
-                    return OR_OP;
+                    //return OR_OP;
                 }
 \*=             {
                     if(printToken) {std::cout << "MUL_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return MUL_ASSIGN;
+                    //return MUL_ASSIGN;
                 }
 \/=             {
                     if(printToken) {std::cout << "DIV_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return DIV_ASSIGN;
+                    //return DIV_ASSIGN;
                 }
 %=              {
                     if(printToken) {std::cout << "MOD_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return MOD_ASSIGN;
+                    //return MOD_ASSIGN;
                 }
 \+=             {
                     if(printToken) {std::cout << "ADD_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return ADD_ASSIGN;
+                    //return ADD_ASSIGN;
                 }
 -=              {
                     if(printToken) {std::cout << "SUB_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return SUB_ASSIGN;
+                    //return SUB_ASSIGN;
                 }
 '<<='           {
                     if(printToken) {std::cout << "LEFT_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return LEFT_ASSIGN;
+                    //return LEFT_ASSIGN;
                 }
 '>>='           {
                     if(printToken) {std::cout << "RIGHT_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return RIGHT_ASSIGN;
+                    //return RIGHT_ASSIGN;
                 }
 &=              {
                     if(printToken) {std::cout << "AND_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return AND_ASSIGN;
+                    //return AND_ASSIGN;
                 }
 \|=             {
                     if(printToken) {std::cout << "OR_ASSIGN" << std::endl;}
                     colNum += yyleng;
-                    return OR_ASSIGN;
+                    //return OR_ASSIGN;
                 }
 \;              {
                     if(printToken) {std::cout << "SEMI" << std::endl;}
                     colNum += yyleng;
-                    return SEMI;
+                    //return SEMI;
                 }
 \:              {
                     if(printToken) {std::cout << "COLON" << std::endl;}
                     colNum += yyleng;
-                    return COLON;
+                    //return COLON;
                 }
 \{              {
                     if(printToken) {std::cout << "CURLYOPEN" << std::endl;}
                     colNum += yyleng;
-                    return CURLYOPEN;
+                    //return CURLYOPEN;
                 }
 \}              {
                     if(printToken) {std::cout << "CURLYCLOSE" << std::endl;}
                     colNum += yyleng;
-                    return CURLYCLOSE;
+                    //return CURLYCLOSE;
                 }
 \[              {
                     if(printToken) {std::cout << "BRACKETOPEN" << std::endl;}
                     colNum += yyleng;
-                    return BRACKETOPEN;
+                    //return BRACKETOPEN;
                 }
 \]              {
                     if(printToken) {std::cout << "BRACKETCLOSE" << std::endl;}
                     colNum += yyleng;
-                    return BRACKETCLOSE;
+                    //return BRACKETCLOSE;
                 }
 \,              {
                     if(printToken) {std::cout << "COMMA" << std::endl;}
                     colNum += yyleng;
-                    return COMMA;
+                    //return COMMA;
                 }
 \.              {
                     if(printToken) {std::cout << "PERIOD" << std::endl;}
                     colNum += yyleng;
-                    return PERIOD;
+                    //return PERIOD;
                 }
 \=              {
                     if(printToken) {std::cout << "EQUALS" << std::endl;}
                     colNum += yyleng;
-                    return EQUALS;
+                    //return EQUALS;
                 }
 \(              {
                     if(printToken) {std::cout << "OPEN" << std::endl;}
                     colNum += yyleng;
-                    return OPEN;
+                    //return OPEN;
                 }
 \)              {
                     if(printToken) {std::cout << "CLOSE" << std::endl;}
                     colNum += yyleng;
-                    return CLOSE;
+                    //return CLOSE;
                 }
 \*              {
                     if(printToken) {std::cout << "STAR" << std::endl;}
                     colNum += yyleng;
-                    return STAR;
+                    //return STAR;
                 }
 \?              {
                     if(printToken) {std::cout << "QUESTION" << std::endl;}
                     colNum += yyleng;
-                    return QUESTION;
+                    //return QUESTION;
                 }
 \|              {
                     if(printToken) {std::cout << "BAR" << std::endl;}
                     colNum += yyleng;
-                    return BAR;
+                    //return BAR;
                 }
 \^              {
                     if(printToken) {std::cout << "CARROT" << std::endl;}
                     colNum += yyleng;
-                    return CARROT;
+                    //return CARROT;
                 }
 \&              {
                     if(printToken) {std::cout << "AMP" << std::endl;}
                     colNum += yyleng;
-                    return AMP;
+                    //return AMP;
                 }
 \<              {
                     if(printToken) {std::cout << "LESS_OP" << std::endl;}
                     colNum += yyleng;
-                    return LESS_OP;
+                    //return LESS_OP;
                 }
 \>              {
                     if(printToken) {std::cout << "GREAT_OP" << std::endl;}
                     colNum += yyleng;
-                    return GREAT_OP;
+                    //return GREAT_OP;
                 }
 \+              {
                     if(printToken) {std::cout << "PLUS" << std::endl;}
                     colNum += yyleng;
-                    return PLUS;
+                    //return PLUS;
                 }
 \-              {
                     if(printToken) {std::cout << "MINUS" << std::endl;}
                     colNum += yyleng;
-                    return MINUS;
+                    //return MINUS;
                 }
 \/              {
                     if(printToken) {std::cout << "FORSLASH" << std::endl;}
                     colNum += yyleng;
-                    return FORSLASH;
+                    //return FORSLASH;
                 }
 \%              {
                     if(printToken) {std::cout << "PERCENT" << std::endl;}
                     colNum += yyleng;
-                    return PERCENT;
+                    //return PERCENT;
                 }
 \!              {
                     if(printToken) {std::cout << "BANG" << std::endl;}
                     colNum += yyleng;
-                    return BANG;
+                    //return BANG;
                 }
 \~              {
                     if(printToken) {std::cout << "TILDA" << std::endl;}
                     colNum += yyleng;
-                    return TILDA;
+                    //return TILDA;
                 }
 typedef         {
                     if(printToken) {std::cout << "TYPEDEF" << std::endl;}
                     colNum += yyleng;
-                    return TYPEDEF;
+                    //return TYPEDEF;
                 }
 extern          {
                     if(printToken) {std::cout << "EXTERN" << std::endl;}
                     colNum += yyleng;
-                    return EXTERN;
+                    //return EXTERN;
                 }
 static          {
                     if(printToken) {std::cout << "STATIC" << std::endl;}
                     colNum += yyleng;
-                    return STATIC;
+                    //return STATIC;
                 }
 auto            {
                     if(printToken) {std::cout << "AUTO" << std::endl;}
                     colNum += yyleng;
-                    return AUTO;
+                    //return AUTO;
                 }
 register        {
                     if(printToken) {std::cout << "REGISTER" << std::endl;}
                     colNum += yyleng;
-                    return REGISTER;
+                    //return REGISTER;
                 }
 char            {
                     if(printToken) {std::cout << "CHAR" << std::endl;}
                     colNum += yyleng;
-                    return CHAR;
+                    //return CHAR;
                 }
 short           {
                     if(printToken) {std::cout << "SHORT" << std::endl;}
                     colNum += yyleng;
-                    return SHORT;
+                    //return SHORT;
                 }
 int             {
                     if(printToken) {std::cout << "INT" << std::endl;}
                     colNum += yyleng;
-                    return INT;
+                    //return INT;
                 }
 main            {
                     if(printToken) {std::cout << "MAIN" << std::endl;}
                     colNum += yyleng;
-                    return MAIN;
+                    //return MAIN;
                 }
 long            {
                     if(printToken) {std::cout << "LONG" << std::endl;}
                     colNum += yyleng;
-                    return LONG;
+                    //return LONG;
                 }
 signed          {
                     if(printToken) {std::cout << "SIGNED" << std::endl;}
                     colNum += yyleng;
-                    return SIGNED;
+                    //return SIGNED;
                 }
 unsigned        {
                     if(printToken) {std::cout << "UNSIGNED" << std::endl;}
                     colNum += yyleng;
-                    return UNSIGNED;
+                    //return UNSIGNED;
                 }
 float           {
                     if(printToken) {std::cout << "FLOAT" << std::endl;}
                     colNum += yyleng;
-                    return FLOAT;
+                    //return FLOAT;
                 }
 double          {
                     if(printToken) {std::cout << "DOUBLE" << std::endl;}
                     colNum += yyleng;
-                    return DOUBLE;
+                    //return DOUBLE;
                 }
 const           {
                     if(printToken) {std::cout << "CONST" << std::endl;}
                     colNum += yyleng;
-                    return CONST;
+                    //return CONST;
                 }
 volatile        {
                     if(printToken) {std::cout << "VOLATILE" << std::endl;}
                     colNum += yyleng;
-                    return VOLATILE;
+                    //return VOLATILE;
                 }
 void            {
                     if(printToken) {std::cout << "VOID" << std::endl;}
                     colNum += yyleng;
-                    return VOID;
+                    //return VOID;
                 }
 struct          {
                     if(printToken) {std::cout << "STRUCT" << std::endl;}
                     colNum += yyleng;
-                    return STRUCT;
+                    //return STRUCT;
                 }
 union           {
                     if(printToken) {std::cout << "UNION" << std::endl;}
                     colNum += yyleng;
-                    return UNION;
+                    //return UNION;
                 }
 enum            {
                     if(printToken) {std::cout << "ENUM" << std::endl;}
                     colNum += yyleng;
-                    return ENUM;
+                    //return ENUM;
                 }
 elipsis         {
                     if(printToken) {std::cout << "ELIPSIS" << std::endl;}
                     colNum += yyleng;
-                    return ELIPSIS;
+                    //return ELIPSIS;
                 }
 case            {
                     if(printToken) {std::cout << "CASE" << std::endl;}
                     colNum += yyleng;
-                    return CASE;
+                    //return CASE;
                 }
 default         {
                     if(printToken) {std::cout << "DEFAULT" << std::endl;}
                     colNum += yyleng;
-                    return DEFAULT;
+                    //return DEFAULT;
                 }
 if              {
                     if(printToken) {std::cout << "IF" << std::endl;}
                     colNum += yyleng;
-                    return IF;
+                    //return IF;
                 }
 else            {
                     if(printToken) {std::cout << "ELSE" << std::endl;}
                     colNum += yyleng;
-                    return ELSE;
+                    //return ELSE;
                 }
 switch          {
                     if(printToken) {std::cout << "SWITCH" << std::endl;}
                     colNum += yyleng;
-                    return SWITCH;
+                    //return SWITCH;
                 }
 while           {
                     if(printToken) {std::cout << "WHILE" << std::endl;}
                     colNum += yyleng;
-                    return WHILE;
+                    //return WHILE;
                 }
 do              {
                     if(printToken) {std::cout << "DO" << std::endl;}
                     colNum += yyleng;
-                    return DO;
+                    //return DO;
                 }
 for             {
                     if(printToken) {std::cout << "FOR" << std::endl;}
                     colNum += yyleng;
-                    return FOR;
+                    //return FOR;
                 }
 goto            {
                     if(printToken) {std::cout << "GOTO" << std::endl;}
                     colNum += yyleng;
-                    return GOTO;
+                    //return GOTO;
                 }
 continue        {
                     if(printToken) {std::cout << "CONTINUE" << std::endl;}
                     colNum += yyleng;
-                    return CONTINUE;
+                    //return CONTINUE;
                 }
 break           {
                     if(printToken) {std::cout << "BREAK" << std::endl;}
                     colNum += yyleng;
-                    return BREAK;
+                    //return BREAK;
                 }
 return          {
                     if(printToken) {std::cout << "RETURN" << std::endl;}
                     colNum += yyleng;
-                    return RETURN;
+                    //return RETURN;
                 }
 {name}          {
                     if(printToken) {std::cout << "IDENTIFIER" << std::endl;}
@@ -468,19 +471,25 @@ return          {
                     if (yyleng > 31)
                     {
                         std::cout << std::string(colNum,'-') << " ^ "<< "ID LENGTH LONGER THAN 31" << std::endl;
-                        return ERROR;
+                        //return ERROR;
                     }
-                    return IDENTIFIER;
+                    //return IDENTIFIER;
                 }
 .               {
                     if(printToken) {std::cout << "ERROR" << std::endl;}
+                    std::cout << buffer << std::endl;
+                    std::cout << std::string(colNum,'-') << "^ UNIDENTIFED TOKEN: "
+							  << yytext << " on Line: " << lineNum
+							  << " and Column: " << colNum <<std::endl;
+                    //return ERROR;
                 }
 %%
 
 int main (int argc, char** argv)
 {
     std::string tokenFlag = "-dl";
-	  std::string symbolFlag= "-ds";
+	std::string symbolFlag= "-ds";
+    extern std::string buffer;
 
     // Check command line args for debug symbols
     for (int i = 0; i < argc; i++) {
