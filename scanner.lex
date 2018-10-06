@@ -8,7 +8,7 @@
 */
 #include <stdio.h>
 #include <string.h>
-#include "C_grammar.tab.h"
+//#include "C_grammar.tab.h"
 int yyline = 0;
 int colNum = 0;	
 bool printToken = true;
@@ -107,5 +107,5 @@ goto {colNum += yyleng; if(printToken) {std::cout << "GOTO" << std::endl;} retur
 continue {colNum += yyleng; if(printToken) {std::cout << "CONTINUE" << std::endl;} return CONTINUE;}
 break {colNum += yyleng; if(printToken) {std::cout << "BREAK" << std::endl;} return BREAK;}
 return {colNum += yyleng; if(printToken) {std::cout << "RETURN" << std::endl;} return RETURN;}
-. { std::cout << "\n" << (std::string("-")*colNum << "^ INVALID TOKEN"; return ERORR;}
+. { std::cout << "\n" << (std::string(colNum, "-") << "^ INVALID TOKEN"; return ERROR;}
 %%
