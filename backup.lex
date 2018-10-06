@@ -12,7 +12,8 @@
 #include <string>
 int lineNum = 1;
 int colNum = 0;
-bool printToken;
+bool printToken = false;
+bool printSymbol = false;
 %}
 
 %option noyywrap
@@ -134,7 +135,8 @@ return          {if(printToken) {std::cout << "RETURN" << std::endl;} colNum += 
 
 int main (int argc, char** argv)
 {
-    std::string tokenFlag = "-t";
+    std::string tokenFlag = "-dl";
+	  std::string symbolFlag= "-ds";
 
     // Check command line args for debug symbols
     for (int i = 0; i < argc; i++) {
