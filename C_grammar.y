@@ -5,12 +5,12 @@
 
   extern bool printProductions = true;
 %}
+
 %union {
   int ival;
   char cval;
   std::string sval;
   double dval;
-  float fval;
 }
 
 %token <sval> IDENTIFIER
