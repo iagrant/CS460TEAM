@@ -25,6 +25,7 @@ int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
 bool printProductions = false;
+bool printFile = false;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "";
@@ -96,8 +97,8 @@ number  {num1}|{num2}
                     if(printFile) {printFile("INTEGER_CONSTANT");}
                     colNum += yyleng;
                     std::cout << yytext << std::endl;
-                    if (std::atoi(yytext) > POS_INT_MAX || std::atoi(yytext) < NEG_INT_MAX)
-                        std::cout << "POSSIBLE INT OVERFLOW" << std::endl;
+                    if (yyleng > 9)
+                        std::cout << "\033[4;93mWARNING: POSSIBLE INT OVERFLOW\033[0m"<< std::endl;
                     ////return INTEGER_CONSTANT;
                 }
 [0-9]+\.?[0-9]* {
@@ -613,7 +614,7 @@ void printError (int colNum, std::string errorTok) {
     std::cout << std::string(colNum - 1,'-') << "\033[1;91m^ Unidentifed Token: \033[0m\033[4;33m"
     		  << errorTok << "\033[0m on Line: " << lineNum
     		  << " and Column: " << colNum <<std::endl;
-    //remeber to close file pointer lmao
+    srcFileP.close();
 }
 
 void printConsole (std::string token) {
@@ -622,7 +623,10 @@ void printConsole (std::string token) {
 
 
 void printFile (std::string token) {
+    std::ofstream fileP;
+    fileP.open(outSrcFile, std::ios::out, std::ios::app);
     std::cout << token << std::endl;
+    fileP.close();
 }
 
 int main (int argc, char** argv)
@@ -668,6 +672,7 @@ int main (int argc, char** argv)
         {
             if (i+1 < argc)
                 outSrcFile = argv[i++];
+                printFile = true;
             else
             {
                 std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
