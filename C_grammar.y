@@ -3,7 +3,7 @@
   #include <string.h>
   #include <bool.h>
 
-  extern bool printProductions = true;
+  extern bool printProductions;
 %}
 
 %union {
@@ -463,1109 +463,1114 @@ enum_specifier
 	;
 
 enumerator_list
-	: enumerator 
+	: enumerator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "enumerator_list -> enumerator" << std::endl;
             }
         }
-	| enumerator_list COMMA enumerator 
+	| enumerator_list COMMA enumerator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "enumerator_list -> enumerator_list COMMA enumerator" << std::endl;
             }
         }
 	;
 
 enumerator
-	: identifier 
+	: identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "enumerator -> identifier" << std::endl;
             }
         }
-	| identifier EQUALS constant_expression 
+	| identifier EQUALS constant_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "enumerator -> identifier EQUALS constant_expression" << std::endl;
             }
         }
 	;
 
 declarator
-	: direct_declarator 
+	: direct_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "declarator -> direct_declarator" << std::endl;
             }
         }
-	| pointer direct_declarator 
+	| pointer direct_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "declarator -> pointer direct_declarator" << std::endl;
             }
         }
 	;
 
 direct_declarator
-	: identifier 
+	: identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> identifier" << std::endl;
             }
         }
-	| OPEN declarator CLOSE 
+	| OPEN declarator CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> OPEN declarator CLOSE" << std::endl;
             }
         }
-	| direct_declarator BRACKETOPEN BRACKETCLOSE 
+	| direct_declarator BRACKETOPEN BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> direct_declarator BRACKETOPEN BRACKETCLOSE" << std::endl;
             }
         }
-	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE 
+	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
             }
         }
-	| direct_declarator OPEN CLOSE 
+	| direct_declarator OPEN CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
             }
         }
-	| direct_declarator OPEN parameter_type_list CLOSE 
+	| direct_declarator OPEN parameter_type_list CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
         }
-	| direct_declarator OPEN identifier_list CLOSE 
+	| direct_declarator OPEN identifier_list CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_declarator ->  direct_declarator OPEN identifier_list CLOSE" << std::endl;
             }
         }
 	;
 
 pointer
-	: STAR 
+	: STAR
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "pointer -> STAR" << std::endl;
             }
         }
-	| STAR type_qualifier_list 
+	| STAR type_qualifier_list
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "pointer -> STAR type_qualifier_list" << std::endl;
             }
         }
-	| STAR pointer 
+	| STAR pointer
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "pointer -> STAR pointer" << std::endl;
             }
         }
-	| STAR type_qualifier_list pointer 
+	| STAR type_qualifier_list pointer
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "pointer -> STAR type_qualifier_list pointer" << std::endl;
             }
         }
 	;
 
 type_qualifier_list
-	: type_qualifier 
+	: type_qualifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "type_qualifier_list -> type_qualifier" << std::endl;
             }
         }
-	| type_qualifier_list type_qualifier 
+	| type_qualifier_list type_qualifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "type_qualifier_list -> type_qualifier_list type_qualifier" << std::endl;
             }
         }
 	;
 
 parameter_type_list
-	: parameter_list 
+	: parameter_list
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_type_list -> parameter_list" << std::endl;
             }
         }
-	| parameter_list COMMA ELIPSIS 
+	| parameter_list COMMA ELIPSIS
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_type_list -> parameter_list COMMA ELIPSIS" << std::endl;
             }
         }
 	;
 
 parameter_list
-	: parameter_declaration 
+	: parameter_declaration
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_list -> parameter_declaration" << std::endl;
             }
         }
-	| parameter_list COMMA parameter_declaration 
+	| parameter_list COMMA parameter_declaration
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_list -> parameter_list COMMA parameter_declaration" << std::endl;
             }
         }
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator 
+	: declaration_specifiers declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_declaration -> declaration_specifiers declarator" << std::endl;
             }
         }
-	| declaration_specifiers 
+	| declaration_specifiers
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_declaration -> declaration_specifiers" << std::endl;
             }
         }
-	| declaration_specifiers abstract_declarator 
+	| declaration_specifiers abstract_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "parameter_declaration -> declaration_specifiers abstract_declarator" << std::endl;
             }
         }
 	;
 
 identifier_list
-	: identifier 
+	: identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "identifier_list -> identifier" << std::endl;
             }
         }
-	| identifier_list COMMA identifier 
+	| identifier_list COMMA identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "identifier_list -> identifier_list COMMA identifier" << std::endl;
             }
         }
 	;
 
 initializer
-	: assignment_expression 
+	: assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "initializer -> assignment_expression" << std::endl;
             }
         }
-	| CURLYOPEN initializer_list CURLYCLOSE 
+	| CURLYOPEN initializer_list CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "initializer -> CURLYOPEN initializer_list CURLYCLOSE" << std::endl;
             }
         }
-	| CURLYOPEN initializer_list COMMA CURLYCLOSE 
+	| CURLYOPEN initializer_list COMMA CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "initializer -> CURLYOPEN initializer_list COMMA CURLYCLOSE" << std::endl;
             }
         }
 	;
 
 initializer_list
-	: initializer 
+	: initializer
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "initializer_list -> initializer" << std::endl;
             }
         }
-	| initializer_list COMMA initializer 
+	| initializer_list COMMA initializer
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "initializer_list -> initializer_list COMMA initializer" << std::endl;
             }
         }
 	;
 
 type_name
-	: specifier_qualifier_list 
+	: specifier_qualifier_list
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "type_name -> specifier_qualifier_list" << std::endl;
             }
         }
-	| specifier_qualifier_list abstract_declarator 
+	| specifier_qualifier_list abstract_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "type_name -> specifier_qualifier_list abstract_declarator" << std::endl;
             }
         }
 	;
 
 abstract_declarator
-	: pointer 
+	: pointer
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "abstract_declarator -> pointer" << std::endl;
             }
         }
-	| direct_abstract_declarator 
+	| direct_abstract_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "abstract_declarator -> direct_abstract_declarator" << std::endl;
             }
         }
-	| pointer direct_abstract_declarator 
+	| pointer direct_abstract_declarator
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "abstract_declarator -> pointer direct_abstract_declarator" << std::endl;
             }
         }
 	;
 
 direct_abstract_declarator
-	: OPEN abstract_declarator CLOSE 
+	: OPEN abstract_declarator CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> OPEN abstract_declarator CLOSE" << std::endl;
             }
         }
-	| BRACKETOPEN BRACKETCLOSE 
+	| BRACKETOPEN BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> BRACKETOPEN BRACKETCLOSE" << std::endl;
             }
         }
-	| BRACKETOPEN constant_expression BRACKETCLOSE 
+	| BRACKETOPEN constant_expression BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
             }
         }
-	| direct_abstract_declarator BRACKETOPEN BRACKETCLOSE 
+	| direct_abstract_declarator BRACKETOPEN BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> direct_abstract_declarator BRACKETOPEN BRACKETCLOSE" << std::endl;
             }
         }
-	| direct_abstract_declarator BRACKETOPEN constant_expression BRACKETCLOSE 
+	| direct_abstract_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> direct_abstract_declarator BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
             }
         }
-	| OPEN CLOSE 
+	| OPEN CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> OPEN CLOSE" << std::endl;
             }
         }
-	| OPEN parameter_type_list CLOSE 
+	| OPEN parameter_type_list CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> OPEN parameter_type_list CLOSE" << std::endl;
             }
         }
-	| direct_abstract_declarator OPEN CLOSE 
+	| direct_abstract_declarator OPEN CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> direct_abstract_declarator OPEN CLOSE" << std::endl;
             }
         }
-	| direct_abstract_declarator OPEN parameter_type_list CLOSE 
+	| direct_abstract_declarator OPEN parameter_type_list CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "direct_abstract_declarator -> direct_abstract_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
         }
 	;
 
 statement
-	: labeled_statement 
+	: labeled_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> labeled_statement" << std::endl;
             }
         }
-	| compound_statement 
+	| compound_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> compound_statement" << std::endl;
             }
         }
-	| expression_statement 
+	| expression_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> expression_statement" << std::endl;
             }
         }
-	| selection_statement 
+	| selection_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> selection_statement" << std::endl;
             }
         }
-	| iteration_statement 
+	| iteration_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> iteration_statement" << std::endl;
             }
         }
-	| jump_statement 
+	| jump_statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement -> jump_statement" << std::endl;
             }
         }
 	;
 
 labeled_statement
-	: identifier COLON statement 
+	: identifier COLON statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "labeled_statement -> identifier COLON statement" << std::endl;
             }
         }
-	| CASE constant_expression COLON statement 
+	| CASE constant_expression COLON statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "labeled_statement -> CASE constant_expression COLON statement" << std::endl;
             }
         }
-	| DEFAULT COLON statement 
+	| DEFAULT COLON statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "labeled_statement -> DEFAULT COLON statement" << std::endl;
             }
         }
 	;
 
 expression_statement
-	: SEMI 
+	: SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "expression_statement -> SEMI" << std::endl;
             }
         }
-	| expression SEMI 
+	| expression SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "expression_statement -> expression SEMI" << std::endl;
             }
         }
 	;
 
 compound_statement
-	: CURLYOPEN CURLYCLOSE 
+	: CURLYOPEN CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "compound_statement -> CURLYOPEN CURLYCLOSE" << std::endl;
             }
         }
-	| CURLYOPEN statement_list CURLYCLOSE 
+	| CURLYOPEN statement_list CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "compound_statement -> CURLYOPEN statement_list CURLYCLOSE" << std::endl;
             }
         }
-	| CURLYOPEN declaration_list CURLYCLOSE 
+	| CURLYOPEN declaration_list CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "compound_statement -> CURLYOPEN declaration_list CURLYCLOSE" << std::endl;
             }
         }
-	| CURLYOPEN declaration_list statement_list CURLYCLOSE 
+	| CURLYOPEN declaration_list statement_list CURLYCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "compound_statement -> CURLYOPEN declaration_list statement_list CURLYCLOSE" << std::endl;
             }
         }
 	;
 
 statement_list
-	: statement 
+	: statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement_list -> statement" << std::endl;
             }
         }
-	| statement_list statement 
+	| statement_list statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "statement_list -> statement_list statement" << std::endl;
             }
         }
 	;
 
 selection_statement
-	: IF OPEN expression CLOSE statement 
+	: IF OPEN expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "selection_statement -> IF OPEN expression CLOSE statement" << std::endl;
             }
         }
-	| IF OPEN expression CLOSE statement ELSE statement 
+	| IF OPEN expression CLOSE statement ELSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "selection_statement -> IF OPEN expression CLOSE statement ELSE statement" << std::endl;
             }
         }
-	| SWITCH OPEN expression CLOSE statement 
+	| SWITCH OPEN expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "selection_statement -> SWITCH OPEN expression CLOSE statement" << std::endl;
             }
         }
 	;
 
 iteration_statement
-	: WHILE OPEN expression CLOSE statement 
+	: WHILE OPEN expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
         }
-	| DO statement WHILE OPEN expression CLOSE SEMI 
+	| DO statement WHILE OPEN expression CLOSE SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> DO statement WHILE OPEN expression CLOSE SEMI" << std::endl;
             }
         }
-	| FOR OPEN SEMI SEMI CLOSE statement 
+	| FOR OPEN SEMI SEMI CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN SEMI SEMI CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN SEMI SEMI expression CLOSE statement 
+	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN SEMI SEMI expression CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN SEMI expression SEMI CLOSE statement 
+	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN SEMI expression SEMI expression CLOSE statement 
+	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN expression SEMI SEMI CLOSE statement 
+	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN expression SEMI SEMI expression CLOSE statement 
+	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI expression CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN expression SEMI expression SEMI CLOSE statement 
+	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI CLOSE statement" << std::endl;
             }
         }
-	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement 
+	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
         }
 	;
 
 jump_statement
-	: GOTO identifier SEMI 
+	: GOTO identifier SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "jump_statement -> GOTO identifier SEMI" << std::endl;
             }
         }
-	| CONTINUE SEMI 
+	| CONTINUE SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "jump_statement -> CONTINUE SEMI" << std::endl;
             }
         }
-	| BREAK SEMI 
+	| BREAK SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "jump_statement -> BREAK SEMI" << std::endl;
             }
         }
-	| RETURN SEMI 
+	| RETURN SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "jump_statement -> RETURN SEMI" << std::endl;
             }
         }
-	| RETURN expression SEMI 
+	| RETURN expression SEMI
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "jump_statement -> RETURN expression SEMI" << std::endl;
             }
         }
 	;
 
 expression
-	: assignment_expression 
+	: assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "expression -> assignment_expression" << std::endl;
             }
         }
-	| expression COMMA assignment_expression 
+	| expression COMMA assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "expression -> expression COMMA assignment_expression" << std::endl;
             }
         }
 	;
 
 assignment_expression
-	: conditional_expression 
+	: conditional_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_expression -> conditional_expression" << std::endl;
             }
         }
-	| unary_expression assignment_operator assignment_expression 
+	| unary_expression assignment_operator assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
             }
         }
 	;
 
 assignment_operator
-	: EQUALS 
+	: EQUALS
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> EQUALS" << std::endl;
             }
         }
-	| MUL_ASSIGN 
+	| MUL_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> MUL_ASSIGN" << std::endl;
             }
         }
-	| DIV_ASSIGN 
+	| DIV_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> DIV_ASSIGN" << std::endl;
             }
         }
-	| MOD_ASSIGN 
+	| MOD_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> MOD_ASSIGN" << std::endl;
             }
         }
-	| ADD_ASSIGN 
+	| ADD_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> ADD_ASSIGN" << std::endl;
             }
         }
-	| SUB_ASSIGN 
+	| SUB_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> SUB_ASSIGN" << std::endl;
             }
         }
-	| LEFT_ASSIGN 
+	| LEFT_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> LEFT_ASSIGN" << std::endl;
             }
         }
-	| RIGHT_ASSIGN 
+	| RIGHT_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> RIGHT_ASSIGN" << std::endl;
             }
         }
-	| AND_ASSIGN 
+	| AND_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> AND_ASSIGN" << std::endl;
             }
         }
-	| XOR_ASSIGN 
+	| XOR_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> XOR_ASSIGN" << std::endl;
             }
         }
-	| OR_ASSIGN 
+	| OR_ASSIGN
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "assignment_operator -> OR_ASSIGN" << std::endl;
             }
         }
 	;
 
 conditional_expression
-	: logical_or_expression 
+	: logical_or_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "conditional_expression -> logical_or_expression" << std::endl;
             }
         }
-	| logical_or_expression QUESTION expression COLON conditional_expression 
+	| logical_or_expression QUESTION expression COLON conditional_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "conditional_expression -> logical_or_expression QUESTION expression COLON conditional_expression" << std::endl;
             }
         }
 	;
 
 constant_expression
-	: conditional_expression 
+	: conditional_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "constant_expression -> conditional_expression" << std::endl;
             }
         }
 	;
 
 logical_or_expression
-	: logical_and_expression 
+	: logical_and_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "logical_or_expression -> logical_and_expression" << std::endl;
             }
         }
-	| logical_or_expression OR_OP logical_and_expression 
+	| logical_or_expression OR_OP logical_and_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "logical_or_expression -> logical_or_expression OR_OP logical_and_expression" << std::endl;
             }
         }
 	;
 
 logical_and_expression
-	: inclusive_or_expression 
+	: inclusive_or_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "logical_and_expression -> inclusive_or_expression" << std::endl;
             }
         }
-	| logical_and_expression AND_OP inclusive_or_expression 
+	| logical_and_expression AND_OP inclusive_or_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "logical_and_expression -> logical_and_expression AND_OP inclusive_or_expression" << std::endl;
             }
         }
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression 
+	: exclusive_or_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "inclusive_or_expression -> exclusive_or_expression" << std::endl;
             }
         }
-	| inclusive_or_expression BAR exclusive_or_expression 
+	| inclusive_or_expression BAR exclusive_or_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "inclusive_or_expression -> inclusive_or_expression BAR exclusive_or_expression" << std::endl;
             }
         }
 	;
 
 exclusive_or_expression
-	: and_expression 
+	: and_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "exclusive_or_expression -> and_expression" << std::endl;
             }
         }
-	| exclusive_or_expression CARROT and_expression 
+	| exclusive_or_expression CARROT and_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "exclusive_or_expression -> exclusive_or_expression CARROT and_expression" << std::endl;
             }
         }
 	;
 
 and_expression
-	: equality_expression 
+	: equality_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "and_expression -> equality_expression" << std::endl;
             }
         }
-	| and_expression AMP equality_expression 
+	| and_expression AMP equality_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "and_expression -> and_expression AMP equality_expression" << std::endl;
             }
         }
 	;
 
 equality_expression
-	: relational_expression 
+	: relational_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "equality_expression -> relational_expression" << std::endl;
             }
         }
-	| equality_expression EQ_OP relational_expression 
+	| equality_expression EQ_OP relational_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "equality_expression -> equality_expression EQ_OP relational_expression" << std::endl;
             }
         }
 	| equality_expression NE_OP relational_expression
+		{
+			if (printProductions) {
+				std::cout << "equality_expression -> equality_expression NE_OP relational_expression" << std::endl;
+			}
+		}
 	;
 
 relational_expression
-	: shift_expression 
+	: shift_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "relational_expression -> shift_expression" << std::endl;
             }
         }
-	| relational_expression LESS_OP shift_expression 
+	| relational_expression LESS_OP shift_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "relational_expression -> relational_expression LESS_OP shift_expression" << std::endl;
             }
         }
-	| relational_expression GREAT_OP shift_expression 
+	| relational_expression GREAT_OP shift_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "relational_expression -> relational_expression GREAT_OP shift_expression" << std::endl;
             }
         }
-	| relational_expression LE_OP shift_expression 
+	| relational_expression LE_OP shift_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "relational_expression -> relational_expression LE_OP shift_expression" << std::endl;
             }
         }
-	| relational_expression GE_OP shift_expression 
+	| relational_expression GE_OP shift_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "relational_expression -> relational_expression GE_OP shift_expression" << std::endl;
             }
         }
 	;
 
 shift_expression
-	: additive_expression 
+	: additive_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "shift_expression -> additive_expression" << std::endl;
             }
         }
-	| shift_expression LEFT_OP additive_expression 
+	| shift_expression LEFT_OP additive_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "shift_expression -> shift_expression LEFT_OP additive_expression" << std::endl;
             }
         }
-	| shift_expression RIGHT_OP additive_expression 
+	| shift_expression RIGHT_OP additive_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "shift_expression -> shift_expression RIGHT_OP additive_expression" << std::endl;
             }
         }
 	;
 
 additive_expression
-	: multiplicative_expression 
+	: multiplicative_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "additive_expression -> multiplicative_expression" << std::endl;
             }
         }
-	| additive_expression PLUS multiplicative_expression 
+	| additive_expression PLUS multiplicative_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
         }
-	| additive_expression MINUS multiplicative_expression 
+	| additive_expression MINUS multiplicative_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
             }
         }
 	;
 
 multiplicative_expression
-	: cast_expression 
+	: cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "multiplicative_expression -> cast_expression" << std::endl;
             }
         }
-	| multiplicative_expression STAR cast_expression 
+	| multiplicative_expression STAR cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "multiplicative_expression -> multiplicative_expression STAR cast_expression" << std::endl;
             }
         }
-	| multiplicative_expression FORSLASH cast_expression 
+	| multiplicative_expression FORSLASH cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "multiplicative_expression -> multiplicative_expression FORSLASH cast_expression" << std::endl;
             }
         }
-	| multiplicative_expression PERCENT cast_expression 
+	| multiplicative_expression PERCENT cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "multiplicative_expression -> multiplicative_expression PERCENT cast_expression" << std::endl;
             }
         }
 	;
 
 cast_expression
-	: unary_expression 
+	: unary_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "cast_expression -> unary_expression" << std::endl;
             }
         }
-	| OPEN type_name CLOSE cast_expression 
+	| OPEN type_name CLOSE cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "cast_expression -> OPEN type_name CLOSE cast_expression" << std::endl;
             }
         }
 	;
 
 unary_expression
-	: postfix_expression 
+	: postfix_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> postfix_expression" << std::endl;
             }
         }
-	| INC_OP unary_expression 
+	| INC_OP unary_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> INC_OP unary_expression" << std::endl;
             }
         }
-	| DEC_OP unary_expression 
+	| DEC_OP unary_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> DEC_OP unary_expression" << std::endl;
             }
         }
-	| unary_operator cast_expression 
+	| unary_operator cast_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> unary_operator cast_expression" << std::endl;
             }
         }
-	| SIZEOF unary_expression 
+	| SIZEOF unary_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> SIZEOF unary_expression" << std::endl;
             }
         }
-	| SIZEOF OPEN type_name CLOSE 
+	| SIZEOF OPEN type_name CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_expression -> SIZEOF OPEN type_name CLOSE" << std::endl;
             }
         }
 	;
 
 unary_operator
-	: AMP 
+	: AMP
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> AMP" << std::endl;
             }
         }
-	| STAR 
+	| STAR
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> STAR" << std::endl;
             }
         }
-	| PLUS 
+	| PLUS
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> PLUS" << std::endl;
             }
         }
-	| MINUS 
+	| MINUS
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> MINUS" << std::endl;
             }
         }
-	| TILDA 
+	| TILDA
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> TILDA" << std::endl;
             }
         }
-	| BANG 
+	| BANG
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "unary_operator -> BANG" << std::endl;
             }
         }
 	;
 
 postfix_expression
-	: primary_expression 
+	: primary_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> primary_expression" << std::endl;
             }
         }
-	| postfix_expression BRACKETOPEN expression BRACKETCLOSE 
+	| postfix_expression BRACKETOPEN expression BRACKETCLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression BRACKETOPEN expression BRACKETCLOSE" << std::endl;
             }
         }
-	| postfix_expression OPEN CLOSE 
+	| postfix_expression OPEN CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression OPEN CLOSE" << std::endl;
             }
         }
-	| postfix_expression OPEN argument_expression_list CLOSE 
+	| postfix_expression OPEN argument_expression_list CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression OPEN argument_expression_list CLOSE" << std::endl;
             }
         }
-	| postfix_expression PERIOD identifier 
+	| postfix_expression PERIOD identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression PERIOD identifier" << std::endl;
             }
         }
-	| postfix_expression STAR identifier 
+	| postfix_expression STAR identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression STAR identifier" << std::endl;
             }
         }
-	| postfix_expression INC_OP 
+	| postfix_expression INC_OP
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression INC_OP" << std::endl;
             }
         }
-	| postfix_expression DEC_OP 
+	| postfix_expression DEC_OP
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression DEC_OP" << std::endl;
             }
         }
 	;
 
 primary_expression
-	: identifier 
+	: identifier
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "primary_expression -> identifier" << std::endl;
             }
         }
-	| constant 
+	| constant
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "primary_expression -> constant" << std::endl;
             }
         }
-	| string 
+	| string
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "primary_expression -> string" << std::endl;
             }
         }
-	| OPEN expression CLOSE 
+	| OPEN expression CLOSE
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "primary_expression -> OPEN expression CLOSE" << std::endl;
             }
         }
 	;
 
 argument_expression_list
-	: assignment_expression 
+	: assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "argument_expression_list -> assignment_expression" << std::endl;
             }
         }
-	| argument_expression_list COMMA assignment_expression 
+	| argument_expression_list COMMA assignment_expression
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "argument_expression_list -> argument_expression_list COMMA assignment_expression" << std::endl;
             }
         }
 	;
 
 constant
-	: INTEGER_CONSTANT 
+	: INTEGER_CONSTANT
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "constant -> INTEGER_CONSTANT" << std::endl;
             }
         }
-	| CHARACTER_CONSTANT 
+	| CHARACTER_CONSTANT
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "constant -> CHARACTER_CONSTANT" << std::endl;
             }
         }
-	| FLOATING_CONSTANT 
+	| FLOATING_CONSTANT
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "constant -> FLOATING_CONSTANT" << std::endl;
             }
         }
-	| ENUMERATION_CONSTANT 
+	| ENUMERATION_CONSTANT
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "constant -> ENUMERATION_CONSTANT" << std::endl;
             }
         }
 	;
 
 string
-	: STRING_LITERAL 
+	: STRING_LITERAL
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "string -> STRING_LITERAL" << std::endl;
             }
         }
 	;
 
 identifier
-	: IDENTIFIER 
+	: IDENTIFIER
         {
             if (printProductions) {
-                std::cout << "" << std::endl;
+                std::cout << "identifier -> IDENTIFIER" << std::endl;
             }
         }
 	;
