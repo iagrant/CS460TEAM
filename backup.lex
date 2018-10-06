@@ -44,7 +44,7 @@ number  {num1}|{num2}
             }
         }
 
-\/\/.*
+\/\/.*\n
 \!\![A-z] {if(printToken) {std::cout << "DEBUG" << std::endl;}}
 [0-9]+ {if(printToken) {std::cout << "INTEGER_CONSTANT" << std::endl;}}
 [0-9]+\.?[0-9]* {if(printToken) {std::cout << "FLOATING_CONSTANT" << std::endl;}}
