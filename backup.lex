@@ -11,7 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-//#include "C_grammar.tab.h"
+#include "C_grammar.tab.hpp"
 
 #define POS_INT_MAX 2147483646
 #define NEG_INT_MAX -2147483647
@@ -19,6 +19,8 @@
 #define POS_DOUBLE_MAX 1.7E+308
 #define NEG_DOUBLE_MAX 2.3E-308
 */
+extern int yylex();
+extern int yyparse();
 
 int lineNum = 1;
 int colNum = 1;
@@ -66,10 +68,10 @@ number  {num1}|{num2}
 		        }
 
 \/\/.* 			/*skipping single line comments */
-\!\![A-z]       {
+\!\![A-z]+      {
                     if(printToken) {printConsole("DEBUG");}
                     if(printFile) {printToFile("DEBUG");}
-                    if (yytext == "!!dl")
+                	if (yytext == "!!dl")
                     {
                         if(printToken)
                             printToken = false;
@@ -90,7 +92,7 @@ number  {num1}|{num2}
                         else
                             printSymbol = true;
                     }
-                    ////return DEBUG;
+                    return yy::parser::token::DEBUG;
                 }
 [-]?[0-9]+      {
                     if(printToken) {printConsole("INTEGER_CONSTANT");}
@@ -99,493 +101,493 @@ number  {num1}|{num2}
                     std::cout << yytext << std::endl;
                     if (yyleng > 9)
                         std::cout << "\033[4;93mWARNING: POSSIBLE INT OVERFLOW\033[0m"<< std::endl;
-                    ////return INTEGER_CONSTANT;
+                    return yy::parser::token::INTEGER_CONSTANT;
                 }
 [0-9]+\.?[0-9]* {
                     if(printToken) {printConsole("FLOATING_CONSTANT");}
                     if(printFile) {printToFile("FLOATING_CONSTANT");}
                     colNum += yyleng;
-                    ////return FLOATING_CONSTANT;
+                    return yy::parser::token::FLOATING_CONSTANT;
                 }
 \'(\\.|.)\'     {
                     if(printToken) {printConsole("CHARACTER_CONSTANT");}
                     if(printFile) {printToFile("CHARACTER_CONSTANT");}
                     colNum += yyleng;
-                    ////return CHARACTER_CONSTANT;
+                    return yy::parser::token::CHARACTER_CONSTANT;
                 }
 "ENUM"          {
                     if(printToken) {printConsole("ENUMERATION_CONSTANT");}
                     if(printFile) {printToFile("ENUMERATION_CONSTANT");}
                     colNum += yyleng;
-                    ////return ENUMERATION_CONSTANT;
+                    return yy::parser::token::ENUMERATION_CONSTANT;
                 }
 \"[A-z]+\"      {
                     if(printToken) {printConsole("STRING_LITERAL");}
                     if(printFile) {printToFile("STRING_LITERAL");}
                     colNum += yyleng;
-                    ////return STRING_LITERAL;
+                    return yy::parser::token::STRING_LITERAL;
                 }
 sizeof          {
                     if(printToken) {printConsole("SIZEOF");}
                     if(printFile) {printToFile("SIZEOF");}
                     colNum += yyleng;
-                    ////return SIZEOF;
+                    return yy::parser::token::SIZEOF;
                 }
 \+\+            {
                     if(printToken) {printConsole("INC_OP");}
                     if(printFile) {printToFile("INC_OP");}
                     colNum += yyleng;
-                    ////return INC_OP;
+                    return yy::parser::token::INC_OP;
                 }
 --              {
                     if(printToken) {printConsole("DEC_OP");}
                     if(printFile) {printToFile("DEC_OP");}
                     colNum += yyleng;
-                    ////return DEC_OP;
+                    return yy::parser::token::DEC_OP;
                 }
 \<\<            {
                     if(printToken) {printConsole("LEFT_OP");}
                     if(printFile) {printToFile("LEFT_OP");}
                     colNum += yyleng;
-                    ////return LEFT_OP;
+                    return yy::parser::token::LEFT_OP;
                 }
 >>              {
                     if(printToken) {printConsole("RIGHT_OP");}
                     if(printFile) {printToFile("RIGHT_OP");}
                     colNum += yyleng;
-                    ////return RIGHT_OP;
+                    return yy::parser::token::RIGHT_OP;
                 }
 \<=             {
                     if(printToken) {printConsole("LE_OP");}
                     if(printFile) {printToFile("LE_OP");}
                     colNum += yyleng;
-                    ////return LE_OP;
+                    return yy::parser::token::LE_OP;
                 }
 >=              {
                     if(printToken) {printConsole("GE_OP");}
                     if(printFile) {printToFile("GE_OP");}
                     colNum += yyleng;
-                    ////return GE_OP;
+                    return yy::parser::token::GE_OP;
                 }
 ==              {
                     if(printToken) {printConsole("EQ_OP");}
                     if(printFile) {printToFile("EQ_OP");}
                     colNum += yyleng;
-                    ////return EQ_OP;
+                    return yy::parser::token::EQ_OP;
                 }
 !=              {
                     if(printToken) {printConsole("NE_OP");}
                     if(printFile) {printToFile("NE_OP");}
                     colNum += yyleng;
-                    //return NE_OP;
+                    return yy::parser::token::NE_OP;
                 }
 &&              {
                     if(printToken) {printConsole("AND_OP");}
                     if(printFile) {printToFile("AND_OP");}
                     colNum += yyleng;
-                    //return AND_OP;
+                    return yy::parser::token::AND_OP;
                 }
 \|\|            {
                     if(printToken) {printConsole("OR_OP");}
                     if(printFile) {printToFile("OR_OP");}
                     colNum += yyleng;
-                    //return OR_OP;
+                    return yy::parser::token::OR_OP;
                 }
 \*=             {
                     if(printToken) {printConsole("MUL_ASSIGN");}
                     if(printFile) {printToFile("MUL_ASSIGN");}
                     colNum += yyleng;
-                    //return MUL_ASSIGN;
+                    return yy::parser::token::MUL_ASSIGN;
                 }
 \/=             {
                     if(printToken) {printConsole("DIV_ASSIGN");}
                     if(printFile) {printToFile("DIV_ASSIGN");}
                     colNum += yyleng;
-                    //return DIV_ASSIGN;
+                    return yy::parser::token::DIV_ASSIGN;
                 }
 %=              {
                     if(printToken) {printConsole("MOD_ASSIGN");}
                     if(printFile) {printToFile("MOD_ASSIGN");}
                     colNum += yyleng;
-                    //return MOD_ASSIGN;
+                    return yy::parser::token::MOD_ASSIGN;
                 }
 \+=             {
                     if(printToken) {printConsole("ADD_ASSIGN");}
                     if(printFile) {printToFile("ADD_ASSIGN");}
                     colNum += yyleng;
-                    //return ADD_ASSIGN;
+                    return yy::parser::token::ADD_ASSIGN;
                 }
 -=              {
                     if(printToken) {printConsole("SUB_ASSIGN");}
                     if(printFile) {printToFile("SUB_ASSIGN");}
                     colNum += yyleng;
-                    //return SUB_ASSIGN;
+                    return yy::parser::token::SUB_ASSIGN;
                 }
 '<<='           {
                     if(printToken) {printConsole("LEFT_ASSIGN");}
                     if(printFile) {printToFile("LEFT_ASSIGN");}
                     colNum += yyleng;
-                    //return LEFT_ASSIGN;
+                    return yy::parser::token::LEFT_ASSIGN;
                 }
 '>>='           {
                     if(printToken) {printConsole("RIGHT_ASSIGN");}
                     if(printFile) {printToFile("RIGHT_ASSIGN");}
                     colNum += yyleng;
-                    //return RIGHT_ASSIGN;
+                    return yy::parser::token::RIGHT_ASSIGN;
                 }
 &=              {
                     if(printToken) {printConsole("AND_ASSIGN");}
                     if(printFile) {printToFile("AND_ASSIGN");}
                     colNum += yyleng;
-                    //return AND_ASSIGN;
+                    return yy::parser::token::AND_ASSIGN;
                 }
 \|=             {
                     if(printToken) {printConsole("OR_ASSIGN");}
                     if(printFile) {printToFile("OR_ASSIGN");}
                     colNum += yyleng;
-                    //return OR_ASSIGN;
+                    return yy::parser::token::OR_ASSIGN;
                 }
 \;              {
                     if(printToken) {printConsole("SEMI");}
                     if(printFile) {printToFile("SEMI");}
                     colNum += yyleng;
-                    //return SEMI;
+                    return yy::parser::token::SEMI;
                 }
 \:              {
                     if(printToken) {printConsole("COLON");}
                     if(printFile) {printToFile("COLON");}
                     colNum += yyleng;
-                    //return COLON;
+                    return yy::parser::token::COLON;
                 }
 \{              {
                     if(printToken) {printConsole("CURLYOPEN");}
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
-                    //return CURLYOPEN;
+                    return yy::parser::token::CURLYOPEN;
                 }
 \}              {
                     if(printToken) {printConsole("CURLYCLOSE");}
                     if(printFile) {printToFile("CURLYCLOSE");}
                     colNum += yyleng;
-                    //return CURLYCLOSE;
+                    return yy::parser::token::CURLYCLOSE;
                 }
 \[              {
                     if(printToken) {printConsole("BRACKETOPEN");}
                     if(printFile) {printToFile("BRACKETOPEN");}
                     colNum += yyleng;
-                    //return BRACKETOPEN;
+                    return yy::parser::token::BRACKETOPEN;
                 }
 \]              {
                     if(printToken) {printConsole("BRACKETCLOSE");}
                     if(printFile) {printToFile("BRACKETCLOSE");}
                     colNum += yyleng;
-                    //return BRACKETCLOSE;
+                    return yy::parser::token::BRACKETCLOSE;
                 }
 \,              {
                     if(printToken) {printConsole("COMMA");}
                     if(printFile) {printToFile("COMMA");}
                     colNum += yyleng;
-                    //return COMMA;
+                    return yy::parser::token::COMMA;
                 }
 \.              {
                     if(printToken) {printConsole("PERIOD");}
                     if(printFile) {printToFile("PERIOD");}
                     colNum += yyleng;
-                    //return PERIOD;
+                    return yy::parser::token::PERIOD;
                 }
 \=              {
                     if(printToken) {printConsole("EQUALS");}
                     if(printFile) {printToFile("EQUALS");}
                     colNum += yyleng;
-                    //return EQUALS;
+                    return yy::parser::token::EQUALS;
                 }
 \(              {
                     if(printToken) {printConsole("OPEN");}
                     if(printFile) {printToFile("OPEN");}
                     colNum += yyleng;
-                    //return OPEN;
+                    return yy::parser::token::OPEN;
                 }
 \)              {
                     if(printToken) {printConsole("CLOSE");}
                     if(printFile) {printToFile("CLOSE");}
                     colNum += yyleng;
-                    //return CLOSE;
+                    return yy::parser::token::CLOSE;
                 }
 \*              {
                     if(printToken) {printConsole("STAR");}
                     if(printFile) {printToFile("STAR");}
                     colNum += yyleng;
-                    //return STAR;
+                    return yy::parser::token::STAR;
                 }
 \?              {
                     if(printToken) {printConsole("QUESTION");}
                     if(printFile) {printToFile("QUESTION");}
                     colNum += yyleng;
-                    //return QUESTION;
+                    return yy::parser::token::QUESTION;
                 }
 \|              {
                     if(printToken) {printConsole("BAR");}
                     if(printFile) {printToFile("BAR");}
                     colNum += yyleng;
-                    //return BAR;
+                    return yy::parser::token::BAR;
                 }
 \^              {
                     if(printToken) {printConsole("CARROT");}
                     if(printFile) {printToFile("CARROT");}
                     colNum += yyleng;
-                    //return CARROT;
+                    return yy::parser::token::CARROT;
                 }
 \&              {
                     if(printToken) {printConsole("AMP");}
                     if(printFile) {printToFile("AMP");}
                     colNum += yyleng;
-                    //return AMP;
+                    return yy::parser::token::AMP;
                 }
 \<              {
                     if(printToken) {printConsole("LESS_OP");}
                     if(printFile) {printToFile("LESS_OP");}
                     colNum += yyleng;
-                    //return LESS_OP;
+                    return yy::parser::token::LESS_OP;
                 }
 \>              {
                     if(printToken) {printConsole("GREAT_OP");}
                     if(printFile) {printToFile("GREAT_OP");}
                     colNum += yyleng;
-                    //return GREAT_OP;
+                    return yy::parser::token::GREAT_OP;
                 }
 \+              {
                     if(printToken) {printConsole("PLUS");}
                     if(printFile) {printToFile("PLUS");}
                     colNum += yyleng;
-                    //return PLUS;
+                    return yy::parser::token::PLUS;
                 }
 \-              {
                     if(printToken) {printConsole("MINUS");}
                     if(printFile) {printToFile("MINUS");}
                     colNum += yyleng;
-                    //return MINUS;
+                    return yy::parser::token::MINUS;
                 }
 \/              {
                     if(printToken) {printConsole("FORSLASH");}
                     if(printFile) {printToFile("FORSLASH");}
                     colNum += yyleng;
-                    //return FORSLASH;
+                    return yy::parser::token::FORSLASH;
                 }
 \%              {
                     if(printToken) {printConsole("PERCENT");}
                     if(printFile) {printToFile("PERCENT");}
                     colNum += yyleng;
-                    //return PERCENT;
+                    return yy::parser::token::PERCENT;
                 }
 \!              {
                     if(printToken) {printConsole("BANG");}
                     if(printFile) {printToFile("BANG");}
                     colNum += yyleng;
-                    //return BANG;
+                    return yy::parser::token::BANG;
                 }
 \~              {
                     if(printToken) {printConsole("TILDA");}
                     if(printFile) {printToFile("TILDA");}
                     colNum += yyleng;
-                    //return TILDA;
+                    return yy::parser::token::TILDA;
                 }
 typedef         {
                     if(printToken) {printConsole("TYPEDEF");}
                     if(printFile) {printToFile("TYPEDEF");}
                     colNum += yyleng;
-                    //return TYPEDEF;
+                    return yy::parser::token::TYPEDEF;
                 }
 extern          {
                     if(printToken) {printConsole("EXTERN");}
                     if(printFile) {printToFile("EXTERN");}
                     colNum += yyleng;
-                    //return EXTERN;
+                    return yy::parser::token::EXTERN;
                 }
 static          {
                     if(printToken) {printConsole("STATIC");}
                     if(printFile) {printToFile("STATIC");}
                     colNum += yyleng;
-                    //return STATIC;
+                    return yy::parser::token::STATIC;
                 }
 auto            {
                     if(printToken) {printConsole("AUTO");}
                     if(printFile) {printToFile("AUTO");}
                     colNum += yyleng;
-                    //return AUTO;
+                    return yy::parser::token::AUTO;
                 }
 register        {
                     if(printToken) {printConsole("REGISTER");}
                     if(printFile) {printToFile("REGISTER");}
                     colNum += yyleng;
-                    //return REGISTER;
+                    return yy::parser::token::REGISTER;
                 }
 char            {
                     if(printToken) {printConsole("CHAR");}
                     if(printFile) {printToFile("CHAR");}
                     colNum += yyleng;
-                    //return CHAR;
+                    return yy::parser::token::CHAR;
                 }
 short           {
                     if(printToken) {printConsole("SHORT");}
                     if(printFile) {printToFile("SHORT");}
                     colNum += yyleng;
-                    //return SHORT;
+                    return yy::parser::token::SHORT;
                 }
 int             {
                     if(printToken) {printConsole("INT");}
                     if(printFile) {printToFile("INT");}
                     colNum += yyleng;
-                    //return INT;
+                    return yy::parser::token::INT;
                 }
 main            {
                     if(printToken) {printConsole("MAIN");}
                     if(printFile) {printToFile("MAIN");}
                     colNum += yyleng;
-                    //return MAIN;
+                    return yy::parser::token::MAIN;
                 }
 long            {
                     if(printToken) {printConsole("LONG");}
                     if(printFile) {printToFile("LONG");}
                     colNum += yyleng;
-                    //return LONG;
+                    return yy::parser::token::LONG;
                 }
 signed          {
                     if(printToken) {printConsole("SIGNED");}
                     if(printFile) {printToFile("SIGNED");}
                     colNum += yyleng;
-                    //return SIGNED;
+                    return yy::parser::token::SIGNED;
                 }
 unsigned        {
                     if(printToken) {printConsole("UNSIGNED");}
                     if(printFile) {printToFile("UNSIGNED");}
                     colNum += yyleng;
-                    //return UNSIGNED;
+                    return yy::parser::token::UNSIGNED;
                 }
 float           {
                     if(printToken) {printConsole("FLOAT");}
                     if(printFile) {printToFile("FLOAT");}
                     colNum += yyleng;
-                    //return FLOAT;
+                    return yy::parser::token::FLOAT;
                 }
 double          {
                     if(printToken) {printConsole("DOUBLE");}
                     if(printFile) {printToFile("DOUBLE");}
                     colNum += yyleng;
-                    //return DOUBLE;
+                    return yy::parser::token::DOUBLE;
                 }
 const           {
                     if(printToken) {printConsole("CONST");}
                     if(printFile) {printToFile("CONST");}
                     colNum += yyleng;
-                    //return CONST;
+                    return yy::parser::token::CONST;
                 }
 volatile        {
                     if(printToken) {printConsole("VOLATILE");}
                     if(printFile) {printToFile("VOLATILE");}
                     colNum += yyleng;
-                    //return VOLATILE;
+                    return yy::parser::token::VOLATILE;
                 }
 void            {
                     if(printToken) {printConsole("VOID");}
                     if(printFile) {printToFile("VOID");}
                     colNum += yyleng;
-                    //return VOID;
+                    return yy::parser::token::VOID;
                 }
 struct          {
                     if(printToken) {printConsole("STRUCT");}
                     if(printFile) {printToFile("STRUCT");}
                     colNum += yyleng;
-                    //return STRUCT;
+                    return yy::parser::token::STRUCT;
                 }
 union           {
                     if(printToken) {printConsole("UNION");}
                     if(printFile) {printToFile("UNION");}
                     colNum += yyleng;
-                    //return UNION;
+                    return yy::parser::token::UNION;
                 }
 enum            {
                     if(printToken) {printConsole("ENUM");}
                     if(printFile) {printToFile("ENUM");}
                     colNum += yyleng;
-                    //return ENUM;
+                    return yy::parser::token::ENUM;
                 }
 elipsis         {
                     if(printToken) {printConsole("ELIPSIS");}
                     if(printFile) {printToFile("ELIPSIS");}
                     colNum += yyleng;
-                    //return ELIPSIS;
+                    return yy::parser::token::ELIPSIS;
                 }
 case            {
                     if(printToken) {printConsole("CASE");}
                     if(printFile) {printToFile("CASE");}
                     colNum += yyleng;
-                    //return CASE;
+                    return yy::parser::token::CASE;
                 }
 default         {
                     if(printToken) {printConsole("DEFAULT");}
                     if(printFile) {printToFile("DEFAULT");}
                     colNum += yyleng;
-                    //return DEFAULT;
+                    return yy::parser::token::DEFAULT;
                 }
 if              {
                     if(printToken) {printConsole("IF");}
                     if(printFile) {printToFile("IF");}
                     colNum += yyleng;
-                    //return IF;
+                    return yy::parser::token::IF;
                 }
 else            {
                     if(printToken) {printConsole("ELSE");}
                     if(printFile) {printToFile("ELSE");}
                     colNum += yyleng;
-                    //return ELSE;
+                    return yy::parser::token::ELSE;
                 }
 switch          {
                     if(printToken) {printConsole("SWITCH");}
                     if(printFile) {printToFile("SWITCH");}
                     colNum += yyleng;
-                    //return SWITCH;
+                    return yy::parser::token::SWITCH;
                 }
 while           {
                     if(printToken) {printConsole("WHILE");}
                     if(printFile) {printToFile("WHILE");}
                     colNum += yyleng;
-                    //return WHILE;
+                    return yy::parser::token::WHILE;
                 }
 do              {
                     if(printToken) {printConsole("DO");}
                     if(printFile) {printToFile("DO");}
                     colNum += yyleng;
-                    //return DO;
+                    return yy::parser::token::DO;
                 }
 for             {
                     if(printToken) {printConsole("FOR");}
                     if(printFile) {printToFile("FOR");}
                     colNum += yyleng;
-                    //return FOR;
+                    return yy::parser::token::FOR;
                 }
 goto            {
                     if(printToken) {printConsole("GOTO");}
                     if(printFile) {printToFile("GOTO");}
                     colNum += yyleng;
-                    //return GOTO;
+                    return yy::parser::token::GOTO;
                 }
 continue        {
                     if(printToken) {printConsole("CONTINUE");}
                     if(printFile) {printToFile("CONTINUE");}
                     colNum += yyleng;
-                    //return CONTINUE;
+                    return yy::parser::token::CONTINUE;
                 }
 break           {
                     if(printToken) {printConsole("BREAK");}
                     if(printFile) {printToFile("BREAK");}
                     colNum += yyleng;
-                    //return BREAK;
+                    return yy::parser::token::BREAK;
                 }
 return          {
-                    if(printToken) {printConsole("RETURN");}
-                    if(printFile) {printToFile("RETURN");}
+                    if(printToken) {printConsole("return yy::parser::token::");}
+                    if(printFile) {printToFile("return yy::parser::token::");}
                     colNum += yyleng;
-                    //return RETURN;
+                    return yy::parser::token::RETURN;
                 }
 {name}          {
                     if(printToken) {printConsole("IDENTIFIER");}
@@ -594,14 +596,14 @@ return          {
                     if (yyleng > 31)
                     {
                         std::cout << std::string(colNum,'-') << " ^ "<< "ID LENGTH LONGER THAN 31" << std::endl;
-                        //return ERROR;
+                        return yy::parser::token::ERROR;
                     }
-                    //return IDENTIFIER;
+                    return yy::parser::token::IDENTIFIER;
                 }
 .               {
                     if(printToken) {std::cout << "ERROR" << std::endl;}
                     printError(colNum,yytext);
-                    //return ERROR;
+                    return yy::parser::token::ERROR;
                 }
 %%
 void printError (int colNum, std::string errorTok) {
@@ -621,71 +623,8 @@ void printConsole (std::string token) {
     std::cout << token << std::endl;
 }
 
-
 void printToFile (std::string token) {
     std::ofstream fileP(outSrcFile,std::ios::app);
     fileP << token << std::endl;
     fileP.close();
-}
-
-int main (int argc, char** argv)
-{
-    std::string tokenFlag = "-dl";
-	std::string symbolFlag = "-ds";
-	std::string fhFlag = "-fh";
-	std::string productionFlag = "-p";
-    std::string inputFlag = "-i";
-    std::string outputFlag = "-o";
-    extern std::string srcFile;
-    extern std::string outSrcFile;
-    extern std::string buffer;
-
-    // Check command line args for debug symbols
-    for (int i = 0; i < argc; i++) {
-        if((tokenFlag.compare(argv[i])) == 0)
-        {
-            printToken = true;
-        }
-        if((symbolFlag.compare(argv[i])) == 0)
-        {
-            // Dump the symbol table
-        }
-        if((fhFlag.compare(argv[i])) == 0)
-        {
-            // RELEASE THE FH
-        }
-		if ((productionFlag.compare(argv[i])) == 0)
-		{
-			printProductions = true;
-		}
-        if ((inputFlag.compare(argv[i]))==0)
-        {
-            if (i+1 < argc)
-                srcFile = argv[++i];
-            else
-            {
-                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
-                return 0;
-            }
-        }
-        if ((outputFlag.compare(argv[i]))==0)
-        {
-            if (i+1 < argc)
-            {
-                outSrcFile = argv[++i];
-            }
-            else
-            {
-                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
-                return 0;
-            }
-        }
-    }
-    std::ofstream fileP(outSrcFile);
-    fileP << "";
-    fileP.close();
-    FlexLexer* lexer = new yyFlexLexer;
-    while(lexer->yylex() != 0)
-    ;
-    return 0;
 }

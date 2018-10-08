@@ -1,20 +1,30 @@
 %{
-  #include <stdio.h>
-  #include <string.h>
-  #include <bool.h>
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdlib.h>
+	#include <iostream>
 
-  extern bool printProductions;
+	extern bool printProductions;
+	void  yyerror(char *msg)
+	{
+	    printf("syntax error - abort 00 %s",msg);
+	    exit(1);
+	}
 %}
-
+%skeleton "lalr1.cc"
+%defines
 %union {
   int ival;
   char cval;
-  std::string sval;
+  char sval[32];
   double dval;
 }
 
 %token <sval> IDENTIFIER
-%token INTEGER_CONSTANT FLOATING_CONSTANT CHARACTER_CONSTANT ENUMERATION_CONSTANT
+%token <ival> INTEGER_CONSTANT
+%token <dval> FLOATING_CONSTANT
+%token <cval> CHARACTER_CONSTANT
+%token ENUMERATION_CONSTANT
 %token <sval> STRING_LITERAL
 %token SIZEOF
 %token INC_OP DEC_OP
@@ -32,7 +42,7 @@
 %token STRUCT UNION ENUM ELIPSIS RANGE
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-%token ERROR DEBUG
+%token ERROR DEBUG MAIN
 
 %type <sval> string identifier
 
@@ -415,7 +425,7 @@ struct_declarator_list
 	| struct_declarator_list COMMA struct_declarator
 		{
             if (printProductions) {
-                std::cout << std::cout << "struct_declarator_list -> struct_declarator_list COMMA struct_declarator" << std::endl;
+                std::cout << "struct_declarator_list -> struct_declarator_list COMMA struct_declarator" << std::endl;
             }
         }
 	;
@@ -1575,15 +1585,69 @@ identifier
         }
 	;
 %%
-
-#include <stdio.h>
-
 extern char yytext[];
 extern int column;
-
-yyerror(s)
-char *s;
+extern int yylex();
+extern int yyparse();
+int main (int argc, char** argv)
 {
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+    std::string tokenFlag = "-dl";
+	std::string symbolFlag = "-ds";
+	std::string fhFlag = "-fh";
+	std::string productionFlag = "-p";
+    std::string inputFlag = "-i";
+    std::string outputFlag = "-o";
+    extern std::string srcFile;
+    extern std::string outSrcFile;
+    extern std::string buffer;
+
+    // Check command line args for debug symbols
+    for (int i = 0; i < argc; i++) {
+        if((tokenFlag.compare(argv[i])) == 0)
+        {
+            printToken = true;
+        }
+        if((symbolFlag.compare(argv[i])) == 0)
+        {
+            // Dump the symbol table
+        }
+        if((fhFlag.compare(argv[i])) == 0)
+        {
+            // RELEASE THE FH
+        }
+		if ((productionFlag.compare(argv[i])) == 0)
+		{
+			printProductions = true;
+		}
+        if ((inputFlag.compare(argv[i]))==0)
+        {
+            if (i+1 < argc)
+                srcFile = argv[++i];
+            else
+            {
+                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
+                return 0;
+            }
+        }
+        if ((outputFlag.compare(argv[i]))==0)
+        {
+            if (i+1 < argc)
+            {
+                outSrcFile = argv[++i];
+            }
+            else
+            {
+                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
+                return 0;
+            }
+        }
+    }
+    std::ofstream fileP(outSrcFile);
+    fileP << "";
+    fileP.close();
+    FlexLexer* lexer = new yyFlexLexer;
+    while(lexer->yylex() != 0)
+    ;
+	yyparse();
+    return 0;
 }
