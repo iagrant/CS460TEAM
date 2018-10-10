@@ -109,7 +109,7 @@ number  {num1}|{num2}
                     colNum += yyleng;
                     return yy::parser::token::FLOATING_CONSTANT;
                 }
-\'(\\[nrtbfv0]|.)\'     {
+\'(\\[anrtbfv0]|.|\\x[0-9a-fA-F]{2,20})\'     {
                     if(printToken) {printConsole("CHARACTER_CONSTANT");}
                     if(printFile) {printToFile("CHARACTER_CONSTANT");}
                     colNum += yyleng;
