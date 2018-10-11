@@ -11,8 +11,6 @@
 	    exit(1);
 	}
 %}
-%skeleton "lalr1.cc"
-%defines
 %union {
   int ival;
   char cval;
@@ -1585,10 +1583,8 @@ identifier
         }
 	;
 %%
-extern char yytext[];
 extern int column;
-extern int yylex();
-extern int yyparse();
+
 int main (int argc, char** argv)
 {
     std::string tokenFlag = "-dl";
@@ -1645,9 +1641,6 @@ int main (int argc, char** argv)
     std::ofstream fileP(outSrcFile);
     fileP << "";
     fileP.close();
-    FlexLexer* lexer = new yyFlexLexer;
-    while(lexer->yylex() != 0)
-    ;
 	yyparse();
     return 0;
 }
