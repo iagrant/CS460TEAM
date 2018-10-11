@@ -23,6 +23,7 @@ extern int yylex();
 extern int yyparse();
 
 int lineNum = 1;
+int tabNum = 0;
 int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
@@ -47,9 +48,10 @@ num2    [-+]?{dig}*\.{dig}+([eE][-+]?{dig}+)?
 number  {num1}|{num2}
 
 %%
-\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1;}
+\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;}
 \r 
 [ ]	        	{colNum++; /* skip white space */ }
+\t		{tabNum++;/* inc tab num for errMsg */}
 "/*"   			{
 			        int c;
 
@@ -608,7 +610,7 @@ void printError (int colNum, std::string errorTok) {
         std::getline(srcFileP,buffer);
     }
     std::cout << buffer << std::endl;
-    std::cout << std::string(colNum - 1,'-') << "\033[1;91m^ Unidentifed Token: \033[0m\033[4;33m"
+    std::cout << std::string(tabNum, '\t') << std::string(colNum - 1,'-') << "\033[1;91m^ Unidentifed Token: \033[0m\033[4;33m"
     		  << errorTok << "\033[0m on Line: " << lineNum
     		  << " and Column: " << colNum <<std::endl;
     srcFileP.close();
