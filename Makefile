@@ -1,26 +1,13 @@
-CC	= g++
-LEX	= flex++
-YACC	= bison
-LIBS	= -L/usr/local/lib -lfl 
+all: fcc
 
-OBJS	= lex.yy.o C_grammar.tab.o
-TESTOBJS	= driver.o lex.yy.o
+C_grammar.tab.c C_grammar.tab.h:	C_grammar.y
+	bison -d -t C_grammar.y
 
-C_grammmar: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(LIBS)
+lex.yy.c: backup.lex C_grammar.tab.h
+	flex backup.lex C_grammar.tab.c
 
-testscan: $(TESTOBJS) C_grammar.tab.h
-	$(CC) -o $@ $(TESTOBJS) $(LIBS)
-
-C_grammar.tab.cc: C_grammar.y
-	$(YACC) -d -t $<
-
-lex.yy.cc: scanner.lex C_grammar.tab.cc
-	$(LEX) $<
+fcc: lex.yy.c C_grammar.tab.c C_grammar.tab.h
+	g++ -std=c++11 -o $@ lex.yy.c
 
 clean:
-	-rm -f lex.yy.* C_grammar.tab.* *.o C_grammar testscan *~
-
-.SUFFIXES: .cc .o
-
-.cc.o: $(CC) -c $< -o $@
+	-rm -f lex.yy.* C_grammar.tab.* *.o fcc

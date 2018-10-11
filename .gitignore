@@ -1,10 +1,13 @@
 # Prerequisites
 *.d
 
+#bins
+scanner
+fcc
+
 #lex and bison files
-lex.yy.c
-*.tab.o
-*.tab.h
+lex.yy.*
+*.tab.*
 
 # Compiled Object files
 *.slo
