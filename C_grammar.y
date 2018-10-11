@@ -40,7 +40,7 @@
 %token STRUCT UNION ENUM ELIPSIS RANGE
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-%token ERROR DEBUG MAIN
+%token ERROR DEBUG
 
 %type <sval> string identifier
 
@@ -1609,7 +1609,7 @@ int main (int argc, char** argv)
         }
         if((fhFlag.compare(argv[i])) == 0)
         {
-            // RELEASE THE FH
+            unleash();
         }
 		if ((productionFlag.compare(argv[i])) == 0)
 		{

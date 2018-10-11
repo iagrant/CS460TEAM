@@ -48,6 +48,7 @@ number  {num1}|{num2}
 
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1;}
+\r 
 [ ]	        	{colNum++; /* skip white space */ }
 "/*"   			{
 			        int c;
@@ -98,7 +99,7 @@ number  {num1}|{num2}
                     if(printToken) {printConsole("INTEGER_CONSTANT");}
                     if(printFile) {printToFile("INTEGER_CONSTANT");}
                     colNum += yyleng;
-                    std::cout << yytext << std::endl;
+                    //std::cout << yytext << std::endl;
                     if (yyleng > 9)
                         std::cout << "\033[4;93mWARNING: POSSIBLE INT OVERFLOW\033[0m"<< std::endl;
                     return INTEGER_CONSTANT;
@@ -439,12 +440,6 @@ int             {
                     colNum += yyleng;
                     return INT;
                 }
-main            {
-                    if(printToken) {printConsole("MAIN");}
-                    if(printFile) {printToFile("MAIN");}
-                    colNum += yyleng;
-                    return MAIN;
-                }
 long            {
                     if(printToken) {printConsole("LONG");}
                     if(printFile) {printToFile("LONG");}
@@ -627,4 +622,17 @@ void printToFile (std::string token) {
     std::ofstream fileP(outSrcFile,std::ios::app);
     fileP << token << std::endl;
     fileP.close();
+}
+
+void unleash () {
+//    string file = "";
+  std::ifstream in("harris_w_colorcodes.txt");
+
+    std::string line;
+    while(getline(in, line)) {
+        std::cout << "\033[1;30;47m";
+        std::cout << line << std::endl;
+        std::cout << "\033[0m";
+    }
+    in.close();
 }
