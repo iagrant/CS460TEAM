@@ -1,7 +1,7 @@
 all: fcc
 
 C_grammar.tab.c C_grammar.tab.h:	C_grammar.y
-	bison -d -t C_grammar.y
+	bison -d -v -t C_grammar.y
 
 lex.yy.c: backup.lex C_grammar.tab.h
 	flex backup.lex C_grammar.tab.c

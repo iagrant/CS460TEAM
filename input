@@ -1,11 +1,20 @@
-/* hello
+/* Test multi-line comment
+
+
+
+
 */
 
 
-// hello
+// Test single line comment
 
 int main() {
   int a = 1;
   a += 2;
+  char * hello = "\t 1: This is a test string a+b = c\n";
   return 0;
+}
+
+int add(int a, int b) {
+    return a + b;
 }
