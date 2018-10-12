@@ -7,7 +7,7 @@
 	extern bool printProductions;
 	void  yyerror(char *msg)
 	{
-	    printf("syntax error - abort 00 %s",msg);
+	    printf("syntax error - abort 00 %s\n",msg);
 	    exit(1);
 	}
 %}
@@ -1593,6 +1593,7 @@ int main (int argc, char** argv)
 	std::string productionFlag = "-p";
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
+	FILE* inputStream;
     extern std::string srcFile;
     extern std::string outSrcFile;
     extern std::string buffer;
@@ -1618,7 +1619,13 @@ int main (int argc, char** argv)
         if ((inputFlag.compare(argv[i]))==0)
         {
             if (i+1 < argc)
+			{
                 srcFile = argv[++i];
+				int n = srcFile.length();
+				char inputFile[n+1];
+				strcpy(inputFile,srcFile.c_str());
+				inputStream = fopen(inputFile,"r");
+			}
             else
             {
                 std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
@@ -1638,9 +1645,13 @@ int main (int argc, char** argv)
             }
         }
     }
+
+	yyin = inputStream;
+	yyparse();
+	fclose(inputStream);
     std::ofstream fileP(outSrcFile);
     fileP << "";
     fileP.close();
-	yyparse();
+
     return 0;
 }
