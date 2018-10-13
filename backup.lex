@@ -621,7 +621,6 @@ void printConsole (std::string token) {
 }
 
 void printToFile (std::string token) {
-	outSrcFile = srcFile + "output.txt";
     std::ofstream fileP(outSrcFile,std::ios::app);
     fileP << token << std::endl;
     fileP.close();

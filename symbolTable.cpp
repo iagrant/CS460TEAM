@@ -22,58 +22,12 @@
 bool lookup = false;
 bool insert = true;
 
-class Node {
-public:
-    std::string type;
-    Node(std::string typeIn) {
-      type=typeIn;
-    }
-    void printNode() {
-      std::cout << type << std::endl;
-      std::cout << value << std::endl;
-    }
-};
-
-class stringVal: public Node{
-public:
-	std::string value;
-};
-
-class intVal: public Node{
-public:
-	int value;
-}
-
-class doubleVal: public Node{
-public:
-     double value;
-};
-
-class charVal: public Node{
-public:
-	char value;
-}
-
-
-/*
-class idNode : public Node {
-  public:
-  string identifier;
-  idNode (string id) {identifier=id;}
-
-};
-class forNode : public Node {
-  public:
-    //not sure what  to have it contain
-};
-*/
-
 class SymbolTable {
 
   private:
     list<map<string,Node>> symbolTable;
-  public:
     list <int> :: iterator currentScope;
+  public:
     list <int> :: iterator currentLooker;
     SymbolTable () {
         map <string,Node> map1;
@@ -98,7 +52,7 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (insert)
-            *currentScope.insert(symbol->Name, symbol);
+            *currentScope.insert(symbol -> name, symbol);
         else
             std::cout << "Syntax Error Declared var outside declaration block" << std:: endl;
     }
@@ -122,14 +76,16 @@ class SymbolTable {
     // Searches for a symbol on the stack
     map<string,Node>* searchTree (Node node) {
 
-		for(auto iter = map.begin(); iter != map.end(); iter++)
+		if (lookup)
 		{
-			if (*iter -> value == node-> value)
+			for(auto iter = map.begin(); iter != map.end(); iter++)
+			{
+				if (*iter -> value == node -> value)
+			}
 		}
-
       return tree;
-
     }
-    vector<map<string,Node>>* getStPtr() {return &stVector;}
 
+
+    list <int> getCurrentScope() {return currentScope;}
 };
