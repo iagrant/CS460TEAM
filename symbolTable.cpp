@@ -13,18 +13,19 @@
 //
 
 #include <iostream>
-#include <vector>
+#include <list>
+#include <iterator>
 #include <map>
 #include <string>
 #include <iostream>
 #include <fstream>
 bool lookup = false;
-bool declaration = true;
+bool insert = true;
 
 class Node {
 public:
     std::string type;
-    Node(string typeIn) {
+    Node(std::string typeIn) {
       type=typeIn;
     }
     void printNode() {
@@ -70,25 +71,36 @@ class forNode : public Node {
 class SymbolTable {
 
   private:
-    vector<map<string,Node>> stVector;
+    list<map<string,Node>> symbolTable;
   public:
-
-    // Paramitized Constructor LMAO
-    SymbolTable (vector<map<string,Node>> inVector, map<string,Node> initialTree) {
-        stVector = inVector;
-        stVector.push_back(initialTree);
+    list <int> :: iterator currentScope;
+    list <int> :: iterator currentLooker;
+    SymbolTable () {
+        map <string,Node> map1;
+        symbolTable.push_back(map1);
     }
 
-    // removeSymbol
+    // removeScope
     // returns a tree from the top of the stack
-    map<string,Node> removeSymbol () {
-        return stVector.back();
+    map<string,Node> removeScope () {
+        map<string,Node> ret = symbolTable.back();
+        symbolTable.pop_back();
+        currentScope--;
+        return ret;
     }
 
-    // insertSymbol
+    // insertScope
     // puts a tree on the top of the stack
-    void insertSymbol (map<string,Node> newMap) {
-        stVector.push_back(newMap);
+    void insertScope (map<string,Node> newMap) {
+        symbolTable.push_back(newMap);
+        currentScope++;
+    }
+
+    void insertSymbol (Node symbol) {
+        if (insert)
+            *currentScope.insert(symbol->Name, symbol);
+        else
+            std::cout << "Syntax Error Declared var outside declaration block" << std:: endl;
     }
 
     // writeFile
@@ -110,6 +122,10 @@ class SymbolTable {
     // Searches for a symbol on the stack
     map<string,Node>* searchTree (Node node) {
 
+		for(auto iter = map.begin(); iter != map.end(); iter++)
+		{
+			if (*iter -> value == node-> value)
+		}
 
       return tree;
 

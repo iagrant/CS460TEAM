@@ -31,7 +31,7 @@ bool printProductions = false;
 bool printFile = true;
 std::string buffer = "";
 std::string srcFile = "";
-std::string outSrcFile = "a.out";
+std::string outSrcFile = "output.txt";
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
@@ -50,7 +50,7 @@ number  {num1}|{num2}
 
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;}
-\r 
+\r
 [ ]	        	{colNum++; /* skip white space */ }
 \t		{tabNum++;/* inc tab num for errMsg */}
 "/*"   			{
@@ -226,13 +226,13 @@ sizeof          {
                     colNum += yyleng;
                     return SUB_ASSIGN;
                 }
-'<<='           {
+"<<=""           {
                     if(printToken) {printConsole("LEFT_ASSIGN");}
                     if(printFile) {printToFile("LEFT_ASSIGN");}
                     colNum += yyleng;
                     return LEFT_ASSIGN;
                 }
-'>>='           {
+">>=          {
                     if(printToken) {printConsole("RIGHT_ASSIGN");}
                     if(printFile) {printToFile("RIGHT_ASSIGN");}
                     colNum += yyleng;
@@ -621,6 +621,7 @@ void printConsole (std::string token) {
 }
 
 void printToFile (std::string token) {
+	outSrcFile = srcFile + "output.txt";
     std::ofstream fileP(outSrcFile,std::ios::app);
     fileP << token << std::endl;
     fileP.close();
