@@ -1590,7 +1590,7 @@ int main (int argc, char** argv)
     std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string fhFlag = "-fh";
-	std::string productionFlag = "-p";
+	std::string productionFlag = "-dp";
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
 	FILE* inputStream;

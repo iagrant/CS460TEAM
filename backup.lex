@@ -96,7 +96,6 @@ number  {num1}|{num2}
                         else
                             printSymbol = true;
                     }
-                    return DEBUG;
                 }
 [-]?[0-9]+      {
                     if(printToken) {printConsole("INTEGER_CONSTANT");}
