@@ -4,6 +4,7 @@
 #bins
 scanner
 fcc
+a.out
 
 #lex and bison files
 lex.yy.*
