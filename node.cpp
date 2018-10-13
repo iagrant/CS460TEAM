@@ -23,55 +23,62 @@ bool declaration = true;
 class Node {
 public:
     std::string type;
-    Node(std::string typeIn) {
+    std::string name;
+
+    Node(std::string typeIn, std::string nameIn) {
       type=typeIn;
+      name=nameIn; 
     }
 };
 
 class stringVal: public Node{
 public:
 	std::string value;
-    stringVal(std::string typeIn, std::string val):Node(typeIn) {
+    stringVal(std::string typeIn, std::string name, std::string val):Node(typeIn,name) {
         value = val;
     }
     void printNode() {
-      std::cout << type << std::endl;
-      std::cout << value << std::endl;
+      std::cout << "NAME: " << name << std::endl;
+      std::cout << "TYPE: " << type << std::endl;
+      std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
 
 class intVal: public Node{
 public:
 	int value;
-    intVal(std::string typeIn, int val):Node(typeIn) {
+    intVal(std::string typeIn, std::string name, int val):Node(typeIn,name) {
         value = val;
     }
     void printNode() {
-      std::cout << type << std::endl;
-      std::cout << value << std::endl;
+      std::cout << "NAME: " << name << std::endl;
+      std::cout << "TYPE: " << type << std::endl;
+      std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
 
 class doubleVal: public Node{
 public:
     double value;
-    doubleVal(std::string typeIn, double val):Node(typeIn) {
+    doubleVal(std::string typeIn, std::string name, double val):Node(typeIn,name) {
         value = val;
     }
     void printNode() {
-      std::cout << type << std::endl;
-      std::cout << value << std::endl;
+      std::cout << "NAME: " << name << std::endl;
+      std::cout << "TYPE: " << type << std::endl;
+      std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
 
 class charVal: public Node{
 public:
 	char value;
-    charVal(std::string typeIn, char val):Node(typeIn) {
+    charVal(std::string typeIn, std::string name, char val):Node(typeIn,name) {
         value = val;
     }
     void printNode() {
-      std::cout << type << std::endl;
-      std::cout << value << std::endl;
+      std::cout << "NAME: " << name << std::endl;
+      std::cout << "TYPE: " << type << std::endl;
+      std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
