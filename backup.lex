@@ -226,13 +226,13 @@ sizeof          {
                     colNum += yyleng;
                     return SUB_ASSIGN;
                 }
-"<<=""           {
+"<<="           {
                     if(printToken) {printConsole("LEFT_ASSIGN");}
                     if(printFile) {printToFile("LEFT_ASSIGN");}
                     colNum += yyleng;
                     return LEFT_ASSIGN;
                 }
-">>=          {
+">>="          {
                     if(printToken) {printConsole("RIGHT_ASSIGN");}
                     if(printFile) {printToFile("RIGHT_ASSIGN");}
                     colNum += yyleng;
