@@ -50,7 +50,7 @@ number  {num1}|{num2}
 
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;}
-\r 
+\r
 [ ]	        	{colNum++; /* skip white space */ }
 \t		{tabNum++;/* inc tab num for errMsg */}
 "/*"   			{
@@ -112,7 +112,7 @@ number  {num1}|{num2}
                     colNum += yyleng;
                     return FLOATING_CONSTANT;
                 }
-\'({escaped}|.|\\x[0-9a-fA-F]{2,20})\'     {
+'(\\.|[^\\'])+' {
                     if(printToken) {printConsole("CHARACTER_CONSTANT");}
                     if(printFile) {printToFile("CHARACTER_CONSTANT");}
                     colNum += yyleng;
@@ -124,7 +124,7 @@ number  {num1}|{num2}
                     colNum += yyleng;
                     return ENUMERATION_CONSTANT;
                 }
-\"(.|{escaped})*\"      {
+\"(\\.|[^\\"])*\" {
                     if(printToken) {printConsole("STRING_LITERAL");}
                     if(printFile) {printToFile("STRING_LITERAL");}
                     colNum += yyleng;
