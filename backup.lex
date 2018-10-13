@@ -112,7 +112,7 @@ number  {num1}|{num2}
                     colNum += yyleng;
                     return FLOATING_CONSTANT;
                 }
-\'({escaped}|.|\\x[0-9a-fA-F]{2,20})\'     {
+'(\\.|[^\\'])+' {
                     if(printToken) {printConsole("CHARACTER_CONSTANT");}
                     if(printFile) {printToFile("CHARACTER_CONSTANT");}
                     colNum += yyleng;
@@ -124,7 +124,7 @@ number  {num1}|{num2}
                     colNum += yyleng;
                     return ENUMERATION_CONSTANT;
                 }
-\"(.|{escaped})*\"      {
+\"(\\.|[^\\"])*\" {
                     if(printToken) {printConsole("STRING_LITERAL");}
                     if(printFile) {printToFile("STRING_LITERAL");}
                     colNum += yyleng;
