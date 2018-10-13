@@ -1,7 +1,15 @@
 //
 // Name:    symbolTable.cpp
 // Author:  Semantic Team (Franklin, Grant, Knutson)
-// Purpose: The symbol table is implemented as a stack of Binary Search Trees. When the scanning begins a BST will be pushed onto the stack for the main program. Every time we enter a procedure a BST will be pushed onto the stack and all of the local variables will be stored there. When a procedure is finished that level of the stack will be popped.
+// Purpose: The symbol table is implemented as a stack of Binary Search Trees.
+//
+//          When the scanning begins a BST will be pushed onto the stack for the
+//          main program.
+//
+//          Every time we enter a procedure a BST will be pushed onto the stack
+//  		and all of the local variables will be stored there.
+//
+//          When a procedure is finished that level of the stack will be popped.
 //
 
 #include <iostream>
@@ -10,23 +18,41 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
-using namespace std;
+bool lookup = false;
+bool declaration = true;
 
 class Node {
-  public:
-    string type;
-    int numOfPtrs;
-    Node () {
-      type="";
-      numOfPtrs=0;
-    }
-    Node(string typeIn, int numIn) {
+public:
+    std::string type;
+    Node(string typeIn) {
       type=typeIn;
-      numOfPtrs=numIn;
     }
-
+    void printNode() {
+      std::cout << type << std::endl;
+      std::cout << value << std::endl;
+    }
 };
+
+class stringVal: public Node{
+public:
+	std::string value;
+};
+
+class intVal: public Node{
+public:
+	int value;
+}
+
+class doubleVal: public Node{
+public:
+     double value;
+};
+
+class charVal: public Node{
+public:
+	char value;
+}
+
 
 /*
 class idNode : public Node {
