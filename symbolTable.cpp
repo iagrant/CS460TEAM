@@ -19,25 +19,26 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "node.cpp"
 bool lookup = false;
 bool insert = true;
 
 class SymbolTable {
 
   private:
-    list<map<string,Node>> symbolTable;
-    list <int> :: iterator currentScope;
+    std::list<std::map<std::string,Node>> symbolTable;
+    std::list <int> :: iterator currentScope;
   public:
-    list <int> :: iterator currentLooker;
+    std::list <int> :: iterator currentLooker;
     SymbolTable () {
-        map <string,Node> map1;
+        std::map <std::string,Node> map1;
         symbolTable.push_back(map1);
     }
 
     // removeScope
     // returns a tree from the top of the stack
-    map<string,Node> removeScope () {
-        map<string,Node> ret = symbolTable.back();
+    std::map<std::string,Node> removeScope () {
+        std::map<std::string,Node> ret = symbolTable.back();
         symbolTable.pop_back();
         currentScope--;
         return ret;
@@ -45,47 +46,77 @@ class SymbolTable {
 
     // insertScope
     // puts a tree on the top of the stack
-    void insertScope (map<string,Node> newMap) {
+    void insertScope (std::map<std::string,Node> newMap) {
         symbolTable.push_back(newMap);
         currentScope++;
     }
 
     void insertSymbol (Node symbol) {
         if (insert)
-            *currentScope.insert(symbol -> name, symbol);
+            *currentScope.insert(std::pair <string,Node> (symbol -> name, symbol));
         else
-            std::cout << "Syntax Error Declared var outside declaration block" << std:: endl;
+            std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
     }
 
     // writeFile
     // opens a file for writing writes the contents
     // of the symbol table to a file.
     // why?
-    void writeFile (string filename) {
-            // Create the file pointer
-        ofstream myfile;
-            // Open the file for writing
+    void writeFile (std::string filename) {
+        // Create the file pointer
+        std::ofstream myfile(outSrcFile,std::ios::app);
+        // Open the file for writing
+        currentLooker = symbolTable.start();
         myfile.open(filename);
-            // Replace this with actual implementation
-        myfile << "Writing this to a file.\n";
-            // Close the file pointer
+        currentLooker--;
+        while (currentLooker != symbolTable.end())
+        {
+			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
+            {
+                myfile << "Writing this to a file.\n";
+                myfile << *iter.printNode();
+            }
+        }
         myfile.close();
     }
 
     // searchTree
     // Searches for a symbol on the stack
-    map<string,Node>* searchTree (Node node) {
-
-		if (lookup)
+    bool searchTree (Node *node) {
+        if (insert)
 		{
-			for(auto iter = map.begin(); iter != map.end(); iter++)
+			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
 			{
-				if (*iter -> value == node -> value)
+				if (*iter.name == node.name)
+                {
+                    std::cout << "Warning shadowing variable " << node->name << std::endl;
+					return true;
+                }
+			}
+        }
+		else if (lookup)
+		{
+			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
+			{
+				if (*iter -> name == node -> name)
+                {
+                    node -> value = *iter -> value;
+                    return true;
+                }
 			}
 		}
-      return tree;
+      	return false;
+    }
+    void searchPrevScope(Node node)
+    {
+        currentLooker = getCurrentScope();
+        currentLooker--;
+        bool ret = false;
+        while (currentLooker != symbolTable.start())
+        {
+            searchTree(node);
+        }
     }
 
-
-    list <int> getCurrentScope() {return currentScope;}
+    std::list <int> :: iterator getCurrentScope() {return currentScope;}
 };
