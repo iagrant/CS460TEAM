@@ -34,7 +34,7 @@
 %token TYPEDEF_NAME
 %token SEMI COLON CURLYOPEN CURLYCLOSE BRACKETOPEN BRACKETCLOSE COMMA PERIOD EQUALS
 %token OPEN CLOSE STAR QUESTION BAR CARROT AMP LESS_OP GREAT_OP PLUS MINUS FORSLASH
-%token PERCENT BANG TILDA
+%token PERCENT BANG TILDA PTR_OP
 %token TYPEDEF EXTERN STATIC AUTO REGISTER
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
 %token STRUCT UNION ENUM ELIPSIS RANGE
@@ -1476,10 +1476,10 @@ postfix_expression
                 std::cout << "postfix_expression -> postfix_expression PERIOD identifier" << std::endl;
             }
         }
-	| postfix_expression STAR identifier
+	| postfix_expression PTR_OP identifier
         {
             if (printProductions) {
-                std::cout << "postfix_expression -> postfix_expression STAR identifier" << std::endl;
+                std::cout << "postfix_expression -> postfix_expression PTR_OP identifier" << std::endl;
             }
         }
 	| postfix_expression INC_OP
