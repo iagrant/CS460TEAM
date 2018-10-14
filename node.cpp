@@ -29,6 +29,10 @@ public:
       type=typeIn;
       name=nameIn; 
     }
+    void printNode() {
+      std::cout << "NAME: " << name << std::endl;
+      std::cout << "TYPE: " << type << std::endl;
+    }
 };
 
 class stringVal: public Node{

@@ -27,11 +27,11 @@ class SymbolTable {
 
   private:
     std::list<std::map<std::string,Node>> symbolTable;
-    std::list <int> :: iterator currentScope;
+    std::list <std::map<std::string,Node>> :: iterator currentScope;
   public:
-    std::list <int> :: iterator currentLooker;
+    std::list <std::map<std::string,Node>> :: iterator currentLooker;
     SymbolTable () {
-        std::map <std::string,Node> map1;
+        std::map <:string,Node> map1;
         symbolTable.push_back(map1);
     }
 
