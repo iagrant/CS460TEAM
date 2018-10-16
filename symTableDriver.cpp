@@ -10,7 +10,7 @@ using namespace std;
 
 int main () {
 
-    SymbolTable st();
+    SymbolTable st;
 
     // SHADOWING TEST
     string type0 = "int";
@@ -32,19 +32,25 @@ int main () {
     string type4 = "char";
     string name4 = "my_var4";
     int line4 = 123;
-
+    std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
     Node z(type0, name0, line0);
     Node a(type1, name1, line1);
     Node b(type2, name2, line2);
     Node c(type3, name3, line3);
     Node d(type4, name4, line4);
+    std::cout << "AFTER NODES"<< std::endl;
     st.insertSymbol(a);
+    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(b);
     st.insertSymbol(z);
+    std::cout << "NEW SCOPE"<< std::endl;
     st.addNewScope();
+    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(c);
     st.insertSymbol(d);
+    std::cout << "PRINT ST"<< std::endl;
+    st.printST();
 
 
     /*

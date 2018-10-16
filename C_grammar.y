@@ -1603,71 +1603,71 @@ extern int column;
 
 int main (int argc, char** argv)
 {
-    std::string tokenFlag = "-dl";
+  std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string productionFlag = "-dp";
 	std::string fhFlag = "-fh";
-    std::string inputFlag = "-i";
-    std::string outputFlag = "-o";
+  std::string inputFlag = "-i";
+  std::string outputFlag = "-o";
 	FILE* inputStream;
-    extern std::string srcFile;
-    extern std::string outSrcFile;
-    extern std::string buffer;
+  extern std::string srcFile;
+  extern std::string outSrcFile;
+  extern std::string buffer;
 
-    // Check command line args for debug symbols
-    for (int i = 0; i < argc; i++) {
-        if((tokenFlag.compare(argv[i])) == 0)
-        {
-            printToken = true;
-        }
-        if((symbolFlag.compare(argv[i])) == 0)
-        {
-            // Dump the symbol table
-        }
-        if((fhFlag.compare(argv[i])) == 0)
-        {
-            unleash();
-        }
-		if ((productionFlag.compare(argv[i])) == 0)
-		{
-			printProductions = true;
-		}
-        if ((inputFlag.compare(argv[i]))==0)
-        {
-            if (i+1 < argc)
-			{
-                srcFile = argv[++i];
-				int n = srcFile.length();
-				char inputFile[n+1];
-				strcpy(inputFile,srcFile.c_str());
-				inputStream = fopen(inputFile,"r");
-			}
-            else
-            {
-                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
-                return 0;
-            }
-        }
-        if ((outputFlag.compare(argv[i]))==0)
-        {
-            if (i+1 < argc)
-            {
-                outSrcFile = argv[++i];
-            }
-            else
-            {
-                std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
-                return 0;
-            }
-        }
+  // Check command line args for debug symbols
+  for (int i = 0; i < argc; i++) {
+    if((tokenFlag.compare(argv[i])) == 0)
+    {
+      printToken = true;
     }
+    if((symbolFlag.compare(argv[i])) == 0)
+    {
+      // Dump the symbol table
+    }
+    if((fhFlag.compare(argv[i])) == 0)
+    {
+      unleash();
+    }
+    if ((productionFlag.compare(argv[i])) == 0)
+    {
+      printProductions = true;
+    }
+    if ((inputFlag.compare(argv[i]))==0)
+    {
+      if (i+1 < argc)
+      {
+        srcFile = argv[++i];
+        int n = srcFile.length();
+        char inputFile[n+1];
+        strcpy(inputFile,srcFile.c_str());
+        inputStream = fopen(inputFile,"r");
+      }
+      else
+      {
+        std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -i" << std::endl;
+        return 0;
+      }
+    }
+    if ((outputFlag.compare(argv[i]))==0)
+    {
+      if (i+1 < argc)
+      {
+        outSrcFile = argv[++i];
+      }
+      else
+      {
+        std::cout << "ERROR: PLEASE SPECIFIY A SRC CODE FILE AFTER -o" << std::endl;
+        return 0;
+      }
+    }
+  }
 
-	yyin = inputStream;
-	yyparse();
-	fclose(inputStream);
-    std::ofstream fileP(outSrcFile);
-    fileP << "";
-    fileP.close();
+  yyin = inputStream;
+  yyparse();
+  fclose(inputStream);
+  std::ofstream fileP(outSrcFile);
+  fileP << "";
+  fileP.close();
 
-    return 0;
+  return 0;
 }

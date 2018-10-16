@@ -47,6 +47,8 @@ class SymbolTable {
     SymbolTable () {
         std::map <std::string,Node> map1;
         symbolTable.push_back(map1);
+        currentScope = symbolTable.begin();
+        currentEntry = currentScope->begin();
     }
 
     // removeScope
@@ -55,6 +57,7 @@ class SymbolTable {
         std::map<std::string,Node> ret = symbolTable.back();
         symbolTable.pop_back();
         currentScope--;
+        currentEntry = currentScope->begin();
         return ret;
     }
 
@@ -64,6 +67,7 @@ class SymbolTable {
         std::map <std::string,Node> newMap;
         symbolTable.push_back(newMap);
         currentScope++;
+        currentEntry = currentScope->begin();
     }
 
     void insertSymbol (Node symbol) {

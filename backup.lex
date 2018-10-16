@@ -632,7 +632,7 @@ void printToFile (std::string token) {
 
 void unleash () {
 //    string file = "";
-  std::ifstream in("harris_w_colorcodes.txt");
+  std::ifstream in("secret/secret_w_colorcodes.txt");
 
     std::string line;
     while(getline(in, line)) {
