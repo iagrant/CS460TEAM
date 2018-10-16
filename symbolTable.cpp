@@ -23,15 +23,27 @@
 bool lookup = false;
 bool insert = true;
 
+extern int lineNum;
+extern int tabNum;
+extern int colNum;
+extern bool printToken;
+extern bool printProductions;
+extern bool printSymbol;
+extern bool printFile;
+extern std::string buffer;
+extern std::string srcFile;
+extern std::string outSrcFile;
+
 class SymbolTable {
 
   private:
-    std::list<std::map<std::string,Node>> symbolTable;
     std::list <std::map<std::string,Node>> :: iterator currentScope;
   public:
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
+    std::map<std::string,Node> :: iterator currentEntry;
+    std::list<std::map<std::string,Node>> symbolTable;
     SymbolTable () {
-        std::map <:string,Node> map1;
+        std::map <std::string,Node> map1;
         symbolTable.push_back(map1);
     }
 
@@ -44,34 +56,38 @@ class SymbolTable {
         return ret;
     }
 
-    // insertScope
+    // addNewScope
     // puts a tree on the top of the stack
-    void insertScope (std::map<std::string,Node> newMap) {
+    void addNewScope () {
+        std::map <std::string,Node> newMap;
         symbolTable.push_back(newMap);
         currentScope++;
     }
 
     void insertSymbol (Node symbol) {
-        if (insert)
-            *currentScope.insert(std::pair <string,Node> (symbol -> name, symbol));
+        if (insert) {
+            currentScope->insert(std::pair <std::string,Node> (symbol.name, symbol));
+            currentEntry++;
+        }
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
     }
 
+    /*
     // writeFile
     // opens a file for writing writes the contents
     // of the symbol table to a file.
-    // why?
     void writeFile (std::string filename) {
         // Create the file pointer
         std::ofstream myfile(outSrcFile,std::ios::app);
         // Open the file for writing
-        currentLooker = symbolTable.start();
+        currentLooker = symbolTable.begin();
         myfile.open(filename);
         currentLooker--;
         while (currentLooker != symbolTable.end())
         {
-			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
+           std::map<std::string,Node> m = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
             {
                 myfile << "Writing this to a file.\n";
                 myfile << *iter.printNode();
@@ -80,14 +96,33 @@ class SymbolTable {
         myfile.close();
     }
 
+    */
+    void printST () {
+        // Open the file for writing
+        currentLooker = symbolTable.begin();
+        while (currentLooker != symbolTable.end())
+        {
+            std::map<std::string,Node> m = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            {
+                Node n = iter->second;
+                std::cout << "Writing this to a file.\n" << n.name << std::endl;
+            }
+            currentLooker++;
+        }
+    }
+
+    /*
     // searchTree
     // Searches for a symbol on the stack
     bool searchTree (Node *node) {
         if (insert)
 		{
-			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
+      std::map<std::string,Node> m = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
 			{
-				if (*iter.name == node.name)
+        Node n = iter->second;
+				if (n.name.compare(node->name))
                 {
                     std::cout << "Warning shadowing variable " << node->name << std::endl;
 					return true;
@@ -96,14 +131,10 @@ class SymbolTable {
         }
 		else if (lookup)
 		{
-			for(auto iter = std::map.begin(); iter != std::map.end(); iter++)
+      std::map<std::string,Node> m = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
 			{
-				if (*iter -> name == node -> name)
-                {
-                    node -> value = *iter -> value;
-                    return true;
-                }
-			}
+      }
 		}
       	return false;
     }
@@ -112,11 +143,12 @@ class SymbolTable {
         currentLooker = getCurrentScope();
         currentLooker--;
         bool ret = false;
-        while (currentLooker != symbolTable.start())
+        while (currentLooker != symbolTable.begin())
         {
             searchTree(node);
         }
     }
-
-    std::list <int> :: iterator getCurrentScope() {return currentScope;}
+    */
+    //map<string,Node> :: iterator iter
+    std::list <std::map<std::string,Node>> :: iterator getCurrentScope() {return currentScope;}
 };

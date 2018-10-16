@@ -17,9 +17,6 @@
 #include <iostream>
 #include <fstream>
 
-bool lookup = false;
-bool declaration = true;
-
 class Node {
 public:
     std::string type;

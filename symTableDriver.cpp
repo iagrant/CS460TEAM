@@ -4,12 +4,50 @@
 #include <iterator>
 #include <string>
 #include <list>
-#include "node.cpp"
+#include "symbolTable.cpp"
 
 using namespace std;
 
 int main () {
 
+    SymbolTable st();
+
+    // SHADOWING TEST
+    string type0 = "int";
+    string name0 = "my_var1";
+    int line0 = 144;
+
+    string type1 = "int";
+    string name1 = "my_var1";
+    int line1 = 144;
+
+    string type2 = "string";
+    string name2 = "my_var2";
+    int line2 = 1337;
+
+    string type3 = "double";
+    string name3 = "my_var3";
+	  int line3 = 145;
+
+    string type4 = "char";
+    string name4 = "my_var4";
+    int line4 = 123;
+
+    // CREATE NODES
+    Node z(type0, name0, line0);
+    Node a(type1, name1, line1);
+    Node b(type2, name2, line2);
+    Node c(type3, name3, line3);
+    Node d(type4, name4, line4);
+    st.insertSymbol(a);
+    st.insertSymbol(b);
+    st.insertSymbol(z);
+    st.addNewScope();
+    st.insertSymbol(c);
+    st.insertSymbol(d);
+
+
+    /*
     list<map<string,Node>> st;
     list<map<string,Node>> :: iterator it;
     map <string,Node> map1;
@@ -18,25 +56,26 @@ int main () {
     // NODE TESTING
     string type1 = "int";
     string name1 = "my_var1";
-    int int_value = 5;
+    int line1 = 144;
 
     string type2 = "string";
     string name2 = "my_var2";
-    string str_value = "Hollo";
+    int line2 = 1337;
 
     string type3 = "double";
     string name3 = "my_var3";
-    double dbl_value = 3.1;
+	  int line3 = 145;
 
     string type4 = "char";
     string name4 = "my_var4";
-    char chr_value = 'a';
+    int line4 = 123;
+
 
     // CREATE NODES
-    intVal a(type1, name1, int_value); 
-    stringVal b(type2, name2, str_value); 
-    doubleVal c(type3, name3, dbl_value); 
-    charVal d(type4, name4, chr_value); 
+    Node a(type1, name1, line1);
+    Node b(type2, name2, line2);
+    Node c(type3, name3, line3);
+    Node d(type4, name4, line4);
 
     // OUTPUT CONTENTS OF NODES
     cout << "OUTPUT CONTENTS OF NODES" << endl;
@@ -45,12 +84,15 @@ int main () {
     c.printNode();
     d.printNode();
 
+    // Insert Nodes into map1
     map1.insert(pair <string,Node> (a.name,a));
     map1.insert(pair <string,Node> (b.name,b));
 
+    // Insert Nodes into map2
     map2.insert(pair <string,Node> (c.name,c));
     map2.insert(pair <string,Node> (d.name,d));
 
+    // Insert maps into the symbol table
     st.push_back(map1);
     st.push_back(map2);
 
@@ -66,5 +108,6 @@ int main () {
         n.printNode();
       }
     }
+    */
     return 0;
 }
