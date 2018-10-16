@@ -42,6 +42,8 @@ class SymbolTable {
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
     std::map<std::string,Node> :: iterator currentEntry;
     std::list<std::map<std::string,Node>> symbolTable;
+
+    //Default Constructor
     SymbolTable () {
         std::map <std::string,Node> map1;
         symbolTable.push_back(map1);
