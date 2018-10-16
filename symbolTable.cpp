@@ -38,10 +38,10 @@ class SymbolTable {
 
   private:
     std::list <std::map<std::string,Node>> :: iterator currentScope;
-  public:
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
     std::map<std::string,Node> :: iterator currentEntry;
     std::list<std::map<std::string,Node>> symbolTable;
+  public:
 
     //Default Constructor
     SymbolTable () {
@@ -72,8 +72,8 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (insert) {
-            currentScope->insert(std::pair <std::string,Node> (symbol.name, symbol));
-            currentEntry++;
+            std::map<std::string,Node> m = *currentScope;
+            m.insert(std::pair <std::string,Node> (symbol.name, symbol));
         }
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
@@ -104,17 +104,14 @@ class SymbolTable {
 
     */
     void printST () {
-        // Open the file for writing
-        currentLooker = symbolTable.begin();
-        while (currentLooker != symbolTable.end())
+        for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
-            std::map<std::string,Node> m = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
-            {
-                Node n = iter->second;
-                std::cout << "Writing this to a file.\n" << n.name << std::endl;
-            }
-            currentLooker++;
+          std::map<std::string,Node> m = *currentLooker;
+			    for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+          {
+            Node n = iter->second;
+            n.printNode();
+          }
         }
     }
 
