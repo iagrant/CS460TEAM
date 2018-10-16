@@ -13,7 +13,7 @@
 #include "C_grammar.tab.h"
 int yyline = 0;
 int colNum = 0;
-bool printToken = true;
+bool printToken = false;
 %}
 
 %%

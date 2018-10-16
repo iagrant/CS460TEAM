@@ -33,6 +33,10 @@ std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
 
+std::string tokenFlag = "!!dl";
+std::string symbolFlag = "!!dl";
+std::string productionFlag = "!!dl";
+
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
 void printToFile (std::string token);
@@ -75,21 +79,21 @@ number  {num1}|{num2}
 \!\![A-z]+      {
                     if(printToken) {printConsole("DEBUG");}
                     if(printFile) {printToFile("DEBUG");}
-                	if (strcmp(yytext,"!!dl"))
+                	if (tokenFlag.compare(yytext))
                     {
                         if(printToken)
                             printToken = false;
                         else
                             printToken = true;
                     }
-                    if (strcmp(yytext,"!!dp"))
+                    if (productionFlag.compare(yytext))
                     {
                         if(printProductions)
                             printProductions = false;
                         else
                             printProductions = true;
                     }
-                    if (strcmp(yytext,"!!ds"))
+                    if (symbolFlag.compare(yytext))
                     {
                         if(printSymbol)
                             printSymbol = false;

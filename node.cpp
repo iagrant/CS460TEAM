@@ -24,34 +24,37 @@ class Node {
 public:
     std::string type;
     std::string name;
+    int line;
 
-    Node(std::string typeIn, std::string nameIn) {
+    Node(std::string typeIn, std::string nameIn, int lineIn) {
       type=typeIn;
-      name=nameIn; 
+      name=nameIn;
+      line=lineIn;
     }
     void printNode() {
       std::cout << "NAME: " << name << std::endl;
       std::cout << "TYPE: " << type << std::endl;
+      std::cout << "LINE: " << line << std::endl;
     }
 };
 
+/*
 class stringVal: public Node{
 public:
 	std::string value;
-    stringVal(std::string typeIn, std::string name, std::string val):Node(typeIn,name) {
+    stringVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
         value = val;
     }
     void printNode() {
       std::cout << "NAME: " << name << std::endl;
       std::cout << "TYPE: " << type << std::endl;
-      std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
 
 class intVal: public Node{
 public:
 	int value;
-    intVal(std::string typeIn, std::string name, int val):Node(typeIn,name) {
+    intVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
         value = val;
     }
     void printNode() {
@@ -64,7 +67,7 @@ public:
 class doubleVal: public Node{
 public:
     double value;
-    doubleVal(std::string typeIn, std::string name, double val):Node(typeIn,name) {
+    doubleVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
         value = val;
     }
     void printNode() {
@@ -77,7 +80,7 @@ public:
 class charVal: public Node{
 public:
 	char value;
-    charVal(std::string typeIn, std::string name, char val):Node(typeIn,name) {
+    charVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
         value = val;
     }
     void printNode() {
@@ -86,3 +89,4 @@ public:
       std::cout << "VALUE: " << value << std::endl << std::endl;
     }
 };
+*/

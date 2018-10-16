@@ -9,10 +9,10 @@ int main(void)
 	int fact = 0;
 	int result = 1;
 	int i;
-
+  !!dp
 	printf("Enter a whole number: ");
 	scanf("%d",&fact);
-
+  !!dp
 	if(fact < 0)
 	{
 		printf("Cannot take the factorial of a negative number.\n");
