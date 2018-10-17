@@ -22,6 +22,12 @@ public:
     std::string type;
     std::string name;
     int line;
+    Node(){
+        name="";
+        type="";
+        line=0;
+    }
+
 
     Node(std::string typeIn, std::string nameIn, int lineIn) {
       type=typeIn;
@@ -33,6 +39,13 @@ public:
       std::cout << "TYPE: " << type << std::endl;
       std::cout << "LINE: " << line << std::endl;
     }
+    std::string getName() {return name;}
+    std::string getType() {return type;}
+    int getLine() {return line;}
+
+    void setName(std::string nodeIn) {name=nodeIn;}
+    void setType(std::string typeIn) {type=typeIn;}
+    void setLine(int lineIn) {line=lineIn;}
 };
 
 /*

@@ -34,6 +34,11 @@ int main () {
     int line4 = 123;
     std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
+    Node i;
+    i.setName("big");
+    i.setType("booty");
+    i.setLine(12);
+
     Node z(type0, name0, line0);
     Node a(type1, name1, line1);
     Node b(type2, name2, line2);

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "symbolTable.cpp"
 #include "C_grammar.tab.h"
 
 #define POS_INT_MAX 2147483646
@@ -21,7 +22,8 @@
 */
 extern int yylex();
 extern int yyparse();
-extern SymbolTable globalSymbolTable;
+
+SymbolTable globalSymbolTable;
 
 int lineNum = 1;
 int tabNum = 0;
@@ -433,30 +435,21 @@ char            {
                     if(printToken) {printConsole("CHAR");}
                     if(printFile) {printToFile("CHAR");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return CHAR;
                 }
 short           {
                     if(printToken) {printConsole("SHORT");}
                     if(printFile) {printToFile("SHORT");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return SHORT;
                 }
 int             {
                     if(printToken) {printConsole("INT");}
                     if(printFile) {printToFile("INT");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return INT;
                 }
 long            {
@@ -464,10 +457,7 @@ long            {
                     if(printToken) {printConsole("LONG");}
                     if(printFile) {printToFile("LONG");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return LONG;
                 }
 signed          {
@@ -486,20 +476,14 @@ float           {
                     if(printToken) {printConsole("FLOAT");}
                     if(printFile) {printToFile("FLOAT");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return FLOAT;
                 }
 double          {
                     if(printToken) {printConsole("DOUBLE");}
                     if(printFile) {printToFile("DOUBLE");}
                     colNum += yyleng;
-					Node nodeType(); //create node
-					nodeType.type=(yytext+'\0'); //sets type
-					nodeType.line=lineNum; //sets line
-					globalSymbolTable.insertSymbol(nodeType);
+                    globalSymbolTable.insertType((yytext+'\0'),lineNum);
                     return DOUBLE;
                 }
 const           {
@@ -625,6 +609,7 @@ return          {
                         std::cout << std::string(colNum,'-') << " ^ "<< "ID LENGTH LONGER THAN 31" << std::endl;
                         return ERROR;
                     }
+                    //globalSymbolTable.insertName(yytext+'\0');
                     return IDENTIFIER;
                 }
 .               {

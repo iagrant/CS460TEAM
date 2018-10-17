@@ -14,6 +14,7 @@
 	extern std::string buffer;
 	extern std::string srcFile;
 	extern std::string outSrcFile;
+    extern SymbolTable globalSymbolTable;
 
 	void  yyerror(char *msg)
 	{
@@ -1603,17 +1604,16 @@ extern int column;
 
 int main (int argc, char** argv)
 {
-  std::string tokenFlag = "-dl";
+    std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string productionFlag = "-dp";
 	std::string fhFlag = "-fh";
-  std::string inputFlag = "-i";
-  std::string outputFlag = "-o";
+    std::string inputFlag = "-i";
+    std::string outputFlag = "-o";
 	FILE* inputStream;
-  extern std::string srcFile;
-  extern std::string outSrcFile;
-  extern std::string buffer;
-  SymbolTable globalSymbolTable();
+    extern std::string srcFile;
+    extern std::string outSrcFile;
+    extern std::string buffer;
 
   // Check command line args for debug symbols
   for (int i = 0; i < argc; i++) {
@@ -1669,6 +1669,7 @@ int main (int argc, char** argv)
   std::ofstream fileP(outSrcFile);
   fileP << "";
   fileP.close();
+  globalSymbolTable.printST();
 
   return 0;
 }
