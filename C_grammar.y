@@ -1613,6 +1613,7 @@ int main (int argc, char** argv)
   extern std::string srcFile;
   extern std::string outSrcFile;
   extern std::string buffer;
+  SymbolTable globalSymbolTable();
 
   // Check command line args for debug symbols
   for (int i = 0; i < argc; i++) {

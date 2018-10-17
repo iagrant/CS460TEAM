@@ -21,6 +21,7 @@
 */
 extern int yylex();
 extern int yyparse();
+extern SymbolTable globalSymbolTable;
 
 int lineNum = 1;
 int tabNum = 0;
@@ -432,24 +433,41 @@ char            {
                     if(printToken) {printConsole("CHAR");}
                     if(printFile) {printToFile("CHAR");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return CHAR;
                 }
 short           {
                     if(printToken) {printConsole("SHORT");}
                     if(printFile) {printToFile("SHORT");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return SHORT;
                 }
 int             {
                     if(printToken) {printConsole("INT");}
                     if(printFile) {printToFile("INT");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return INT;
                 }
 long            {
+
                     if(printToken) {printConsole("LONG");}
                     if(printFile) {printToFile("LONG");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return LONG;
                 }
 signed          {
@@ -468,12 +486,20 @@ float           {
                     if(printToken) {printConsole("FLOAT");}
                     if(printFile) {printToFile("FLOAT");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return FLOAT;
                 }
 double          {
                     if(printToken) {printConsole("DOUBLE");}
                     if(printFile) {printToFile("DOUBLE");}
                     colNum += yyleng;
+					Node nodeType(); //create node
+					nodeType.type=(yytext+'\0'); //sets type
+					nodeType.line=lineNum; //sets line
+					globalSymbolTable.insertSymbol(nodeType);
                     return DOUBLE;
                 }
 const           {
