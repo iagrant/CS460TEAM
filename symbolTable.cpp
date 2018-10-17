@@ -77,23 +77,6 @@ class SymbolTable {
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
     }
-    void insertType(std::string typeIn, int lineNumIn){
-        Node * nodeType = new Node(); //create node
-        nodeType->type=(typeIn); //sets type
-        nodeType->line=lineNumIn; //sets line
-        insertSymbol(*nodeType);
-    }
-    void insertName(std::string) {
-        /* broken name insertion
-        std::map<std::string,Node> :: iterator entry = globalSymbolTable.getCurrentEntry();
-        std::cout << "INSERT NAME" << std::endl;
-        Node * n = &entry->second;
-        n->setName(yytext+'\0');
-        std::cout << "INSERT NAME" << std::endl;
-        globalSymbolTable.nextEntry();
-        std::cout << "INSERT NAME" << std::endl;
-        */
-    }
 
     /*
     // writeFile
@@ -124,11 +107,10 @@ class SymbolTable {
         {
             std::map<std::string,Node> m = *currentLooker;
             std::cout << m.size() << std::endl;
-            std::cout << "test inner 1" << std::endl;
+            std::cout << "NEW SCOPE" << std::endl;
             for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
             {
                 Node n = iter->second;
-                std::cout << "test inner 2" << std::endl;
                 n.printNode();
             }
         }

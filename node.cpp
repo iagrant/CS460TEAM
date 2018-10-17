@@ -43,7 +43,7 @@ public:
     std::string getType() {return type;}
     int getLine() {return line;}
 
-    void setName(std::string nodeIn) {name=nodeIn;}
+    void setName(std::string nameIn) {name=nameIn;}
     void setType(std::string typeIn) {type=typeIn;}
     void setLine(int lineIn) {line=lineIn;}
 };

@@ -164,12 +164,11 @@ declaration_specifiers
                 std::cout << "declaration_specifiers -> storage_class_specifier declaration_specifiers" << std::endl;
             }
         }
-	| type_specifier {
-        if (printProductions
-    )
-			{
+	| type_specifier
+        {
+        if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
-            }
+        }
 	| type_specifier declaration_specifiers
 		{
             if (printProductions) {
