@@ -125,12 +125,14 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
+            mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
             }
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
+            mode = lookup;
             std::cout << $1 << "FUCK " << std::endl;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
@@ -156,35 +158,41 @@ declaration_list
 declaration_specifiers
 	: storage_class_specifier
 		{
+            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> storage_class_specifier" << std::endl;
             }
         }
 	| storage_class_specifier declaration_specifiers
 		{
+            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> storage_class_specifier declaration_specifiers" << std::endl;
             }
         }
 	| type_specifier
         {
+            mode = insert;
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
         }
 	| type_specifier declaration_specifiers
 		{
+            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> type_specifier declaration_specifiers" << std::endl;
             }
         }
 	| type_qualifier
 		{
+            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers ->  type_qualifier" << std::endl;
             }
         }
 	| type_qualifier declaration_specifiers
 		{
+            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> type_qualifier declaration_specifiers" << std::endl;
             }
