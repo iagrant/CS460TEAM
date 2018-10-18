@@ -72,8 +72,11 @@ class SymbolTable {
     }
 
     void insertSymbol (Node symbol) {
-        if (insert) {
-            currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
+        if (mode == insert) {
+            if (!searchTree(symbol))
+                currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
+            else
+                std:: cout << "Warning Shadowing Variable: " << symbol.getName() << "on line: " << symbol.getLine() << std::endl;
         }
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
@@ -117,29 +120,32 @@ class SymbolTable {
         }
     }
 
-    /*
     // searchTree
     // Searches for a symbol on the stack
-    bool searchTree (Node *node) {
-        if (insert)
-		{
-      std::map<std::string,Node> m = *currentScope;
+    bool searchTree (Node node) {
+        if (insert){
+            std::map<std::string,Node> m = *currentScope;
 			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
 			{
-        Node n = iter->second;
-				if (n.name.compare(node->name))
+                Node n = iter->second;
+				if (n.getName().compare(node.getName()))
                 {
-                    std::cout << "Warning shadowing variable " << node->name << std::endl;
+                    std::cout << "Warning shadowing variable " << node.getName() << std::endl;
 					return true;
                 }
 			}
         }
 		else if (lookup)
 		{
-      std::map<std::string,Node> m = *currentScope;
+            std::map<std::string,Node> m = *currentScope;
 			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
 			{
-      }
+                Node n = iter->second;
+				if (n.getName().compare(node.getName()))
+                {
+					return true;
+                }
+            }
 		}
       	return false;
     }
@@ -153,8 +159,6 @@ class SymbolTable {
             searchTree(node);
         }
     }
-    */
-    //map<string,Node> :: iterator iter
     std::list <std::map<std::string,Node>> :: iterator getCurrentScope() {return currentScope;}
     std::map<std::string,Node> :: iterator getCurrentEntry() {return currentEntry;}
     void nextEntry() {currentEntry++;}
