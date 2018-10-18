@@ -125,6 +125,13 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
+            globalSymbolTable.insertSymbol(globalTempNode);
+            globalTempNode.setName("");
+            globalTempNode.setLine(0);
+            globalTempNode.setSigned(9);
+            globalTempNode.setTypeSpec(9);
+            globalTempNode.setTypeQual(9);
+            globalTempNode.setStorageSpec(9);
             mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
