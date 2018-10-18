@@ -23,9 +23,6 @@
 extern int yylex();
 extern int yyparse();
 
-SymbolTable globalSymbolTable;
-Node globalTempNode;
-
 int lineNum = 1;
 int tabNum = 0;
 int colNum = 1;
@@ -262,9 +259,6 @@ sizeof          {
                     if(printToken) {printConsole("SEMI");}
                     if(printFile) {printToFile("SEMI");}
                     colNum += yyleng;
-                    globalSymbolTable.insertSymbol(globalTempNode);
-                    globalTempNode.setName("");
-                    globalTempNode.setLine(0);
                     return SEMI;
                 }
 \:              {
@@ -277,7 +271,6 @@ sizeof          {
                     if(printToken) {printConsole("CURLYOPEN");}
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
-                    globalSymbolTable.addNewScope();
                     return CURLYOPEN;
                 }
 \}              {
@@ -416,16 +409,12 @@ extern          {
                     if(printToken) {printConsole("EXTERN");}
                     if(printFile) {printToFile("EXTERN");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return EXTERN;
                 }
 static          {
                     if(printToken) {printConsole("STATIC");}
                     if(printFile) {printToFile("STATIC");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return STATIC;
                 }
 auto            {
@@ -444,24 +433,18 @@ char            {
                     if(printToken) {printConsole("CHAR");}
                     if(printFile) {printToFile("CHAR");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return CHAR;
                 }
 short           {
                     if(printToken) {printConsole("SHORT");}
                     if(printFile) {printToFile("SHORT");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return SHORT;
                 }
 int             {
                     if(printToken) {printConsole("INT");}
                     if(printFile) {printToFile("INT");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext);
-                    globalTempNode.setLine(lineNum);
                     return INT;
                 }
 long            {
@@ -469,48 +452,36 @@ long            {
                     if(printToken) {printConsole("LONG");}
                     if(printFile) {printToFile("LONG");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return LONG;
                 }
 signed          {
                     if(printToken) {printConsole("SIGNED");}
                     if(printFile) {printToFile("SIGNED");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return SIGNED;
                 }
 unsigned        {
                     if(printToken) {printConsole("UNSIGNED");}
                     if(printFile) {printToFile("UNSIGNED");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return UNSIGNED;
                 }
 float           {
                     if(printToken) {printConsole("FLOAT");}
                     if(printFile) {printToFile("FLOAT");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return FLOAT;
                 }
 double          {
                     if(printToken) {printConsole("DOUBLE");}
                     if(printFile) {printToFile("DOUBLE");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return DOUBLE;
                 }
 const           {
                     if(printToken) {printConsole("CONST");}
                     if(printFile) {printToFile("CONST");}
                     colNum += yyleng;
-                    globalTempNode.setName(yytext+'\0');
-                    globalTempNode.setLine(lineNum);
                     return CONST;
                 }
 volatile        {
@@ -630,7 +601,6 @@ return          {
                         std::cout << std::string(colNum,'-') << " ^ "<< "ID LENGTH LONGER THAN 31" << std::endl;
                         return ERROR;
                     }
-                    globalTempNode.setName(yytext+'\0');
                     return IDENTIFIER;
                 }
 .               {

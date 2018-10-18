@@ -14,8 +14,8 @@
 	extern std::string buffer;
 	extern std::string srcFile;
 	extern std::string outSrcFile;
-    extern SymbolTable globalSymbolTable;
-    extern Node globalTempNode;
+    SymbolTable globalSymbolTable;
+    Node globalTempNode;
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
