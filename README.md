@@ -39,6 +39,7 @@ The binary is called fcc for Fred C Compliler.
 
 ###### Source Code Debug Options
 In order to use these options, put the flags inside of the source code.
+
     - !!dl: Turns on token output until the next !!dl flag is reached.
     - !!dp: Turns on production output until the next !!dp flag is reached.
     - !!ds: Turns on Symbol Table output until the next !!ds flag is reached.
