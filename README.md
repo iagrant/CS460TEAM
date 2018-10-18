@@ -18,10 +18,10 @@ Integration
 
 ## Building
 #### Dependencies
-    - Flex >= 2.6.4
-    - Bison >= 3.1
-    - g++ >= 8.2.1
-    - make >= 3.81
+    * Flex >= 2.6.4
+    * Bison >= 3.1
+    * g++ >= 8.2.1
+    * make >= 3.81
 Run make in the src folder in local terminal
 ```
 make
@@ -29,20 +29,20 @@ make
 #### Running
 The binary is called fcc for Fred C Compliler.
 ###### Command Line Options:
-    - -i <inputfile>: (Required) Provide a file to compile
-    - -o <outputfile>: (Optional) Provide a file to output debug options to.
+    * -i <inputfile>: (Required) Provide a file to compile
+    * -o <outputfile>: (Optional) Provide a file to output debug options to.
       Defaults to output.txt if no file is provided.
-    - -dl: This will print out all of the tokens
-    - -dp: This will print out all of the productions with the source code
-    - -ds: This will print out all of the contents of the Symbol Table
-    - -fh: Prints our inspiration -Ian
+    * -dl: This will print out all of the tokens
+    * -dp: This will print out all of the productions with the source code
+    * -ds: This will print out all of the contents of the Symbol Table
+    * -fh: Prints our inspiration -Ian
 
 ###### Source Code Debug Options
 In order to use these options, put the flags inside of the source code.
 
-    - !!dl: Turns on token output until the next !!dl flag is reached.
-    - !!dp: Turns on production output until the next !!dp flag is reached.
-    - !!ds: Turns on Symbol Table output until the next !!ds flag is reached.
+    * !!dl: Turns on token output until the next !!dl flag is reached.
+    * !!dp: Turns on production output until the next !!dp flag is reached.
+    * !!ds: Turns on Symbol Table output until the next !!ds flag is reached.
 
 Examples:
 This example has an input file called foo.c and an output file called
