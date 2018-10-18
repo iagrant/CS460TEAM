@@ -227,18 +227,21 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
+            globalTempNode.setTypeSpec(voidS);
             if (printProductions) {
                 std::cout << "type_specifier -> VOID" << std::endl;
             }
         }
 	| CHAR
 		{
+            globalTempNode.setTypeSpec(charS);
             if (printProductions) {
                 std::cout << "type_specifier -> CHAR" << std::endl;
             }
         }
 	| SHORT
 		{
+            globalTempNode.setTypeSpec(shortS);
             if (printProductions) {
                 std::cout << "type_specifier -> SHORT" << std::endl;
             }
@@ -252,18 +255,21 @@ type_specifier
         }
 	| LONG
 		{
+            globalTempNode.setTypeSpec(longS);
             if (printProductions) {
                 std::cout << "type_specifier -> LONG" << std::endl;
             }
         }
 	| FLOAT
 		{
+            globalTempNode.setTypeSpec(floatS);
             if (printProductions) {
                 std::cout << "type_specifier -> FLOAT" << std::endl;
             }
         }
 	| DOUBLE
 		{
+            globalTempNode.setTypeSpec(doubleS);
             if (printProductions) {
                 std::cout << "type_specifier -> DOUBLE" << std::endl;
             }
