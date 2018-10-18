@@ -165,41 +165,35 @@ declaration_list
 declaration_specifiers
 	: storage_class_specifier
 		{
-            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> storage_class_specifier" << std::endl;
             }
         }
 	| storage_class_specifier declaration_specifiers
 		{
-            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> storage_class_specifier declaration_specifiers" << std::endl;
             }
         }
 	| type_specifier
         {
-            mode = insert;
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
         }
 	| type_specifier declaration_specifiers
 		{
-            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> type_specifier declaration_specifiers" << std::endl;
             }
         }
 	| type_qualifier
 		{
-            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers ->  type_qualifier" << std::endl;
             }
         }
 	| type_qualifier declaration_specifiers
 		{
-            mode = insert;
             if (printProductions) {
                 std::cout << "declaration_specifiers -> type_qualifier declaration_specifiers" << std::endl;
             }
@@ -209,6 +203,7 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
@@ -216,6 +211,7 @@ storage_class_specifier
         }
 	| REGISTER
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
@@ -223,6 +219,7 @@ storage_class_specifier
         }
 	| STATIC
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
@@ -230,6 +227,7 @@ storage_class_specifier
         }
 	| EXTERN
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
@@ -237,6 +235,7 @@ storage_class_specifier
         }
 	| TYPEDEF
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
@@ -247,6 +246,7 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(voidS);}
             if (printProductions) {
                 std::cout << "type_specifier -> VOID" << std::endl;
@@ -254,6 +254,7 @@ type_specifier
         }
 	| CHAR
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(charS);}
             if (printProductions) {
                 std::cout << "type_specifier -> CHAR" << std::endl;
@@ -261,6 +262,7 @@ type_specifier
         }
 	| SHORT
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(shortS);}
             if (printProductions) {
                 std::cout << "type_specifier -> SHORT" << std::endl;
@@ -268,6 +270,7 @@ type_specifier
         }
 	| INT
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(intS);}
             if (printProductions) {
                 std::cout << "type_specifier -> INT" << std::endl;
@@ -275,6 +278,7 @@ type_specifier
         }
 	| LONG
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(longS);}
             if (printProductions) {
                 std::cout << "type_specifier -> LONG" << std::endl;
@@ -282,6 +286,7 @@ type_specifier
         }
 	| FLOAT
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(floatS);}
             if (printProductions) {
                 std::cout << "type_specifier -> FLOAT" << std::endl;
@@ -289,6 +294,7 @@ type_specifier
         }
 	| DOUBLE
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setTypeSpec(doubleS);}
             if (printProductions) {
                 std::cout << "type_specifier -> DOUBLE" << std::endl;
@@ -296,6 +302,7 @@ type_specifier
         }
 	| SIGNED
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setSigned(signedE);}
             if (printProductions) {
                 std::cout << "type_specifier -> SIGNED" << std::endl;
@@ -303,6 +310,7 @@ type_specifier
         }
 	| UNSIGNED
 		{
+            mode = insert;
             if(mode == insert){globalTempNode.setSigned(unsignedE);}
             if (printProductions) {
                 std::cout << "type_specifier -> UNSIGNED" << std::endl;
