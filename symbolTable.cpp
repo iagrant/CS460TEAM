@@ -20,8 +20,8 @@
 #include <iostream>
 #include <fstream>
 #include "node.cpp"
-bool lookup = false;
-bool insert = true;
+
+enum modeE {lookup,insert};
 
 extern int lineNum;
 extern int tabNum;
@@ -33,6 +33,7 @@ extern bool printFile;
 extern std::string buffer;
 extern std::string srcFile;
 extern std::string outSrcFile;
+int mode = insert;
 
 class SymbolTable {
 
