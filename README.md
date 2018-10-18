@@ -62,4 +62,4 @@ the contents of the symbol table.
 ./fcc -i foo.c -dp -ds
 ```
 
-To find out more information on how to build and run our compiler, visit the wiki: [Semantics Wiki] (https://github.com/iagrant/CS460TEAM/wiki)
+To find out more information on how to build and run our compiler, visit the wiki: [Semantics Wiki](https://github.com/iagrant/CS460TEAM/wiki)
