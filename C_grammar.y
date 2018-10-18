@@ -1691,6 +1691,11 @@ int main (int argc, char** argv)
     extern std::string outSrcFile;
     extern std::string buffer;
 
+    if(argc == 1)
+    {
+        std::cout << "Usage: ./fcc -i <inputfile.c>" << std::endl;
+    }
+
   // Check command line args for debug symbols
   for (int i = 0; i < argc; i++) {
     if((tokenFlag.compare(argv[i])) == 0)
