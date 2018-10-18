@@ -9,6 +9,7 @@ a.out
 #lex and bison files
 lex.yy.*
 *.tab.*
+C_grammar.output
 
 # Compiled Object files
 *.slo

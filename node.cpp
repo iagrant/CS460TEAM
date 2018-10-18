@@ -20,6 +20,7 @@
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
 enum typeQualE {constQ,volatileQ};
 enum signedE {unsignedE,signedE};
+enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
 
 class Node {
 private:
@@ -27,6 +28,7 @@ private:
     int line;
     int typeSpec;
     int typeQual;
+    int storageSpec;
     int signedB;
 public:
     Node(){
@@ -52,12 +54,14 @@ public:
     int getTypeSpec() {return typeSpec;}
     int getTypeQual() {return typeQual;}
     int getSigned() {return signedB;}
+    int getStorageSec() {return storageSpec;}
 
     void setName(std::string nameIn) {name=nameIn;}
     void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
     void setTypeQual(int typeQualIn) {typeSpec=typeQualIn;}
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}
+    void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
 };
 
 /*

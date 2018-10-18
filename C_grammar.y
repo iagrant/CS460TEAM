@@ -194,30 +194,35 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
+            globalTempNode.setStorageSpec(autoS);
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
         }
 	| REGISTER
 		{
+            globalTempNode.setStorageSpec(registerS);
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
         }
 	| STATIC
 		{
+            globalTempNode.setStorageSpec(staticS);
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
         }
 	| EXTERN
 		{
+            globalTempNode.setStorageSpec(externS);
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
         }
 	| TYPEDEF
 		{
+            globalTempNode.setStorageSpec(typedefS);
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -270,12 +275,14 @@ type_specifier
         }
 	| SIGNED
 		{
+            globalTempNode.setSigned(signedE);
             if (printProductions) {
                 std::cout << "type_specifier -> SIGNED" << std::endl;
             }
         }
 	| UNSIGNED
 		{
+            globalTempNode.setSigned(unsignedE);
             if (printProductions) {
                 std::cout << "type_specifier -> UNSIGNED" << std::endl;
             }
@@ -303,12 +310,14 @@ type_specifier
 type_qualifier
 	: CONST
 		{
+            globalTempNode.setTypeQual(constQ);
             if (printProductions) {
                 std::cout << "type_qualifier -> CONST" << std::endl;
             }
         }
 	| VOLATILE
 		{
+            globalTempNode.setTypeQual(volatileQ);
             if (printProductions) {
                 std::cout << "type_qualifier -> VOLATILE" << std::endl;
             }
