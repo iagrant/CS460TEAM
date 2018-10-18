@@ -194,35 +194,35 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
-            globalTempNode.setStorageSpec(autoS);
+            if(mode == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
         }
 	| REGISTER
 		{
-            globalTempNode.setStorageSpec(registerS);
+            if(mode == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
         }
 	| STATIC
 		{
-            globalTempNode.setStorageSpec(staticS);
+            if(mode == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
         }
 	| EXTERN
 		{
-            globalTempNode.setStorageSpec(externS);
+            if(mode == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
         }
 	| TYPEDEF
 		{
-            globalTempNode.setStorageSpec(typedefS);
+            if(mode == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -232,63 +232,63 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
-            globalTempNode.setTypeSpec(voidS);
+            if(mode == insert){globalTempNode.setTypeSpec(voidS);}
             if (printProductions) {
                 std::cout << "type_specifier -> VOID" << std::endl;
             }
         }
 	| CHAR
 		{
-            globalTempNode.setTypeSpec(charS);
+            if(mode == insert){globalTempNode.setTypeSpec(charS);}
             if (printProductions) {
                 std::cout << "type_specifier -> CHAR" << std::endl;
             }
         }
 	| SHORT
 		{
-            globalTempNode.setTypeSpec(shortS);
+            if(mode == insert){globalTempNode.setTypeSpec(shortS);}
             if (printProductions) {
                 std::cout << "type_specifier -> SHORT" << std::endl;
             }
         }
 	| INT
 		{
-            globalTempNode.setTypeSpec(intS);
+            if(mode == insert){globalTempNode.setTypeSpec(intS);}
             if (printProductions) {
                 std::cout << "type_specifier -> INT" << std::endl;
             }
         }
 	| LONG
 		{
-            globalTempNode.setTypeSpec(longS);
+            if(mode == insert){globalTempNode.setTypeSpec(longS);}
             if (printProductions) {
                 std::cout << "type_specifier -> LONG" << std::endl;
             }
         }
 	| FLOAT
 		{
-            globalTempNode.setTypeSpec(floatS);
+            if(mode == insert){globalTempNode.setTypeSpec(floatS);}
             if (printProductions) {
                 std::cout << "type_specifier -> FLOAT" << std::endl;
             }
         }
 	| DOUBLE
 		{
-            globalTempNode.setTypeSpec(doubleS);
+            if(mode == insert){globalTempNode.setTypeSpec(doubleS);}
             if (printProductions) {
                 std::cout << "type_specifier -> DOUBLE" << std::endl;
             }
         }
 	| SIGNED
 		{
-            globalTempNode.setSigned(signedE);
+            if(mode == insert){globalTempNode.setSigned(signedE);}
             if (printProductions) {
                 std::cout << "type_specifier -> SIGNED" << std::endl;
             }
         }
 	| UNSIGNED
 		{
-            globalTempNode.setSigned(unsignedE);
+            if(mode == insert){globalTempNode.setSigned(unsignedE);}
             if (printProductions) {
                 std::cout << "type_specifier -> UNSIGNED" << std::endl;
             }
@@ -316,14 +316,14 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            globalTempNode.setTypeQual(constQ);
+            if(mode == insert){globalTempNode.setTypeQual(constQ);}
             if (printProductions) {
                 std::cout << "type_qualifier -> CONST" << std::endl;
             }
         }
 	| VOLATILE
 		{
-            globalTempNode.setTypeQual(volatileQ);
+            if(mode == insert){globalTempNode.setTypeQual(volatileQ);}
             if (printProductions) {
                 std::cout << "type_qualifier -> VOLATILE" << std::endl;
             }
