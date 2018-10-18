@@ -6,23 +6,19 @@
 #include <list>
 #include "symbolTable.cpp"
 
+extern int mode;
 using namespace std;
 
 int main () {
 
     SymbolTable st;
 
-    // SHADOWING TEST
-    int type0 = 3; //int
-    string name0 = "my_var0";
-    int line0 = 144;
-
     int sign1 = 1; //unsigned
     int type1 = 3; //int
     string name1 = "my_var1";
     int line1 = 144;
 
-    string type2 = "string";
+    int type2 = 2; //char
     string name2 = "my_var2";
     int line2 = 1337;
 
@@ -34,17 +30,18 @@ int main () {
     string name4 = "my_var4";
     int line4 = 123;
 
+    // SHADOWING TEST
+    int type0 = 3; //int
+    string name0 = "my_var1";
+    int line0 = 244;
+
     std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
-    Node z;
     Node a;
     Node b;
     Node c;
     Node d;
-
-    z.setTypeSpec(type0);
-    z.setName(name0);
-    z.setLine(line0);
+    Node z;
 
     a.setTypeSpec(type1);
     a.setSigned(sign1);
@@ -63,6 +60,12 @@ int main () {
     d.setName(name4);
     d.setLine(line4);
 
+    z.setTypeSpec(type0);
+    z.setName(name0);
+    z.setLine(line0);
+
+    std::cout << "ENTERING INSERT MODE"<< std::endl;
+    mode = insert;
     std::cout << "AFTER NODES"<< std::endl;
     st.insertSymbol(a);
     std::cout << "INSERT NODES"<< std::endl;
@@ -74,7 +77,10 @@ int main () {
     st.insertSymbol(c);
     st.insertSymbol(d);
     std::cout << "PRINT ST"<< std::endl;
+    mode = lookup;
     st.printST();
+    //st.writeST("out.txt");
+
 
 
     /*

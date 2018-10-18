@@ -76,36 +76,31 @@ class SymbolTable {
             if (!searchTree(symbol))
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             else
-                std:: cout << "Warning Shadowing Variable: " << symbol.getName() << "on line: " << symbol.getLine() << std::endl;
+                std:: cout << "Warning Shadowing Variable: " << symbol.getName() << " on line: " << symbol.getLine() << std::endl;
         }
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
     }
 
-    /*
     // writeFile
     // opens a file for writing writes the contents
     // of the symbol table to a file.
-    void writeFile (std::string filename) {
+    void writeST (std::string filename) {
         // Create the file pointer
-        std::ofstream myfile(outSrcFile,std::ios::app);
+        std::ofstream myfile(filename,std::ios::app);
         // Open the file for writing
-        currentLooker = symbolTable.begin();
-        myfile.open(filename);
-        currentLooker--;
-        while (currentLooker != symbolTable.end())
+        for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
-           std::map<std::string,Node> m = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            std::map<std::string,Node> m = *currentLooker;
+            for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
             {
-                myfile << "Writing this to a file.\n";
-                myfile << *iter.printNode();
+                Node n = iter->second;
+                //n.writeNode(filename);
             }
         }
         myfile.close();
     }
 
-    */
     void printST () {
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {

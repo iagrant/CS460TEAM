@@ -18,13 +18,14 @@
 #include <fstream>
 
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
-enum typeQualE {constQ,volatileQ};
+enum typeQualE {constQ,volatileQ,bothQ};
 enum signedE {signedE,unsignedE};
 enum storageSpecE {noneSS, autoS,registerS,staticS,externS,typedefS};
 
 class Node {
 private:
     std::string name;
+    std::string typeOut;
     int line;
     int typeSpec;
     int typeQual;
@@ -44,11 +45,69 @@ public:
     }
     */
     void printNode() {
-      std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec << std::endl;
-      std::cout << "LINE: " << line << std::endl;
-      std::cout << std::endl;
+        //typeOut = makeTypeString();
+        std::cout << "NAME: " << name << std::endl;
+        std::cout << "SCOPE LEVEL: " << scope << std::endl;
+        std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec;
+        std::cout << "LINE: " << line << std::endl;
+        std::cout << std::endl;
     }
+    /*
+    void writeNode(std::string filename) {
+        //typeOut = makeTypeString();
+        std::ofstream myfileP(filename,std::ios::app);
+        myfileP << "NAME: " << name << std::endl;
+        myfileP << "SCOPE LEVEL: " << scope << std::endl;
+        myfileP << "TYPE: ";
+        myfileP << typeOut << std::endl;
+        myfileP << "LINE: " << line << std::endl;
+        myfileP << std::endl;
+        myfileP.close();
+    }
+    */
+    /*
+    std::string makeTypeString() {
+        if (storageSpec == externS)
+          typeOut.append("extern");
+        if (signedB == unsignedE) //checks if unsigned
+          typeOut.append("unsigned");
+        if (typeQual == constQ)
+          typeOut.append("unsigned");
+        if (typeQual == volatileQ)
+          typeOut.append("volatile");
+        if (typeQual == bothQ)
+          typeOut.append("volatile unsigned");
+        if (storageSpec == autoS)
+          typeOut.append("auto");
+        if (storageSpec == registerS)
+          typeOut.append("register");
+        if (storageSpec == staticS)
+          typeOut.append("static");
+        if (storageSpec == typedefS)
+          typeOut.append("typedef");
+        if (storageSpec == voidS)
+          typeOut.append("void");
+        if (storageSpec == charS)
+          typeOut.append("char");
+        if (storageSpec == shortS)
+          typeOut.append("short");
+        if (storageSpec == shortS)
+          typeOut.append("short");
+        if (storageSpec == intS)
+          typeOut.append("int");
+        if (storageSpec == longS)
+          typeOut.append("long");
+        if (storageSpec == floatS)
+          typeOut.append("float");
+        if (storageSpec == doubleS)
+          typeOut.append("double");
+        if (storageSpec == structS)
+          typeOut.append("struct");
+        else
+          typeOut.append("empty");
+
+    }
+    */
     void resetNode() {
         setName("");
         setLine(0);
@@ -57,6 +116,7 @@ public:
         setTypeQual(9);
         setStorageSpec(9);
         setScope(0);
+        typeOut="";
     }
     std::string getName() {return name;}
     int getLine() {return line;}
