@@ -50,7 +50,6 @@ This example has an input file called bar.c and prints out all of the tokens
 that are matched.
 ```
 ./fcc -i bar.c -dl
-
 ```
 This example has an input file called foo.c and prints out all productions and
 the contents of the symbol table.
