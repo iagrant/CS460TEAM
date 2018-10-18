@@ -5,16 +5,12 @@ Ian Jared and Clayton
 
 ![Alt Text](https://78.media.tumblr.com/cd6bf1ff5b7e508c78dd8522c52cc766/tumblr_op2o49oV6g1tzqospo1_500.gif)
 
-Work Distribution
-We all pair programmed on a large portion of the project. Some areas of
-individual effort are the following:
+Work Distribution  
+We all pair programmed on a large portion of the project. Some areas of individual effort are the following:  
 
-Ian: Symbol Table, Debug Flags for Lex, Node Class, Symbol Table Driver, Symbol
-Table integration.
-Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing
-with command line argument.
-Jared: Symbol Table, Yacc, and Lex, Symbol Table Driver, Symbol Table
-Integration
+Ian: Symbol Table, Debug Flags for Lex, Node Class, Symbol Table Driver, Symbol Table integration.  
+Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument.  
+Jared: Symbol Table, Yacc, and Lex, Symbol Table Driver, Symbol Table Integration
 
 ## Building
 #### Dependencies
