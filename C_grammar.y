@@ -15,7 +15,7 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-
+    extern Node globalTempNode;
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -60,6 +60,7 @@
 %token ERROR DEBUG
 
 %type <sval> string identifier
+%type <ival> declaration declaration_specifiers type_specifier
 
 %start translation_unit
 %%
@@ -130,6 +131,7 @@ declaration
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
+            std::cout << $1 << "FUCK " << std::endl;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
             }
@@ -243,6 +245,7 @@ type_specifier
         }
 	| INT
 		{
+            globalTempNode.setTypeSpec(intS);
             if (printProductions) {
                 std::cout << "type_specifier -> INT" << std::endl;
             }

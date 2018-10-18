@@ -264,7 +264,6 @@ sizeof          {
                     colNum += yyleng;
                     globalSymbolTable.insertSymbol(globalTempNode);
                     globalTempNode.setName("");
-                    globalTempNode.setType("");
                     globalTempNode.setLine(0);
                     return SEMI;
                 }
@@ -461,7 +460,6 @@ int             {
                     if(printToken) {printConsole("INT");}
                     if(printFile) {printToFile("INT");}
                     colNum += yyleng;
-                    std::cout << yytext << std::endl;
                     globalTempNode.setName(yytext);
                     globalTempNode.setLine(lineNum);
                     return INT;

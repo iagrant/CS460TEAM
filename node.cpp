@@ -17,35 +17,47 @@
 #include <iostream>
 #include <fstream>
 
+enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
+enum typeQualE {constQ,volatileQ};
+enum signedE {unsignedE,signedE};
+
 class Node {
-public:
-    std::string type;
+private:
     std::string name;
     int line;
+    int typeSpec;
+    int typeQual;
+    int signedB;
+public:
     Node(){
         name="";
-        type="";
         line=0;
+        signedB = unsignedE;
     }
 
-
+    /*
     Node(std::string typeIn, std::string nameIn, int lineIn) {
       type=typeIn;
       name=nameIn;
       line=lineIn;
     }
+    */
     void printNode() {
       std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << type << std::endl;
+      std::cout << "TYPE: " << typeQual << typeSpec << std::endl;
       std::cout << "LINE: " << line << std::endl;
     }
     std::string getName() {return name;}
-    std::string getType() {return type;}
     int getLine() {return line;}
+    int getTypeSpec() {return typeSpec;}
+    int getTypeQual() {return typeQual;}
+    int getSigned() {return signedB;}
 
     void setName(std::string nameIn) {name=nameIn;}
-    void setType(std::string typeIn) {type=typeIn;}
+    void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
+    void setTypeQual(int typeQualIn) {typeSpec=typeQualIn;}
     void setLine(int lineIn) {line=lineIn;}
+    void setSigned(int signIn) {signedB=signIn;}
 };
 
 /*

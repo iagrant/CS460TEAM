@@ -72,7 +72,7 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (insert) {
-            currentScope->insert(std::pair <std::string,Node> (symbol.name, symbol));
+            currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
         }
         else
             std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
