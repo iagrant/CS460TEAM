@@ -35,8 +35,8 @@ std::string srcFile = "";
 std::string outSrcFile = "output.txt";
 
 std::string tokenFlag = "!!dl";
-std::string symbolFlag = "!!dl";
-std::string productionFlag = "!!dl";
+std::string symbolFlag = "!!ds";
+std::string productionFlag = "!!dp";
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);

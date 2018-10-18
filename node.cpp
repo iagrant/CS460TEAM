@@ -19,8 +19,8 @@
 
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
 enum typeQualE {constQ,volatileQ};
-enum signedE {unsignedE,signedE};
-enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
+enum signedE {signedE,unsignedE};
+enum storageSpecE {noneSS, autoS,registerS,staticS,externS,typedefS};
 
 class Node {
 private:
@@ -30,11 +30,10 @@ private:
     int typeQual;
     int storageSpec;
     int signedB;
+    int scope;
 public:
     Node(){
-        name="";
-        line=0;
-        signedB = unsignedE;
+        resetNode();
     }
 
     /*
@@ -46,8 +45,18 @@ public:
     */
     void printNode() {
       std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << typeQual << typeSpec << std::endl;
+      std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec << std::endl;
       std::cout << "LINE: " << line << std::endl;
+      std::cout << std::endl;
+    }
+    void resetNode() {
+        setName("");
+        setLine(0);
+        setSigned(signedE);
+        setTypeSpec(9);
+        setTypeQual(9);
+        setStorageSpec(9);
+        setScope(0);
     }
     std::string getName() {return name;}
     int getLine() {return line;}
@@ -55,9 +64,11 @@ public:
     int getTypeQual() {return typeQual;}
     int getSigned() {return signedB;}
     int getStorageSec() {return storageSpec;}
+    int getScope() {return scope;}
 
     void setName(std::string nameIn) {name=nameIn;}
     void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
+    void setScope(int scopeIn) {scope=scopeIn;}
     void setTypeQual(int typeQualIn) {typeSpec=typeQualIn;}
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}

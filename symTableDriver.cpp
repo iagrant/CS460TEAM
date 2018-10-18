@@ -13,11 +13,12 @@ int main () {
     SymbolTable st;
 
     // SHADOWING TEST
-    string type0 = "int";
-    string name0 = "my_var1";
+    int type0 = 3; //int
+    string name0 = "my_var0";
     int line0 = 144;
 
-    string type1 = "int";
+    int sign1 = 1; //unsigned
+    int type1 = 3; //int
     string name1 = "my_var1";
     int line1 = 144;
 
@@ -25,25 +26,43 @@ int main () {
     string name2 = "my_var2";
     int line2 = 1337;
 
-    string type3 = "double";
+    int type3 = 1; //char
     string name3 = "my_var3";
-	  int line3 = 145;
+	int line3 = 145;
 
-    string type4 = "char";
+    int type4 = 1; //char
     string name4 = "my_var4";
     int line4 = 123;
+
     std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
-    Node i;
-    i.setName("big");
-    i.setType("booty");
-    i.setLine(12);
+    Node z;
+    Node a;
+    Node b;
+    Node c;
+    Node d;
 
-    Node z(type0, name0, line0);
-    Node a(type1, name1, line1);
-    Node b(type2, name2, line2);
-    Node c(type3, name3, line3);
-    Node d(type4, name4, line4);
+    z.setTypeSpec(type0);
+    z.setName(name0);
+    z.setLine(line0);
+
+    a.setTypeSpec(type1);
+    a.setSigned(sign1);
+    a.setName(name1);
+    a.setLine(line1);
+
+    b.setTypeSpec(type2);
+    b.setName(name2);
+    b.setLine(line2);
+
+    c.setTypeSpec(type3);
+    c.setName(name3);
+    c.setLine(line3);
+
+    d.setTypeSpec(type4);
+    d.setName(name4);
+    d.setLine(line4);
+
     std::cout << "AFTER NODES"<< std::endl;
     st.insertSymbol(a);
     std::cout << "INSERT NODES"<< std::endl;
