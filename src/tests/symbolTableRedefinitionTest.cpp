@@ -36,7 +36,6 @@ int main () {
     string name0 = "my_var1";
     int line0 = 244;
 
-    std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
     Node a;
     Node b;
@@ -65,19 +64,13 @@ int main () {
     z.setName(name0);
     z.setLine(line0);
 
-    std::cout << "ENTERING INSERT MODE"<< std::endl;
     mode = insert;
-    std::cout << "AFTER NODES"<< std::endl;
     st.insertSymbol(a);
-    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(b);
     st.insertSymbol(z);
-    std::cout << "NEW SCOPE"<< std::endl;
     st.addNewScope();
-    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(c);
     st.insertSymbol(d);
-    std::cout << "PRINT ST"<< std::endl;
     mode = lookup;
     st.searchTree(z);
     st.printST();

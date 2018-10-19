@@ -5,6 +5,10 @@
 scanner
 fcc
 a.out
+pushPopTest
+RedefinitionTest
+shadowTest
+symbolDriver
 
 #lex and bison files
 lex.yy.*

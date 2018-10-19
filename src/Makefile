@@ -1,4 +1,4 @@
-all: fcc symbolDriver
+all: fcc symbolDriver shadowTest RedefinitionTest pushPopTest
 
 C_grammar.tab.c C_grammar.tab.h:	C_grammar.y
 	bison -d -t C_grammar.y
@@ -12,5 +12,13 @@ fcc: lex.yy.c C_grammar.tab.c C_grammar.tab.h
 symbolDriver: symTableDriver.cpp
 	g++ -std=c++11 symTableDriver.cpp -o $@
 
+shadowTest: tests/symbolTableShadowing.cpp
+	g++ -std=c++11 tests/symbolTableShadowing.cpp -o $@
+
+RedefinitionTest: tests/symbolTableRedefinitionTest.cpp
+	g++ -std=c++11 tests/symbolTableRedefinitionTest.cpp -o $@
+
+pushPopTest: tests/symbolTablePushPop.cpp
+	g++ -std=c++11 tests/symbolTablePushPop.cpp -o $@
 clean:
-	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver
+	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest
