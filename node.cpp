@@ -45,6 +45,71 @@ public:
     }
     */
     void printNode() {
+        switch(signedB)
+        {
+            case signedE:
+                break;
+            case unsignedE:
+                std::cout << "unsigned ";
+                break;
+        }
+        switch(typeQual)
+        {
+            case constQ:
+                std::cout << "const ";
+                break;
+            case volatileQ:
+                std::cout << "volatile ";
+                break;
+            case bothQ:
+                std::cout << "const volatile";
+                break;
+        }
+        switch(typeSpec)
+        {
+            case voidS:
+                std::cout << "void ";
+                break;
+            case charS:
+                std::cout << "char ";
+                break;
+            case shortS:
+                std::cout << "short ";
+                break;
+            case intS:
+                std::cout << "int ";
+                break;
+            case longS:
+                std::cout << "long ";
+                break;
+            case floatS:
+                std::cout << "float ";
+                break;
+            case doubleS:
+                std::cout << "double ";
+                break;
+            case structS:
+                std::cout << "struct ";
+                break;
+        }
+        switch(storageSpec)
+        {
+            case autoS:
+                std::cout << "auto ";
+                break;
+            case registerS:
+                std::cout << "register ";
+                break;
+            case staticS:
+                std::cout << "static ";
+                break;
+            case externS:
+                std::cout << "extern ";
+                break;
+            case typedefS:
+                std::cout << "typedef ";
+                break;
+        }
         //typeOut = makeTypeString();
         std::cout << "NAME: " << name << std::endl;
         std::cout << "SCOPE LEVEL: " << scope << std::endl;
