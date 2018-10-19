@@ -1,5 +1,5 @@
 //
-// Name:    symbolTable.cpp
+// Name:    node.cpp
 // Author:  Semantic Team (Franklin, Grant, Knutson)
 // Purpose: The symbol table is implemented as a stack of Binary Search Trees.
 //
@@ -17,10 +17,10 @@
 #include <iostream>
 #include <fstream>
 
-enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
+enum signedEnum {signedE,unsignedE};
 enum typeQualE {constQ,volatileQ,bothQ};
-enum signedE {signedE,unsignedE};
-enum storageSpecE {noneSS, autoS,registerS,staticS,externS,typedefS};
+enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
+enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
 
 class Node {
 private:
@@ -34,7 +34,13 @@ private:
     int scope;
 public:
     Node(){
-        resetNode();
+        setName("");
+        setLine(0);
+        setSigned(0);
+        setTypeSpec(9);
+        setTypeQual(9);
+        setStorageSpec(9);
+        setScope(0);
     }
 
     /*
@@ -110,13 +116,12 @@ public:
     */
     void resetNode() {
         setName("");
-        setLine(0);
-        setSigned(signedE);
+        setLine(-1); //-1 is error if line is neg 1
+        setSigned(0);
         setTypeSpec(9);
         setTypeQual(9);
         setStorageSpec(9);
-        setScope(0);
-        typeOut="";
+        setScope(-1); //-1 is error if scope is -1
     }
     std::string getName() {return name;}
     int getLine() {return line;}
@@ -129,7 +134,7 @@ public:
     void setName(std::string nameIn) {name=nameIn;}
     void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
     void setScope(int scopeIn) {scope=scopeIn;}
-    void setTypeQual(int typeQualIn) {typeSpec=typeQualIn;}
+    void setTypeQual(int typeQualIn) {typeQual=typeQualIn;}
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}

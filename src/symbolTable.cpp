@@ -105,8 +105,6 @@ class SymbolTable {
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> m = *currentLooker;
-            std::cout << m.size() << std::endl;
-            std::cout << "NEW SCOPE" << std::endl;
             for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
             {
                 Node n = iter->second;
@@ -119,20 +117,18 @@ class SymbolTable {
     // Searches for a symbol on the stack
     bool searchTree (Node node) {
         if (insert){
-            std::map<std::string,Node> m = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            std::map<std::string,Node> currentScopeLoop = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
 			{
                 Node treeNode = iter->second;
-				if ((treeNode.getName().compare(node.getName())) && (treeNode.getScope() == node.getScope()) && (treeNode.getLine() != node.getLine()))
+				if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()) && (treeNode.getLine() != node.getLine()))
                 {
-                    treeNode.printNode();
-                    node.printNode();
                     std::cout << "ERROR: Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
                     printError();
                     exit(1);
 					return true;
                 }
-				else if (treeNode.getName().compare(node.getName()))
+				else if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()))
                 {
                     std::cout << "Warning shadowing variable " << node.getName() << ", previous declared on line " << treeNode.getLine() << std::endl;
 					return true;
@@ -141,11 +137,11 @@ class SymbolTable {
         }
 		else if (lookup)
 		{
-            std::map<std::string,Node> m = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            std::map<std::string,Node> currentScopeLoop = *currentScope;
+			for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
 			{
-                Node n = iter->second;
-				if (n.getName().compare(node.getName()))
+                Node treeNode = iter->second;
+				if (treeNode.getName().compare(treeNode.getName())==0)
                 {
 					return true;
                 }

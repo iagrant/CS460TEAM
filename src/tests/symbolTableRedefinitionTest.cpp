@@ -14,25 +14,25 @@ using namespace std;
 int main () {
     SymbolTable st;
 
-    int sign1 = 1; //unsigned
-    int type1 = 3; //int
+    int sign1 = unsignedE; //unsigned
+    int type1 = intS; //int
     string name1 = "my_var1";
     int line1 = 144;
 
-    int type2 = 2; //char
+    int type2 = charS; //char
     string name2 = "my_var2";
     int line2 = 1337;
 
-    int type3 = 1; //char
+    int type3 = charS; //char
     string name3 = "my_var3";
 	int line3 = 145;
 
-    int type4 = 1; //char
+    int type4 = charS; //char
     string name4 = "my_var4";
     int line4 = 123;
 
     // REDEFINITION TEST
-    int type0 = 3; //int
+    int type0 = intS; //int
     string name0 = "my_var1";
     int line0 = 244;
 
