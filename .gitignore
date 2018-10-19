@@ -1,6 +1,16 @@
 # Prerequisites
 *.d
 
+#bins
+scanner
+fcc
+a.out
+
+#lex and bison files
+lex.yy.*
+*.tab.*
+C_grammar.output
+
 # Compiled Object files
 *.slo
 *.lo
@@ -32,3 +42,6 @@
 *.app
 #meta data file?
 .idea
+#vim files
+*.swp
+*.swo
