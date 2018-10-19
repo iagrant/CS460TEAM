@@ -10,8 +10,8 @@ We pair programmed together for the majority of the project.
 Some areas of individual effort are the following:  
 
 Ian: Symbol Table, Debug Flags in Source Code, Node Class, Symbol Table Drivers, Symbol Table test cases, and Symbol Table integration.  
-Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument,README,wiki,website.  
-Jared: Helped design Symbol Table, Command Line Debug Flags, Yacc, Lex, base Symbol Table Driver, Symbol Table Integration,Logging of Lex and Bision, 
+Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument, README, wiki, website.  
+Jared: Helped design Symbol Table, Command Line Debug Flags, Yacc, Lex, base Symbol Table Driver, Symbol Table Integration, Logging of Lex and Bision 
 
 ## Building
 #### Dependencies
