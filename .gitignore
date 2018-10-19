@@ -42,3 +42,6 @@ C_grammar.output
 *.app
 #meta data file?
 .idea
+#vim files
+*.swp
+*.swo

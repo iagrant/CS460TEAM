@@ -50,7 +50,85 @@ public:
       line=lineIn;
     }
     */
+    void writeNode(std::string filename) {
+        std::ofstream fileP(filename,std::ios::app);
+        fileP << "NAME: " << name << std::endl;
+        fileP << "SCOPE LEVEL: " << scope << std::endl;
+        fileP << "TYPE: ";
+        switch(signedB)
+        {
+            case signedE:
+                break;
+            case unsignedE:
+                fileP << "unsigned ";
+                break;
+        }
+        switch(typeQual)
+        {
+            case constQ:
+                fileP << "const ";
+                break;
+            case volatileQ:
+                fileP << "volatile ";
+                break;
+            case bothQ:
+                fileP << "const volatile";
+                break;
+        }
+        switch(typeSpec)
+        {
+            case voidS:
+                fileP << "void ";
+                break;
+            case charS:
+                fileP << "char ";
+                break;
+            case shortS:
+                fileP << "short ";
+                break;
+            case intS:
+                fileP << "int ";
+                break;
+            case longS:
+                fileP << "long ";
+                break;
+            case floatS:
+                fileP << "float ";
+                break;
+            case doubleS:
+                fileP << "double ";
+                break;
+            case structS:
+                fileP << "struct ";
+                break;
+        }
+        switch(storageSpec)
+        {
+            case autoS:
+                fileP << "auto ";
+                break;
+            case registerS:
+                fileP << "register ";
+                break;
+            case staticS:
+                fileP << "static ";
+                break;
+            case externS:
+                fileP << "extern ";
+                break;
+            case typedefS:
+                fileP << "typedef ";
+                break;
+        }
+        fileP << std::endl;
+        fileP << "LINE: " << line << std::endl;
+        fileP << std::endl;
+        fileP.close();
+    }
     void printNode() {
+        std::cout << "NAME: " << name << std::endl;
+        std::cout << "SCOPE LEVEL: " << scope << std::endl;
+        std::cout << "TYPE: ";
         switch(signedB)
         {
             case signedE:
@@ -116,69 +194,10 @@ public:
                 std::cout << "typedef ";
                 break;
         }
-        //typeOut = makeTypeString();
-        std::cout << "NAME: " << name << std::endl;
-        std::cout << "SCOPE LEVEL: " << scope << std::endl;
-        std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec << std::endl;
+        std::cout << std::endl;
         std::cout << "LINE: " << line << std::endl;
         std::cout << std::endl;
     }
-    /*
-    void writeNode(std::string filename) {
-        //typeOut = makeTypeString();
-        std::ofstream myfileP(filename,std::ios::app);
-        myfileP << "NAME: " << name << std::endl;
-        myfileP << "SCOPE LEVEL: " << scope << std::endl;
-        myfileP << "TYPE: ";
-        myfileP << typeOut << std::endl;
-        myfileP << "LINE: " << line << std::endl;
-        myfileP << std::endl;
-        myfileP.close();
-    }
-    */
-    /*
-    std::string makeTypeString() {
-        if (storageSpec == externS)
-          typeOut.append("extern");
-        if (signedB == unsignedE) //checks if unsigned
-          typeOut.append("unsigned");
-        if (typeQual == constQ)
-          typeOut.append("unsigned");
-        if (typeQual == volatileQ)
-          typeOut.append("volatile");
-        if (typeQual == bothQ)
-          typeOut.append("volatile unsigned");
-        if (storageSpec == autoS)
-          typeOut.append("auto");
-        if (storageSpec == registerS)
-          typeOut.append("register");
-        if (storageSpec == staticS)
-          typeOut.append("static");
-        if (storageSpec == typedefS)
-          typeOut.append("typedef");
-        if (storageSpec == voidS)
-          typeOut.append("void");
-        if (storageSpec == charS)
-          typeOut.append("char");
-        if (storageSpec == shortS)
-          typeOut.append("short");
-        if (storageSpec == shortS)
-          typeOut.append("short");
-        if (storageSpec == intS)
-          typeOut.append("int");
-        if (storageSpec == longS)
-          typeOut.append("long");
-        if (storageSpec == floatS)
-          typeOut.append("float");
-        if (storageSpec == doubleS)
-          typeOut.append("double");
-        if (storageSpec == structS)
-          typeOut.append("struct");
-        else
-          typeOut.append("empty");
-
-    }
-    */
     void resetNode() {
         setName("");
         setLine(-1); //-1 is error if line is neg 1
@@ -204,56 +223,3 @@ public:
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
 };
-
-/*
-class stringVal: public Node{
-public:
-	std::string value;
-    stringVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
-        value = val;
-    }
-    void printNode() {
-      std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << type << std::endl;
-    }
-};
-
-class intVal: public Node{
-public:
-	int value;
-    intVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
-        value = val;
-    }
-    void printNode() {
-      std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << type << std::endl;
-      std::cout << "VALUE: " << value << std::endl << std::endl;
-    }
-};
-
-class doubleVal: public Node{
-public:
-    double value;
-    doubleVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
-        value = val;
-    }
-    void printNode() {
-      std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << type << std::endl;
-      std::cout << "VALUE: " << value << std::endl << std::endl;
-    }
-};
-
-class charVal: public Node{
-public:
-	char value;
-    charVal(std::string typeIn, std::string name, int lineIn):Node(typeIn,name,lineIn) {
-        value = val;
-    }
-    void printNode() {
-      std::cout << "NAME: " << name << std::endl;
-      std::cout << "TYPE: " << type << std::endl;
-      std::cout << "VALUE: " << value << std::endl << std::endl;
-    }
-};
-*/

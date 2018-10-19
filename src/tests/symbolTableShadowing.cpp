@@ -42,7 +42,6 @@ int main () {
     Node c;
     Node d;
     Node z;
-    std::cout << b.getTypeQual() << std::endl;
 
     a.setTypeSpec(type1);
     a.setSigned(sign1);

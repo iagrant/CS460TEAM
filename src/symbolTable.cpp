@@ -91,11 +91,11 @@ class SymbolTable {
         // Open the file for writing
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
-            std::map<std::string,Node> m = *currentLooker;
-            for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            std::map<std::string,Node> currentScopeLoop = *currentLooker;
+            for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
-                Node n = iter->second;
-                //n.writeNode(filename);
+                Node treeNode = iter->second;
+                treeNode.writeNode(filename);
             }
         }
         myfile.close();
@@ -104,17 +104,17 @@ class SymbolTable {
     void printST () {
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
-            std::map<std::string,Node> m = *currentLooker;
-            for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
+            std::map<std::string,Node> currentScopeLoop = *currentLooker;
+            for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
-                Node n = iter->second;
-                n.printNode();
+                Node treeNode = iter->second;
+                treeNode.printNode();
             }
         }
     }
 
     // searchTree
-    // Searches for a symbol on the stack
+    // Searches for a symbol on the top stack ie current scope
     bool searchTree (Node node) {
         if (insert){
             std::map<std::string,Node> currentScopeLoop = *currentScope;
@@ -159,6 +159,7 @@ class SymbolTable {
         std::cout << buffer << std::endl;
         srcFileP.close();
     }
+    //searches past scopes for symbols
     void searchPrevScope(Node node)
     {
         currentLooker = getCurrentScope();
