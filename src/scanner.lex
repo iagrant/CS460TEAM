@@ -81,21 +81,21 @@ number  {num1}|{num2}
 \!\![A-z]+      {
                     if(printToken) {printConsole("DEBUG");}
                     if(printFile) {printToFile("DEBUG");}
-                	if (tokenFlag.compare(yytext))
+                	if (tokenFlag.compare(yytext)==0)
                     {
                         if(printToken)
                             printToken = false;
                         else
                             printToken = true;
                     }
-                    if (productionFlag.compare(yytext))
+                    if (productionFlag.compare(yytext)==0)
                     {
                         if(printProductions)
                             printProductions = false;
                         else
                             printProductions = true;
                     }
-                    if (symbolFlag.compare(yytext))
+                    if (symbolFlag.compare(yytext)==0)
                     {
                         if(printSymbol)
                             printSymbol = false;
