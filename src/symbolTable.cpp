@@ -73,10 +73,13 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (mode == insert) {
-            if (!searchTree(symbol))
+            if (!searchTree(symbol)) //checks if current symbol is in scope
+                //if here it's new symbol
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             else
             {
+                //if it got here it's just shadowing if it was redec it would of
+                //errored out inside the search
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             }
         }
@@ -87,8 +90,8 @@ class SymbolTable {
     // of the symbol table to a file.
     void writeST (std::string filename) {
         // Create the file pointer
-        std::ofstream myfile(filename,std::ios::app);
         // Open the file for writing
+        std::ofstream myfile(filename,std::ios::app);
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> currentScopeLoop = *currentLooker;

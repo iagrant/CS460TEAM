@@ -31,18 +31,11 @@ int main () {
     string name4 = "my_var4";
     int line4 = 123;
 
-    // SHADOWING TEST
-    int type0 = 3; //int
-    string name0 = "my_var1";
-    int line0 = 244;
-
-    std::cout << "BEFORE NODES"<< std::endl;
     // CREATE NODES
     Node a;
     Node b;
     Node c;
     Node d;
-    Node z;
 
     a.setTypeSpec(type1);
     a.setSigned(sign1);
@@ -61,25 +54,15 @@ int main () {
     d.setName(name4);
     d.setLine(line4);
 
-    z.setTypeSpec(type0);
-    z.setName(name0);
-    z.setLine(line0);
-
-    std::cout << "ENTERING INSERT MODE"<< std::endl;
     mode = insert;
-    std::cout << "AFTER NODES"<< std::endl;
     st.insertSymbol(a);
-    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(b);
-    std::cout << "NEW SCOPE"<< std::endl;
     st.addNewScope();
-    std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(c);
-    st.insertSymbol(z);
     st.insertSymbol(d);
-    std::cout << "PRINT ST"<< std::endl;
     mode = lookup;
     st.printST();
+    st.writeST("symbolTable.txt");
     //st.writeST("out.txt");
 
 
