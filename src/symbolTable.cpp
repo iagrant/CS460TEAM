@@ -133,7 +133,7 @@ class SymbolTable {
                 }
 				else if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()))
                 {
-                    std::cout << "Warning shadowing variable " << node.getName() << ", previous declared on line " << node.getLine() << std::endl;
+                    std::cout << "Warning shadowing variable " << node.getName() << ", previous declared on line " << treeNode.getLine() << std::endl;
 					return true;
                 }
 			}
