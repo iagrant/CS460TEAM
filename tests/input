@@ -6,8 +6,8 @@
 */
 
 
-!!dl
 // Test single line comment
+!!dl
 int main() {
   char * hello = "\t 1: This is a test string a+b = c\n";
   int a = 1;

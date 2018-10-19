@@ -7,10 +7,11 @@
 #include "symbolTable.cpp"
 
 extern int mode;
+std::string srcFile = "tests/input";
+int lineNum = 42;
 using namespace std;
 
 int main () {
-
     SymbolTable st;
 
     int sign1 = 1; //unsigned
@@ -70,14 +71,15 @@ int main () {
     st.insertSymbol(a);
     std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(b);
-    st.insertSymbol(z);
     std::cout << "NEW SCOPE"<< std::endl;
     st.addNewScope();
     std::cout << "INSERT NODES"<< std::endl;
     st.insertSymbol(c);
+    st.insertSymbol(z);
     st.insertSymbol(d);
     std::cout << "PRINT ST"<< std::endl;
     mode = lookup;
+    st.searchTree(z);
     st.printST();
     //st.writeST("out.txt");
 

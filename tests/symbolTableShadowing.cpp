@@ -1,0 +1,90 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <iterator>
+#include <string>
+#include <list>
+#include "../symbolTable.cpp"
+
+extern int mode;
+std::string srcFile = "tests/input";
+int lineNum = 42;
+using namespace std;
+
+int main () {
+    SymbolTable st;
+
+    int sign1 = 1; //unsigned
+    int type1 = 3; //int
+    string name1 = "my_var1";
+    int line1 = 144;
+
+    int type2 = 2; //char
+    string name2 = "my_var2";
+    int line2 = 1337;
+
+    int type3 = 1; //char
+    string name3 = "my_var3";
+	int line3 = 145;
+
+    int type4 = 1; //char
+    string name4 = "my_var4";
+    int line4 = 123;
+
+    // REDEFINITION TEST
+    int type0 = 3; //int
+    string name0 = "my_var1";
+    int line0 = 244;
+
+    std::cout << "BEFORE NODES"<< std::endl;
+    // CREATE NODES
+    Node a;
+    Node b;
+    Node c;
+    Node d;
+    Node z;
+
+    a.setTypeSpec(type1);
+    a.setSigned(sign1);
+    a.setName(name1);
+    a.setLine(line1);
+    a.setScope(0);
+
+    b.setTypeSpec(type2);
+    b.setName(name2);
+    b.setLine(line2);
+    b.setScope(0);
+
+    c.setTypeSpec(type3);
+    c.setName(name3);
+    c.setLine(line3);
+    c.setScope(1);
+
+    d.setTypeSpec(type4);
+    d.setName(name4);
+    d.setLine(line4);
+    d.setScope(1);
+
+    z.setTypeSpec(type0);
+    z.setName(name0);
+    z.setLine(line0);
+    z.setScope(1);
+
+    std::cout << "ENTERING INSERT MODE"<< std::endl;
+    mode = insert;
+    std::cout << "AFTER NODES"<< std::endl;
+    st.insertSymbol(a);
+    std::cout << "INSERT NODES"<< std::endl;
+    st.insertSymbol(b);
+    std::cout << "NEW SCOPE"<< std::endl;
+    st.addNewScope();
+    std::cout << "INSERT NODES"<< std::endl;
+    st.insertSymbol(z);
+    st.insertSymbol(c);
+    st.insertSymbol(d);
+    std::cout << "PRINT ST"<< std::endl;
+    mode = lookup;
+    st.searchTree(z);
+    st.printST();
+    return 0;
+}

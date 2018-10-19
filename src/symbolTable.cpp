@@ -76,10 +76,10 @@ class SymbolTable {
             if (!searchTree(symbol))
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             else
-                std:: cout << "Warning Shadowing Variable: " << symbol.getName() << " on line: " << symbol.getLine() << std::endl;
+            {
+                currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
+            }
         }
-        else
-            std::cout << "Syntax Error: Declared variable outside declaration block" << std::endl;
     }
 
     // writeFile
@@ -122,10 +122,19 @@ class SymbolTable {
             std::map<std::string,Node> m = *currentScope;
 			for(std::map<std::string,Node> :: iterator iter = m.begin(); iter != m.end(); iter++)
 			{
-                Node n = iter->second;
-				if (n.getName().compare(node.getName()))
+                Node treeNode = iter->second;
+				if ((treeNode.getName().compare(node.getName())) && (treeNode.getScope() == node.getScope()) && (treeNode.getLine() != node.getLine()))
                 {
-                    std::cout << "Warning shadowing variable " << node.getName() << std::endl;
+                    treeNode.printNode();
+                    node.printNode();
+                    std::cout << "ERROR: Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    printError();
+                    exit(1);
+					return true;
+                }
+				else if (treeNode.getName().compare(node.getName()))
+                {
+                    std::cout << "Warning shadowing variable " << node.getName() << ", previous declared on line " << treeNode.getLine() << std::endl;
 					return true;
                 }
 			}
@@ -143,6 +152,16 @@ class SymbolTable {
             }
 		}
       	return false;
+    }
+    void printError () {
+        std::ifstream srcFileP(srcFile);
+        std::string buffer="";
+        for (int i = 0; i < lineNum; i++)
+        {
+            std::getline(srcFileP,buffer);
+        }
+        std::cout << buffer << std::endl;
+        srcFileP.close();
     }
     void searchPrevScope(Node node)
     {

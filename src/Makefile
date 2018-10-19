@@ -3,8 +3,8 @@ all: fcc
 C_grammar.tab.c C_grammar.tab.h:	C_grammar.y
 	bison -d -v -t C_grammar.y
 
-lex.yy.c: backup.lex C_grammar.tab.h
-	flex backup.lex C_grammar.tab.c
+lex.yy.c: scanner.lex C_grammar.tab.h
+	flex scanner.lex C_grammar.tab.c
 
 fcc: lex.yy.c C_grammar.tab.c C_grammar.tab.h
 	g++ -std=c++11 -o $@ lex.yy.c
