@@ -15,7 +15,6 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     SymbolTable globalSymbolTable;
-    Node * globalTempNode = new Node();
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -98,32 +97,40 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
-            globalSymbolTable.insertSymbol(*globalTempNode);
-            globalTempNode->resetNode();
+            /*
+            globalSymbolTable.insertSymbol(globalTempNode);
+            globalTempNode.resetNode();
+            */
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
             }
         }
 	| declarator declaration_list compound_statement
 		{
-            globalSymbolTable.insertSymbol(*globalTempNode);
-            globalTempNode->resetNode();
+            /*
+            globalSymbolTable.insertSymbol(globalTempNode);
+            globalTempNode.resetNode();
+            */
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
             }
         }
 	| declaration_specifiers declarator compound_statement
 		{
-            globalSymbolTable.insertSymbol(*globalTempNode);
-            globalTempNode->resetNode();
+            /*
+            globalSymbolTable.insertSymbol(globalTempNode);
+            globalTempNode.resetNode();
+            */
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator compound_statement" << std::endl;
             }
         }
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
-            globalSymbolTable.insertSymbol(*globalTempNode);
-            globalTempNode->resetNode();
+            /*
+            globalSymbolTable.insertSymbol(globalTempNode);
+            globalTempNode.resetNode();
+            */
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
             }
@@ -177,13 +184,13 @@ declaration_specifiers
         }
 	| type_specifier
         {
-        globalTempNode->printNode();
+        //globalTempNode.printNode();
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
         }
 	| type_specifier declaration_specifiers
 		{
-            globalTempNode->printNode();
+            //globalTempNode.printNode();
             if (printProductions) {
                 std::cout << "declaration_specifiers -> type_specifier declaration_specifiers" << std::endl;
             }
@@ -206,7 +213,7 @@ storage_class_specifier
 	: AUTO
 		{
             mode = insert;
-            if(mode == insert){globalTempNode->setStorageSpec(autoS);}
+            //if(mode == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
@@ -214,7 +221,7 @@ storage_class_specifier
 	| REGISTER
 		{
             mode = insert;
-            if(mode == insert){globalTempNode->setStorageSpec(registerS);}
+            //if(mode == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
@@ -222,7 +229,7 @@ storage_class_specifier
 	| STATIC
 		{
             mode = insert;
-            if(mode == insert){globalTempNode->setStorageSpec(staticS);}
+            //if(mode == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
@@ -230,7 +237,7 @@ storage_class_specifier
 	| EXTERN
 		{
             mode = insert;
-            if(mode == insert){globalTempNode->setStorageSpec(externS);}
+            //if(mode == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
@@ -238,7 +245,7 @@ storage_class_specifier
 	| TYPEDEF
 		{
             mode = insert;
-            if(mode == insert){globalTempNode->setStorageSpec(typedefS);}
+            //if(mode == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -248,99 +255,117 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(voidS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(voidS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> VOID" << std::endl;
             }
         }
 	| CHAR
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(charS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(charS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> CHAR" << std::endl;
             }
         }
 	| SHORT
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(shortS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(shortS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> SHORT" << std::endl;
             }
         }
 	| INT
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(intS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(intS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> INT" << std::endl;
             }
         }
 	| LONG
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(longS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(longS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> LONG" << std::endl;
             }
         }
 	| FLOAT
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(floatS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(floatS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> FLOAT" << std::endl;
             }
         }
 	| DOUBLE
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setTypeSpec(doubleS);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeSpec(doubleS);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> DOUBLE" << std::endl;
             }
         }
 	| SIGNED
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setSigned(signedE);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setSigned(signedE);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> SIGNED" << std::endl;
             }
         }
 	| UNSIGNED
 		{
+            /*
             mode = insert;
             if(mode == insert){
-                globalTempNode->setSigned(unsignedE);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setSigned(unsignedE);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_specifier -> UNSIGNED" << std::endl;
             }
@@ -368,20 +393,24 @@ type_specifier
 type_qualifier
 	: CONST
 		{
+            /*
             if(mode == insert){
-                globalTempNode->setTypeQual(constQ);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeQual(constQ);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_qualifier -> CONST" << std::endl;
             }
         }
 	| VOLATILE
 		{
+            /*
             if(mode == insert){
-                globalTempNode->setTypeQual(volatileQ);
-                globalTempNode->setLine(lineNum);
+                globalTempNode.setTypeQual(volatileQ);
+                globalTempNode.setLine(lineNum);
             }
+            */
             if (printProductions) {
                 std::cout << "type_qualifier -> VOLATILE" << std::endl;
             }
@@ -1669,7 +1698,7 @@ string
 identifier
 	: IDENTIFIER
         {
-            globalTempNode->setName(yytext+'\0');
+            //globalTempNode.setName(yytext+'\0');
             if (printProductions) {
                 std::cout << "identifier -> IDENTIFIER" << std::endl;
             }
@@ -1750,7 +1779,7 @@ int main (int argc, char** argv)
   std::ofstream fileP(outSrcFile);
   fileP << "";
   fileP.close();
-  globalSymbolTable.printST();
+  //globalSymbolTable.printST();
 
   return 0;
 }

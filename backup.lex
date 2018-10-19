@@ -33,6 +33,7 @@ bool printFile = true;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
+Node globalTempNode;
 
 std::string tokenFlag = "!!dl";
 std::string symbolFlag = "!!ds";

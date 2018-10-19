@@ -48,7 +48,7 @@ public:
         //typeOut = makeTypeString();
         std::cout << "NAME: " << name << std::endl;
         std::cout << "SCOPE LEVEL: " << scope << std::endl;
-        std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec;
+        std::cout << "TYPE: " << signedB << typeQual << storageSpec << typeSpec << std::endl;
         std::cout << "LINE: " << line << std::endl;
         std::cout << std::endl;
     }
