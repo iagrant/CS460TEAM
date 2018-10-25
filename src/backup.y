@@ -82,14 +82,12 @@ translation_unit
 external_declaration
 	: function_definition
 		{
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "external_declaration -> function definition" << std::endl;
             }
         }
 	| declaration
 		{
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "external_declaration -> declaration" << std::endl;
             }
@@ -99,7 +97,6 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
             }
@@ -198,7 +195,6 @@ storage_class_specifier
 	: AUTO
 		{
             mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
@@ -206,7 +202,6 @@ storage_class_specifier
 	| REGISTER
 		{
             mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
@@ -214,7 +209,6 @@ storage_class_specifier
 	| STATIC
 		{
             mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
@@ -222,7 +216,6 @@ storage_class_specifier
 	| EXTERN
 		{
             mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
@@ -230,7 +223,6 @@ storage_class_specifier
 	| TYPEDEF
 		{
             mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -241,10 +233,6 @@ type_specifier
 	: VOID
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(voidS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> VOID" << std::endl;
             }
@@ -252,10 +240,6 @@ type_specifier
 	| CHAR
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(charS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> CHAR" << std::endl;
             }
@@ -263,10 +247,6 @@ type_specifier
 	| SHORT
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(shortS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> SHORT" << std::endl;
             }
@@ -274,10 +254,6 @@ type_specifier
 	| INT
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(intS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> INT" << std::endl;
             }
@@ -285,10 +261,6 @@ type_specifier
 	| LONG
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(longS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> LONG" << std::endl;
             }
@@ -296,10 +268,6 @@ type_specifier
 	| FLOAT
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(floatS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> FLOAT" << std::endl;
             }
@@ -307,10 +275,6 @@ type_specifier
 	| DOUBLE
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setTypeSpec(doubleS);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> DOUBLE" << std::endl;
             }
@@ -318,10 +282,6 @@ type_specifier
 	| SIGNED
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setSigned(signedE);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> SIGNED" << std::endl;
             }
@@ -329,10 +289,6 @@ type_specifier
 	| UNSIGNED
 		{
             mode = insert;
-            if(mode == insert){
-                globalTempNode.setSigned(unsignedE);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_specifier -> UNSIGNED" << std::endl;
             }
@@ -360,20 +316,12 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            if(mode == insert){
-                globalTempNode.setTypeQual(constQ);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_qualifier -> CONST" << std::endl;
             }
         }
 	| VOLATILE
 		{
-            if(mode == insert){
-                globalTempNode.setTypeQual(volatileQ);
-                globalTempNode.setLine(lineNum);
-            }
             if (printProductions) {
                 std::cout << "type_qualifier -> VOLATILE" << std::endl;
             }
@@ -626,21 +574,18 @@ direct_declarator
         }
 	| direct_declarator OPEN CLOSE
         {
-            globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
             }
         }
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
-            globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
         }
 	| direct_declarator OPEN identifier_list CLOSE
         {
-            globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator ->  direct_declarator OPEN identifier_list CLOSE" << std::endl;
             }
@@ -911,7 +856,6 @@ statement
         }
 	| iteration_statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "statement -> iteration_statement" << std::endl;
             }
@@ -1038,63 +982,54 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI expression CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI expression CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI CLOSE statement" << std::endl;
             }
         }
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
         }
 	;
 
-//where u rem scope
 jump_statement
 	: GOTO identifier SEMI
         {
@@ -1674,12 +1609,6 @@ string
 identifier
 	: IDENTIFIER
         {
-            globalTempNode.setName(yytext+'\0');
-            //std::cout << "ID" << std::endl;
-            //globalTempNode.printNode();
-            globalTempNode.setScope(globalSymbolTable.currentScopeNum);
-            globalSymbolTable.insertSymbol(globalTempNode);
-            //globalTempNode.resetNode();
             if (printProductions) {
                 std::cout << "identifier -> IDENTIFIER" << std::endl;
             }
@@ -1760,6 +1689,7 @@ int main (int argc, char** argv)
   std::ofstream fileP(outSrcFile);
   fileP << "";
   fileP.close();
+  globalSymbolTable.printST();
 
   return 0;
 }

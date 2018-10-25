@@ -16,31 +16,38 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <list>
 
 enum signedEnum {signedE,unsignedE};
 enum typeQualE {constQ,volatileQ,bothQ};
 enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
+enum paramType {signedPT,typeQualPT,typeSpecSP}
 
 class Node {
 private:
     std::string name;
     std::string typeOut;
     int line;
+    int signedB;
     int typeSpec;
     int typeQual;
     int storageSpec;
-    int signedB;
     int scope;
+    int paramNum;
+    bool isFunc;
+    std::list <int []> param;
 public:
     Node(){
         setName("");
-        setLine(0);
+        setLine(-1);
         setSigned(0);
-        setTypeSpec(9);
+        setTypeSpec(intS);
         setTypeQual(9);
         setStorageSpec(9);
-        setScope(0);
+        setScope(-1);
+        func=false;
+        paramNum=0;
     }
 
     /*
@@ -200,12 +207,14 @@ public:
     }
     void resetNode() {
         setName("");
-        setLine(-1); //-1 is error if line is neg 1
+        setLine(-1);
         setSigned(0);
-        setTypeSpec(9);
+        setTypeSpec(intS);
         setTypeQual(9);
         setStorageSpec(9);
-        setScope(-1); //-1 is error if scope is -1
+        setScope(-1);
+        func=false;
+        paramNum=0;
     }
     std::string getName() {return name;}
     int getLine() {return line;}
@@ -222,4 +231,13 @@ public:
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
+    void setFunction(bool funcExsistIn) {isFunc=funcExsistIn;}
+
+    void addParam(){
+        int[3] array={signedE,9,intS};
+
+    }
+    void addParamValue(int typeOfTypes,int type){
+
+    }
 };

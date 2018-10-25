@@ -43,6 +43,7 @@ class SymbolTable {
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
     std::map<std::string,Node> :: iterator currentEntry;
   public:
+    int currentScopeNum = 0;
 
     //Default Constructor
     SymbolTable () {
@@ -58,6 +59,7 @@ class SymbolTable {
         std::map<std::string,Node> ret = symbolTable.back();
         symbolTable.pop_back();
         currentScope--;
+        currentScopeNum--;
         currentEntry = currentScope->begin();
         return ret;
     }
@@ -68,6 +70,7 @@ class SymbolTable {
         std::map <std::string,Node> newMap;
         symbolTable.push_back(newMap);
         currentScope++;
+        currentScopeNum++;
         currentEntry = currentScope->begin();
     }
 
@@ -108,6 +111,7 @@ class SymbolTable {
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> currentScopeLoop = *currentLooker;
+            std::cout << "SIZE OF ST SCOPE: " << currentScopeLoop.size() << std::endl;
             for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
                 Node treeNode = iter->second;

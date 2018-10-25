@@ -98,10 +98,8 @@ number  {num1}|{num2}
                     }
                     if (symbolFlag.compare(yytext)==0)
                     {
-                        if(printSymbol)
-                            printSymbol = false;
-                        else
-                            printSymbol = true;
+                        std::cout << "CURRENT SCOPE LEVEL: " << globalSymbolTable.currentScopeNum << std::endl;
+                        globalSymbolTable.printST();
                     }
                 }
 [-]?[0-9]+      {
@@ -273,6 +271,7 @@ sizeof          {
                     if(printToken) {printConsole("CURLYOPEN");}
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
+                    //globalSymbolTable.addNewScope();
                     return CURLYOPEN;
                 }
 \}              {
@@ -538,12 +537,14 @@ if              {
                     if(printToken) {printConsole("IF");}
                     if(printFile) {printToFile("IF");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return IF;
                 }
 else            {
                     if(printToken) {printConsole("ELSE");}
                     if(printFile) {printToFile("ELSE");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return ELSE;
                 }
 switch          {
@@ -556,6 +557,7 @@ while           {
                     if(printToken) {printConsole("WHILE");}
                     if(printFile) {printToFile("WHILE");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return WHILE;
                 }
 do              {
@@ -568,6 +570,7 @@ for             {
                     if(printToken) {printConsole("FOR");}
                     if(printFile) {printToFile("FOR");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return FOR;
                 }
 goto            {
