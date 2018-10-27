@@ -13,16 +13,16 @@
 //
 
 #include <iostream>
-#include <string>
-#include <iostream>
-#include <fstream>
 #include <list>
+#include <iterator>
+#include <fstream>
+#include <string>
 
 enum signedEnum {signedE,unsignedE};
 enum typeQualE {constQ,volatileQ,bothQ};
 enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
-enum paramType {signedPT,typeQualPT,typeSpecSP}
+enum paramType {signedPT,typeQualPT,typeSpecPT};
 
 class Node {
 private:
@@ -35,8 +35,10 @@ private:
     int storageSpec;
     int scope;
     int paramNum;
-    bool isFunc;
-    std::list <int []> param;
+    bool isFunction;
+    //std::list <int [3]> paramList;
+    //std::list <int [3]> :: iterator paramListIter;
+
 public:
     Node(){
         setName("");
@@ -46,17 +48,10 @@ public:
         setTypeQual(9);
         setStorageSpec(9);
         setScope(-1);
-        func=false;
+        isFunction=false;
         paramNum=0;
     }
 
-    /*
-    Node(std::string typeIn, std::string nameIn, int lineIn) {
-      type=typeIn;
-      name=nameIn;
-      line=lineIn;
-    }
-    */
     void writeNode(std::string filename) {
         std::ofstream fileP(filename,std::ios::app);
         fileP << "NAME: " << name << std::endl;
@@ -213,7 +208,7 @@ public:
         setTypeQual(9);
         setStorageSpec(9);
         setScope(-1);
-        func=false;
+        isFunction=false;
         paramNum=0;
     }
     std::string getName() {return name;}
@@ -231,13 +226,22 @@ public:
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
-    void setFunction(bool funcExsistIn) {isFunc=funcExsistIn;}
-
+    void setFunction(bool funcExsistIn) {isFunction=funcExsistIn;}
+    /*
     void addParam(){
-        int[3] array={signedE,9,intS};
+        int paramType [3] = {signedE,9,intS};     //each param is a array of size 3
+                               //signed,type qualifier, and type specifier
+        //paramType[0]=signedE;  //defaults to signed variable
+        //paramType[1]=9;        //defaults to 9 which is nothing in the enum
+        //paramType[2]=intS;     //always default the type to int cuz C
+        paramList.push_back(paramType);
 
     }
+    //typeOfTypes designates weather you are inserting signed,type qualifier, or
+    //type specifier
     void addParamValue(int typeOfTypes,int type){
-
+            //paramListIter = paramList.end();
+            //*paramListIter[typeOfTypes] = type;
     }
+    */
 };

@@ -34,7 +34,7 @@ std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
 SymbolTable globalSymbolTable; // construct Symbol Table
-Node globalTempNode;
+Node globalTempNode;           // temp ST node for pass around
 
 std::string tokenFlag = "!!dl";
 std::string symbolFlag = "!!ds";
@@ -59,11 +59,11 @@ number  {num1}|{num2}
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;
                     //print the buffer
-                    printLine();
+                    //printLine();
                 }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
-\t		{tabNum++;/* inc tab num for errMsg */}
+\t		        {tabNum++;/* inc tab num for errMsg */}
 "/*"   			{
 			        int c;
 
@@ -282,6 +282,8 @@ sizeof          {
                     if(printToken) {printConsole("CURLYCLOSE");}
                     if(printFile) {printToFile("CURLYCLOSE");}
                     colNum += yyleng;
+                    if (lineNum != globalTempNode.getLine())
+                        globalSymbolTable.removeScope();
                     return CURLYCLOSE;
                 }
 \[              {

@@ -1678,7 +1678,13 @@ identifier
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
             globalTempNode.setScope(globalSymbolTable.currentScopeNum);
-            globalSymbolTable.insertSymbol(globalTempNode);
+            if(mode=insert){
+                globalSymbolTable.insertSymbol(globalTempNode);
+            }
+            if(mode=lookup){
+                globalSymbolTable.searchTree(globalTempNode);
+                //globalSymbolTable.searchPrevScopes(globalTempNode);
+            }
             //globalTempNode.resetNode();
             if (printProductions) {
                 std::cout << "identifier -> IDENTIFIER" << std::endl;
