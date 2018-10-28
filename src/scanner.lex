@@ -97,10 +97,18 @@ number  {num1}|{num2}
                     }
                     if (productionFlag.compare(yytext)==0)
                     {
-                        if(printProductions)
+                        if(printProductions) 
+                        {
                             printProductions = false;
-                        else
+                            printSource = false;
+                        }
+                        else 
+                        {
+                            printLine();
                             printProductions = true;
+                            printSource = true;
+
+                        }
                     }
                     if (symbolFlag.compare(yytext)==0)
                     {
@@ -637,10 +645,10 @@ void printError (int colNum, std::string errorTok) {
 
 void printLine () {
     std::ifstream srcFileP(srcFile);
-    for (int i = 0; i < lineNum-1; i++) {
+    for (int i = 0; i < lineNum; i++) {
         std::getline(srcFileP,buffer);
     }
-    std::cout << buffer << std::endl;
+    std::cout << lineNum << " " << buffer << std::endl;
     srcFileP.close();
 }
 

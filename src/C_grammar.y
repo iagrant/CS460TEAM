@@ -1698,7 +1698,6 @@ int main (int argc, char** argv)
     std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string productionFlag = "-dp";
-	std::string sourceFlag = "-dc";
 	std::string fhFlag = "-fh";
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
@@ -1722,17 +1721,15 @@ int main (int argc, char** argv)
     {
       // Dump the symbol table
     }
-    if((sourceFlag.compare(argv[i])) == 0)
-    {
-        printSource = true;
-    }
     if((fhFlag.compare(argv[i])) == 0)
     {
       unleash();
     }
     if ((productionFlag.compare(argv[i])) == 0)
     {
+      printLine();
       printProductions = true;
+      printSource = true;
     }
     if ((inputFlag.compare(argv[i]))==0)
     {
