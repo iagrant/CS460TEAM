@@ -143,6 +143,7 @@ declaration
 declaration_list
 	: declaration
 		{
+            mode = lookup;
             if (printProductions) {
                 std::cout << "declaration_list -> declaration" << std::endl;
             }
@@ -150,7 +151,7 @@ declaration_list
 	| declaration_list declaration
 		{
             if (printProductions) {
-                std::cout << "declaration_list -> declaration list declaration" << std::endl;
+                std::cout << "declaration_list -> declaration_list declaration" << std::endl;
             }
         }
 	;
@@ -1677,10 +1678,10 @@ identifier
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
             globalTempNode.setScope(globalSymbolTable.currentScopeNum);
-            if(mode=insert){
+            if(mode==insert){
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
-            if(mode=lookup){
+            if(mode==lookup){
                 globalSymbolTable.searchTree(globalTempNode);
                 //globalSymbolTable.searchPrevScopes(globalTempNode);
             }
