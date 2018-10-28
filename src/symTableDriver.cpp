@@ -6,7 +6,6 @@
 #include <list>
 #include "symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
 using namespace std;
@@ -54,13 +53,13 @@ int main () {
     d.setName(name4);
     d.setLine(line4);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.addNewScope();
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
+    st.mode = lookup;
     st.printST();
     st.writeST("symbolTable.txt");
     //st.writeST("out.txt");

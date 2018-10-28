@@ -126,14 +126,14 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
-            mode = lookup;
+            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
             }
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
-            mode = lookup;
+            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
             }
@@ -196,40 +196,40 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
-            mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(autoS);}
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
         }
 	| REGISTER
 		{
-            mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(registerS);}
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
         }
 	| STATIC
 		{
-            mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(staticS);}
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
         }
 	| EXTERN
 		{
-            mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(externS);}
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
         }
 	| TYPEDEF
 		{
-            mode = insert;
-            if(mode == insert){globalTempNode.setStorageSpec(typedefS);}
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -239,8 +239,8 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(voidS);
                 globalTempNode.setLine(lineNum);
             }
@@ -250,8 +250,8 @@ type_specifier
         }
 	| CHAR
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(charS);
                 globalTempNode.setLine(lineNum);
             }
@@ -261,8 +261,8 @@ type_specifier
         }
 	| SHORT
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(shortS);
                 globalTempNode.setLine(lineNum);
             }
@@ -272,8 +272,8 @@ type_specifier
         }
 	| INT
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(intS);
                 globalTempNode.setLine(lineNum);
             }
@@ -283,8 +283,8 @@ type_specifier
         }
 	| LONG
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(longS);
                 globalTempNode.setLine(lineNum);
             }
@@ -294,8 +294,8 @@ type_specifier
         }
 	| FLOAT
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(floatS);
                 globalTempNode.setLine(lineNum);
             }
@@ -305,8 +305,8 @@ type_specifier
         }
 	| DOUBLE
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(doubleS);
                 globalTempNode.setLine(lineNum);
             }
@@ -316,8 +316,8 @@ type_specifier
         }
 	| SIGNED
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(signedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -327,8 +327,8 @@ type_specifier
         }
 	| UNSIGNED
 		{
-            mode = insert;
-            if(mode == insert){
+            globalSymbolTable.mode = insert;
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(unsignedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -359,7 +359,7 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            if(mode == insert){
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeQual(constQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -369,7 +369,7 @@ type_qualifier
         }
 	| VOLATILE
 		{
-            if(mode == insert){
+            if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeQual(volatileQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -1677,10 +1677,10 @@ identifier
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
             globalTempNode.setScope(globalSymbolTable.currentScopeNum);
-            if(mode=insert){
+            if(globalSymbolTable.mode==insert){
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
-            if(mode=lookup){
+            if(globalSymbolTable.mode==lookup){
                 globalSymbolTable.searchTree(globalTempNode);
                 //globalSymbolTable.searchPrevScopes(globalTempNode);
             }
