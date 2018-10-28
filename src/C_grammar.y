@@ -19,8 +19,7 @@
 	{
     	std::ifstream srcFileP(srcFile);
 	    for (int i = 0; i < lineNum; i++)
-	    {
-	        std::getline(srcFileP,buffer);
+	    { std::getline(srcFileP,buffer);
 	    }
 	    std::cout << "Syntax Error on line " << lineNum << ": " << buffer << std::endl;
 	    srcFileP.close();
@@ -1699,6 +1698,7 @@ int main (int argc, char** argv)
     std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string productionFlag = "-dp";
+	std::string sourceFlag = "-dc";
 	std::string fhFlag = "-fh";
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
@@ -1721,6 +1721,10 @@ int main (int argc, char** argv)
     if((symbolFlag.compare(argv[i])) == 0)
     {
       // Dump the symbol table
+    }
+    if((sourceFlag.compare(argv[i])) == 0)
+    {
+        printSource = true;
     }
     if((fhFlag.compare(argv[i])) == 0)
     {

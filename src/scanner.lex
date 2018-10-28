@@ -30,6 +30,7 @@ bool printToken = false;
 bool printSymbol = false;
 bool printProductions = false;
 bool printFile = true;
+bool printSource = false;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
@@ -59,7 +60,8 @@ number  {num1}|{num2}
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;
                     //print the buffer
-                    //printLine();
+                    if(printSource)
+                        printLine();
                 }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
