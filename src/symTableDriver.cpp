@@ -40,18 +40,22 @@ int main () {
     a.setSigned(sign1);
     a.setName(name1);
     a.setLine(line1);
+    a.setScope(0);
 
     b.setTypeSpec(type2);
     b.setName(name2);
     b.setLine(line2);
+    b.setScope(0);
 
     c.setTypeSpec(type3);
     c.setName(name3);
     c.setLine(line3);
+    c.setScope(1);
 
     d.setTypeSpec(type4);
     d.setName(name4);
     d.setLine(line4);
+    d.setScope(1);
 
     st.mode = insert;
     st.insertSymbol(a);
