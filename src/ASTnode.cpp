@@ -5,39 +5,60 @@
 #include <fstream>
 #include <list>
 
-enum signedEnum {signedE,unsignedE};
-enum typeQualE {constQ,volatileQ,bothQ};
-enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
-enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
-enum paramType {signedPT,typeQualPT,typeSpecSP};
+enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
 
 class ASTnode {
-private:
+protected:
     std::string production; 
-//    std::list <int []> param;
 public:
-    ASTnode(){
-
+    ASTnode(){}
+    ASTnode(std::string productionIn){
+        production = productionIn;
+        printASTnode();
+    }
+    virtual void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "GenericNode" << std::endl;
     }
 };
 
 
-class whileNode : public ASTnode {
-
+class idNode : public ASTnode {
+    public:
+    idNode(std::string productionIn){production = productionIn; printASTnode();}
+    void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "IDNode" << std::endl;
+    }
+    
 };
 
-class forNode : public ASTnode {
+class ifNode : public ASTnode {
+    public:
+    ifNode(std::string productionIn){production = productionIn; printASTnode();}
+    void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "IFNode" << std::endl;
+    }
 
 };
 
 class functionNode : public ASTnode {
+    public:
+    functionNode(std::string productionIn){production = productionIn; printASTnode();}
+    void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "FunctionNode" << std::endl;
+    }
 
 };
 
-class typeNode : public ASTnode {
-
-};
-
-class ifNode : public ASTnode {
+class forNode : public ASTnode {
+    public:
+    forNode(std::string productionIn){production = productionIn; printASTnode();}
+    void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "FORNode" << std::endl;
+    }
 
 };

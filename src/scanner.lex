@@ -12,6 +12,7 @@
 #include <fstream>
 #include <string>
 #include "symbolTable.cpp"
+#include "ASTnode.cpp"
 #include "C_grammar.tab.h"
 
 #define POS_INT_MAX 2147483646
