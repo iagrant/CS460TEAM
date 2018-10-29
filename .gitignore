@@ -9,6 +9,7 @@ pushPopTest
 RedefinitionTest
 shadowTest
 symbolDriver
+funkyFuncs
 
 #lex and bison files
 lex.yy.*

@@ -29,9 +29,11 @@ int tabNum = 0;
 int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
+bool printSymbolNums = false;
 bool printProductions = false;
 bool printFile = true;
 bool printSource = false;
+bool buildingFunction=false;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
@@ -63,6 +65,8 @@ number  {num1}|{num2}
                     //print the buffer
                     if(printSource)
                         printLine();
+                    globalTempNode.resetNode();
+                    buildingFunction=false;
                 }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
@@ -98,12 +102,12 @@ number  {num1}|{num2}
                     }
                     if (productionFlag.compare(yytext)==0)
                     {
-                        if(printProductions) 
+                        if(printProductions)
                         {
                             printProductions = false;
                             printSource = false;
                         }
-                        else 
+                        else
                         {
                             printLine();
                             printProductions = true;
