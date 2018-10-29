@@ -19,10 +19,11 @@
 #include <string>
 
 enum signedEnum {signedE,unsignedE};
-enum typeQualE {constQ,volatileQ,bothQ};
-enum storageSpecE {autoS,registerS,staticS,externS,typedefS};
+enum typeQualE {noneQ,constQ,volatileQ,bothQ};
+enum storageSpecE {noneS,autoS,registerS,staticS,externS,typedefS};
 enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
-enum paramType {signedPT,typeQualPT,typeSpecPT};
+enum paramTypeE {signedPT,typeQualPT,typeSpecPT};
+extern bool printSymbolNums;
 
 class Node {
 private:
@@ -30,14 +31,15 @@ private:
     std::string typeOut;
     int line;
     int signedB;
-    int typeSpec;
     int typeQual;
     int storageSpec;
+    int typeSpec;
     int scope;
     int paramNum;
+    int currentParam;
     bool isFunction;
-    //std::list <int [3]> paramList;
-    //std::list <int [3]> :: iterator paramListIter;
+    std::list <int*> paramList;
+    std::list <int*> :: iterator paramListIter;
 
 public:
     Node(){
@@ -45,8 +47,8 @@ public:
         setLine(-1);
         setSigned(0);
         setTypeSpec(intS);
-        setTypeQual(9);
-        setStorageSpec(9);
+        setTypeQual(noneQ);
+        setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
         paramNum=0;
@@ -54,84 +56,15 @@ public:
 
     void writeNode(std::string filename) {
         std::ofstream fileP(filename,std::ios::app);
-        fileP << "NAME: " << name << std::endl;
-        fileP << "SCOPE LEVEL: " << scope << std::endl;
-        fileP << "TYPE: ";
-        switch(signedB)
-        {
-            case signedE:
-                break;
-            case unsignedE:
-                fileP << "unsigned ";
-                break;
-        }
-        switch(typeQual)
-        {
-            case constQ:
-                fileP << "const ";
-                break;
-            case volatileQ:
-                fileP << "volatile ";
-                break;
-            case bothQ:
-                fileP << "const volatile";
-                break;
-        }
-        switch(typeSpec)
-        {
-            case voidS:
-                fileP << "void ";
-                break;
-            case charS:
-                fileP << "char ";
-                break;
-            case shortS:
-                fileP << "short ";
-                break;
-            case intS:
-                fileP << "int ";
-                break;
-            case longS:
-                fileP << "long ";
-                break;
-            case floatS:
-                fileP << "float ";
-                break;
-            case doubleS:
-                fileP << "double ";
-                break;
-            case structS:
-                fileP << "struct ";
-                break;
-        }
-        switch(storageSpec)
-        {
-            case autoS:
-                fileP << "auto ";
-                break;
-            case registerS:
-                fileP << "register ";
-                break;
-            case staticS:
-                fileP << "static ";
-                break;
-            case externS:
-                fileP << "extern ";
-                break;
-            case typedefS:
-                fileP << "typedef ";
-                break;
-        }
-        fileP << std::endl;
-        fileP << "LINE: " << line << std::endl;
-        fileP << std::endl;
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(fileP.rdbuf()); //changes cout to print to file stream
+        printNode();
+        std::cout << std::endl;
+        std::cout.rdbuf(coutbuf); //resets cout to stdout
         fileP.close();
     }
-    void printNode() {
-        std::cout << "NAME: " << name << std::endl;
-        std::cout << "SCOPE LEVEL: " << scope << std::endl;
-        std::cout << "TYPE: ";
-        switch(signedB)
+    void printSigned(int input){
+        switch(input)
         {
             case signedE:
                 break;
@@ -139,7 +72,9 @@ public:
                 std::cout << "unsigned ";
                 break;
         }
-        switch(typeQual)
+    }
+    void printTypeQual(int input){
+        switch(input)
         {
             case constQ:
                 std::cout << "const ";
@@ -151,7 +86,9 @@ public:
                 std::cout << "const volatile";
                 break;
         }
-        switch(typeSpec)
+    }
+    void printTypeSpec(int input) {
+        switch(input)
         {
             case voidS:
                 std::cout << "void ";
@@ -178,7 +115,9 @@ public:
                 std::cout << "struct ";
                 break;
         }
-        switch(storageSpec)
+    }
+    void printStorageSpec(int input) {
+        switch(input)
         {
             case autoS:
                 std::cout << "auto ";
@@ -196,9 +135,66 @@ public:
                 std::cout << "typedef ";
                 break;
         }
-        std::cout << std::endl;
+    }
+    void printNode() {
+        std::cout << "NAME: " << name << std::endl;
+        std::cout << "SCOPE LEVEL: " << scope << std::endl;
+        if (printSymbolNums)
+            std::cout << "TYPE IN NUMS: " << signedB << typeQual << storageSpec << typeSpec << std::endl;
+        std::cout << "TYPE: ";
+        printType();
         std::cout << "LINE: " << line << std::endl;
+        printFunction();
         std::cout << std::endl;
+    }
+    void printType(){
+        printSigned(signedB);
+        printTypeQual(typeQual);
+        printStorageSpec(storageSpec);
+        printTypeSpec(typeSpec);
+        std::cout << std::endl;
+    }
+    void printFunction(){
+        //prints out function types to file stream
+        std::cout << "IS A FUNCTION: " << std::boolalpha << isFunction << std::endl;
+        if (isFunction){
+            std::cout << "Number of Function Paramiters: " << paramNum << std::endl;
+            if (printSymbolNums) {
+                std::cout << "Function Paramiters in Numbers: " << std::endl;;
+                paramListIter = paramList.begin();
+                currentParam = 1;
+                while (paramListIter != paramList.end()){
+                    std::cout << "PARAM " << currentParam << " NUM TYPE: ";
+                    int * ptr = *paramListIter;
+                    int sign = *ptr;
+                    ptr++;
+                    int typeQ = *ptr;
+                    ptr++;
+                    int typeS = *ptr;
+                    std::cout << sign << typeQ << typeS << std::endl;
+                    paramListIter++;
+                    currentParam++;
+                }
+            }
+            std::cout << "Function Paramiters: " << std::endl;;
+            paramListIter = paramList.begin();
+            currentParam = 1;
+            while (paramListIter != paramList.end()){
+                std::cout << "PARAM " << currentParam << " TYPE: ";
+                int * ptr = *paramListIter;
+                int sign = *ptr;
+                ptr++;
+                int typeQ = *ptr;
+                ptr++;
+                int typeS = *ptr;
+                printSigned(sign);
+                printTypeQual(typeQ);
+                printTypeSpec(typeS);
+                std::cout << std::endl;
+                paramListIter++;
+                currentParam++;
+            }
+        }
     }
     void resetNode() {
         setName("");
@@ -226,22 +222,24 @@ public:
     void setLine(int lineIn) {line=lineIn;}
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
-    void setFunction(bool funcExsistIn) {isFunction=funcExsistIn;}
-    /*
+    void setFunction() {isFunction=true;}
     void addParam(){
-        int paramType [3] = {signedE,9,intS};     //each param is a array of size 3
-                               //signed,type qualifier, and type specifier
-        //paramType[0]=signedE;  //defaults to signed variable
-        //paramType[1]=9;        //defaults to 9 which is nothing in the enum
-        //paramType[2]=intS;     //always default the type to int cuz C
+        paramNum++;
+        int * paramType;
+        paramType = new int [3];
+        //signed,type qualifier, and type specifier
+        paramType[0]=signedE;  //defaults to signed variable
+        paramType[1]=9;        //defaults to 9 which is nothing in the enum
+        paramType[2]=intS;     //always default the type to int cuz C
         paramList.push_back(paramType);
 
     }
     //typeOfTypes designates weather you are inserting signed,type qualifier, or
     //type specifier
     void addParamValue(int typeOfTypes,int type){
-            //paramListIter = paramList.end();
-            //*paramListIter[typeOfTypes] = type;
+            int * ptr = paramList.back();
+            paramList.pop_back();
+            ptr[typeOfTypes]=type;
+            paramList.push_back(ptr);
     }
-    */
 };

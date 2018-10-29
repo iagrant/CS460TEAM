@@ -6,9 +6,9 @@
 #include <list>
 #include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
@@ -64,14 +64,14 @@ int main () {
     z.setName(name0);
     z.setLine(line0);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.insertSymbol(z);
     st.addNewScope();
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
+    st.mode = lookup;
     st.searchTree(z);
     st.printST();
     return 0;

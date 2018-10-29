@@ -29,6 +29,7 @@ extern int colNum;
 extern bool printToken;
 extern bool printProductions;
 extern bool printSymbol;
+extern bool printSymbolNums;
 extern bool printFile;
 extern std::string buffer;
 extern std::string srcFile;
@@ -105,10 +106,12 @@ class SymbolTable {
     }
 
     void printST () {
+        std::cout << "Symbol Table Output:" << std::endl << std::endl;
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> currentScopeLoop = *currentLooker;
             std::cout << "SIZE OF ST SCOPE: " << currentScopeLoop.size() << std::endl;
+            std::cout << std::endl;
             for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
                 Node treeNode = iter->second;

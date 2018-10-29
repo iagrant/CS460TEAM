@@ -4,10 +4,11 @@
 #include <iterator>
 #include <string>
 #include <list>
-#include "symbolTable.cpp"
+#include "../symbolTable.cpp"
 
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {

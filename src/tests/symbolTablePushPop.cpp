@@ -6,9 +6,9 @@
 #include <list>
 #include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
@@ -69,14 +69,14 @@ int main () {
     z.setLine(line0);
     z.setScope(1);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.addNewScope();
     st.insertSymbol(z);
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
+    st.mode = lookup;
     st.searchTree(z);
     std::cout << "BEOFRE POP" << std::endl;
     st.printST();
