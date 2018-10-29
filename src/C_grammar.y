@@ -15,6 +15,7 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
+    ASTnode globalNode(Global);
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -1410,12 +1411,14 @@ additive_expression
         }
 	| additive_expression PLUS multiplicative_expression
         {
+            ASTnode tmpNode("+");
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
         }
 	| additive_expression MINUS multiplicative_expression
         {
+            ASTnode tmpNode("-");
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
             }
@@ -1674,6 +1677,7 @@ string
 identifier
 	: IDENTIFIER
         {
+            idNode tmpNode(yytext);
             globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
