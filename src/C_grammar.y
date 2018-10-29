@@ -15,7 +15,7 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-    ASTnode globalNode(Global);
+    ASTnode globalNode("Global");
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -144,7 +144,7 @@ declaration
 declaration_list
 	: declaration
 		{
-            mode = lookup;
+            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration_list -> declaration" << std::endl;
             }
