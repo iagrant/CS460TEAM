@@ -140,14 +140,14 @@ class SymbolTable {
                 //std::cout << " INSERT NODE NAME: " << node.getName() << std::endl;
 				if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()) && (treeNode.getLine() != node.getLine()))
                 {
-                    std::cout << "ERROR: Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    std::cout << "\e[31;1m ERROR: \e[0m Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
                     printError();
                     exit(1);
 					return true;
                 }
 				if ((treeNode.getName().compare(node.getName())==0) && (node.getLine() != treeNode.getLine()))
                 {
-                    std::cout << "WARNING: Shadowing of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    std::cout << "\e[33;1m WARNING: \e[0m Shadowing of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
 					return true;
                 }
                 i++;
