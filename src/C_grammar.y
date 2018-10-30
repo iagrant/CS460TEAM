@@ -1154,7 +1154,7 @@ expression
 assignment_expression
 	: conditional_expression
         {
-        //test
+        //testing
             if (printProductions) {
                 std::cout << "assignment_expression -> conditional_expression" << std::endl;
             }
