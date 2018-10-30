@@ -12,6 +12,7 @@ class ASTnode {
 public:
     std::vector<ASTnode*> child;
     std::string production; 
+    int printLabel;
     ASTnode(){}
     ASTnode(std::string productionIn){
         production = productionIn;

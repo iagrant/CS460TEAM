@@ -663,12 +663,17 @@ void printConsole (std::string token) {
 }
 
 void printSubTree (ASTnode * parent) {
+    static int inc = 0;
+    parent->printLabel = inc;
+    astFileP << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
+    inc++;
+
     for (int i = 0; i < parent->child.size(); i++) 
     {
         if (parent->child.size() != 0) 
         {
-            astFileP << parent->production << " -> " << parent->child[i]->production << std::endl;
             printSubTree(parent->child[i]);
+            astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
         }
     }
 }
