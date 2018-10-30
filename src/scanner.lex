@@ -23,7 +23,6 @@
 */
 extern int yylex();
 extern int yyparse();
-extern std::ofstream astFileP("ASTnode.dot");
 
 int lineNum = 1;
 int tabNum = 0;
@@ -33,14 +32,16 @@ bool printSymbol = false;
 bool printSymbolNums = false;
 bool printProductions = false;
 bool printFile = true;
-bool printSource = false;
-bool buildingFunction=false;
+bool printSource = true;
+bool buildingFunction = false;
+bool firstPrint = true;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
 SymbolTable globalSymbolTable; // construct Symbol Table
 Node globalTempNode;           // temp ST node for pass around
-
+std::ofstream scannerOut; 		// File pointer for scanner
+std::ofstream productionOut;
 std::string tokenFlag = "!!dl";
 std::string symbolFlag = "!!ds";
 std::string productionFlag = "!!dp";
@@ -64,8 +65,11 @@ number  {num1}|{num2}
 %%
 \n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;
                     //print the buffer
-                    if(printSource)
-                        printLine();
+                    if(printSource){
+						printLine();
+						firstPrint = false;
+					}
+
                     globalTempNode.resetNode();
                     buildingFunction=false;
                 }
@@ -622,6 +626,8 @@ return          {
 {name}          {
                     if(printToken) {printConsole("IDENTIFIER");}
                     if(printFile) {printToFile("IDENTIFIER");}
+					if (printSource && firstPrint)
+						printLine();
                     colNum += yyleng;
                     if (yyleng > 31)
                     {
@@ -655,6 +661,7 @@ void printLine () {
         std::getline(srcFileP,buffer);
     }
     std::cout << lineNum << " " << buffer << std::endl;
+	productionOut << lineNum << " " << buffer << std::endl;
     srcFileP.close();
 }
 
@@ -679,9 +686,9 @@ void printSubTree (ASTnode * parent) {
 }
 
 void printToFile (std::string token) {
-    std::ofstream fileP(outSrcFile,std::ios::app);
-    fileP << token << std::endl;
-    fileP.close();
+    scannerOut.open("ScannerOutput.txt",std::ofstream::app);
+    scannerOut << token << std::endl;
+    scannerOut.close();
 }
 
 void unleash () {
