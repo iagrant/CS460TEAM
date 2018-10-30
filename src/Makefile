@@ -7,18 +7,18 @@ lex.yy.c: scanner.lex C_grammar.tab.h
 	flex scanner.lex C_grammar.tab.c
 
 fcc: lex.yy.c C_grammar.tab.c C_grammar.tab.h
-	g++ -std=c++11 -o $@ lex.yy.c
+	g++ -w -std=c++11 -o $@ lex.yy.c
 
-symbolDriver: tests/symTableDriver.cpp
-	g++ -std=c++11 tests/symTableDriver.cpp -o $@
+symbolDriver: symTableDriver.cpp
+	g++ -w -std=c++11 symTableDriver.cpp -o $@
 
 shadowTest: tests/symbolTableShadowing.cpp
-	g++ -std=c++11 tests/symbolTableShadowing.cpp -o $@
+	g++ -w -std=c++11 tests/symbolTableShadowing.cpp -o $@
 
 RedefinitionTest: tests/symbolTableRedefinitionTest.cpp
-	g++ -std=c++11 tests/symbolTableRedefinitionTest.cpp -o $@
+	g++ -w -std=c++11 tests/symbolTableRedefinitionTest.cpp -o $@
 
 pushPopTest: tests/symbolTablePushPop.cpp
-	g++ -std=c++11 tests/symbolTablePushPop.cpp -o $@
+	g++ -w -std=c++11 tests/symbolTablePushPop.cpp -o $@
 clean:
 	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest
