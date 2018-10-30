@@ -10,14 +10,12 @@
 	extern bool printToken;
 	extern bool printProductions;
 	extern bool printSymbol;
-	extern bool printSymbolNums;
 	extern bool printFile;
 	extern std::string buffer;
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-    ASTnode globalNode("Global");
-    extern bool buildingFunction;
+    extern ASTnode globalASTnode;
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -30,6 +28,7 @@
 	}
 %}
 %union {
+    ASTnode *node;
   int ival;
   char cval;
   char sval[32];
@@ -60,8 +59,8 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <sval> string identifier
-%type <ival> declaration declaration_specifiers type_specifier
+%type <ASTNode> string identifier
+%type <ASTNode> declaration declaration_specifiers type_specifier
 
 %start translation_unit
 %%
@@ -363,7 +362,6 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeQual(constQ);
                 globalTempNode.setLine(lineNum);
@@ -374,7 +372,6 @@ type_qualifier
         }
 	| VOLATILE
 		{
-            globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeQual(volatileQ);
                 globalTempNode.setLine(lineNum);
@@ -631,7 +628,6 @@ direct_declarator
         }
 	| direct_declarator OPEN CLOSE
         {
-            buildingFunction=true;
             globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
@@ -639,7 +635,6 @@ direct_declarator
         }
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
-            buildingFunction=true;
             globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
@@ -647,8 +642,8 @@ direct_declarator
         }
 	| direct_declarator OPEN identifier_list CLOSE
         {
-            buildingFunction=true;
-            globalSymbolTable.addNewScope();
+            std::cout << "The compiler does not support this feature" << std::endl;
+            exit(1);
             if (printProductions) {
                 std::cout << "direct_declarator ->  direct_declarator OPEN identifier_list CLOSE" << std::endl;
             }
@@ -935,6 +930,8 @@ statement
 labeled_statement
 	: identifier COLON statement
         {
+            std::cout << "This compiler does not support this feature" << std::endl;
+            exit(1);
             if (printProductions) {
                 std::cout << "labeled_statement -> identifier COLON statement" << std::endl;
             }
@@ -1684,7 +1681,10 @@ string
 identifier
 	: IDENTIFIER
         {
-            idNode tmpNode(yytext);
+            
+            idNode * tmpNode = new idNode("IDENTIFIER");
+            tmpNode->name = yytext;
+            $$=tmpNode;
             globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
@@ -1709,7 +1709,6 @@ int main (int argc, char** argv)
 {
     std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
-	std::string symbolNumFlag = "-dsn";
 	std::string productionFlag = "-dp";
 	std::string fhFlag = "-fh";
     std::string inputFlag = "-i";
@@ -1732,12 +1731,7 @@ int main (int argc, char** argv)
     }
     if((symbolFlag.compare(argv[i])) == 0)
     {
-      // Dump the symbol table after parse
-      printSymbol=true;
-    }
-    if((symbolNumFlag.compare(argv[i])) == 0)
-    {
-        printSymbolNums=true;
+      // Dump the symbol table
     }
     if((fhFlag.compare(argv[i])) == 0)
     {
@@ -1781,8 +1775,6 @@ int main (int argc, char** argv)
 
   yyin = inputStream;
   yyparse();
-  if(printSymbol)
-    globalSymbolTable.printST();
   fclose(inputStream);
   std::ofstream fileP(outSrcFile);
   fileP << "";

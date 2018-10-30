@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <list>
 
 enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
@@ -10,6 +11,7 @@ enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
 class ASTnode {
 protected:
     std::string production; 
+    std::vector<ASTnode*> pointers;
 public:
     ASTnode(){}
     ASTnode(std::string productionIn){
@@ -20,16 +22,20 @@ public:
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "GenericNode" << std::endl;
     }
+    void addNode(ASTnode * newPointer) {
+        pointers.push_back(newPointer);
+    }
 };
 
 
 class idNode : public ASTnode {
     public:
-    idNode(std::string productionIn){production = productionIn; printASTnode();}
-    void printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "IDNode" << std::endl;
-    }
+        std::string name;
+        idNode(std::string productionIn){production = productionIn; printASTnode();}
+        void printASTnode() {
+            std::cout << "NODE: " << production << std::endl;
+            std::cout << "TYPE: " << "IDNode" << std::endl;
+        }
     
 };
 
