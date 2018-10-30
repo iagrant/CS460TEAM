@@ -23,6 +23,7 @@
 */
 extern int yylex();
 extern int yyparse();
+extern std::ofstream astFileP("ASTnode.dot");
 
 int lineNum = 1;
 int tabNum = 0;
@@ -659,6 +660,17 @@ void printLine () {
 
 void printConsole (std::string token) {
     std::cout << token << std::endl;
+}
+
+void printSubTree (ASTnode * parent) {
+    for (int i = 0; i < parent->child.size(); i++) 
+    {
+        if (parent->child.size() != 0) 
+        {
+            astFileP << parent->production << " -> " << parent->child[i]->production << std::endl;
+            printSubTree(parent->child[i]);
+        }
+    }
 }
 
 void printToFile (std::string token) {

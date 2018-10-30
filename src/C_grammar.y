@@ -15,7 +15,7 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-    extern ASTnode globalASTnode;
+    extern ASTnode *globalASTnode = new ASTnode("translation_unit");;
 	void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -59,8 +59,8 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant assignment_expression initializer
-%type <sval> assignment_operator
+%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant assignment_expression initializer translation_unit external_declaration function_definition declarator compound_statement init_declarator_list init_declarator declaration declaration_list declaration_specifiers
+%type <sval> assignment_operator type_specifier 
 
 %start translation_unit
 %%
@@ -68,6 +68,7 @@
 translation_unit
 	: external_declaration
 		{
+            globalASTnode->addNode($1);
             if (printProductions) {
                 std::cout << "translational_unit -> external_declaration" << std::endl;
             }
@@ -83,6 +84,7 @@ translation_unit
 external_declaration
 	: function_definition
 		{
+            $$ = $1;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "external_declaration -> function definition" << std::endl;
@@ -113,6 +115,12 @@ function_definition
         }
 	| declaration_specifiers declarator compound_statement
 		{
+            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
+            
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator compound_statement" << std::endl;
             }
@@ -135,6 +143,10 @@ declaration
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
+            ASTnode *tmpNode = new ASTnode("DECLARATION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            $$ = tmpNode;
             globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
@@ -145,6 +157,7 @@ declaration
 declaration_list
 	: declaration
 		{
+            $$ = $1;
             globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration_list -> declaration" << std::endl;
@@ -173,6 +186,8 @@ declaration_specifiers
         }
 	| type_specifier
         {
+        ASTnode *tmpNode = new ASTnode($1);
+        $$ = tmpNode;
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
         }
@@ -242,7 +257,7 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
-        
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(voidS);
@@ -254,6 +269,7 @@ type_specifier
         }
 	| CHAR
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(charS);
@@ -265,6 +281,7 @@ type_specifier
         }
 	| SHORT
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(shortS);
@@ -276,6 +293,7 @@ type_specifier
         }
 	| INT
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(intS);
@@ -287,6 +305,7 @@ type_specifier
         }
 	| LONG
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(longS);
@@ -298,6 +317,7 @@ type_specifier
         }
 	| FLOAT
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(floatS);
@@ -309,6 +329,7 @@ type_specifier
         }
 	| DOUBLE
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(doubleS);
@@ -320,6 +341,7 @@ type_specifier
         }
 	| SIGNED
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(signedE);
@@ -331,6 +353,7 @@ type_specifier
         }
 	| UNSIGNED
 		{
+            std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(unsignedE);
@@ -437,6 +460,7 @@ struct_declaration_list
 init_declarator_list
 	: init_declarator
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator" << std::endl;
             }
@@ -452,6 +476,7 @@ init_declarator_list
 init_declarator
 	: declarator
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "init_declarator -> declarator" << std::endl;
             }
@@ -590,6 +615,7 @@ enumerator
 declarator
 	: direct_declarator
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "declarator -> direct_declarator" << std::endl;
             }
@@ -983,6 +1009,7 @@ compound_statement
         }
 	| CURLYOPEN declaration_list CURLYCLOSE
         {
+            $$ = $2;
             if (printProductions) {
                 std::cout << "compound_statement -> CURLYOPEN declaration_list CURLYCLOSE" << std::endl;
             }
@@ -1174,77 +1201,77 @@ assignment_expression
 assignment_operator
 	: EQUALS
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "EQUALS");
             if (printProductions) {
                 std::cout << "assignment_operator -> EQUALS" << std::endl;
             }
         }
 	| MUL_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "MUL_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> MUL_ASSIGN" << std::endl;
             }
         }
 	| DIV_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "DIV_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> DIV_ASSIGN" << std::endl;
             }
         }
 	| MOD_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "MOD_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> MOD_ASSIGN" << std::endl;
             }
         }
 	| ADD_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "ADD_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> ADD_ASSIGN" << std::endl;
             }
         }
 	| SUB_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "SUB_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> SUB_ASSIGN" << std::endl;
             }
         }
 	| LEFT_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "LEFT_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> LEFT_ASSIGN" << std::endl;
             }
         }
 	| RIGHT_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "RIGHT_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> RIGHT_ASSIGN" << std::endl;
             }
         }
 	| AND_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "AND_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> AND_ASSIGN" << std::endl;
             }
         }
 	| XOR_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "XOR_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> XOR_ASSIGN" << std::endl;
             }
         }
 	| OR_ASSIGN
         {
-            std::strcpy($$, yytext);
+            std::strcpy($$, "OR_ASSIGN");
             if (printProductions) {
                 std::cout << "assignment_operator -> OR_ASSIGN" << std::endl;
             }
@@ -1809,11 +1836,18 @@ int main (int argc, char** argv)
     }
   }
 
+  
+
   yyin = inputStream;
+  astFileP << "digraph AST {" << std::endl;
   yyparse();
+  printSubTree(globalASTnode);
+  astFileP << "}" << std::endl;
   fclose(inputStream);
   std::ofstream fileP(outSrcFile);
+//  astFileP << "";
   fileP << "";
+  astFileP.close();
   fileP.close();
 
   return 0;

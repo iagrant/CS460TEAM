@@ -9,21 +9,19 @@
 enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
 
 class ASTnode {
-protected:
-    std::string production; 
-    std::vector<ASTnode*> pointers;
 public:
+    std::vector<ASTnode*> child;
+    std::string production; 
     ASTnode(){}
     ASTnode(std::string productionIn){
         production = productionIn;
-        printASTnode();
     }
     virtual void printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "GenericNode" << std::endl;
     }
     void addNode(ASTnode * newPointer) {
-        pointers.push_back(newPointer);
+        child.push_back(newPointer);
     }
 };
 
