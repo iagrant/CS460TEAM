@@ -59,7 +59,8 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant
+%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant assignment_expression initializer
+%type <sval> assignment_operator
 
 %start translation_unit
 %%
@@ -762,6 +763,7 @@ identifier_list
 initializer
 	: assignment_expression
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "initializer -> assignment_expression" << std::endl;
             }
@@ -1158,7 +1160,10 @@ assignment_expression
         }
 	| unary_expression assignment_operator assignment_expression
         {
-            
+            ASTnode *assignmentNode = new ASTnode($2);
+            assignmentNode->addNode($1);
+            assignmentNode->addNode($3);
+            $$ = assignmentNode;
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
             }
@@ -1168,66 +1173,77 @@ assignment_expression
 assignment_operator
 	: EQUALS
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> EQUALS" << std::endl;
             }
         }
 	| MUL_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> MUL_ASSIGN" << std::endl;
             }
         }
 	| DIV_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> DIV_ASSIGN" << std::endl;
             }
         }
 	| MOD_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> MOD_ASSIGN" << std::endl;
             }
         }
 	| ADD_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> ADD_ASSIGN" << std::endl;
             }
         }
 	| SUB_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> SUB_ASSIGN" << std::endl;
             }
         }
 	| LEFT_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> LEFT_ASSIGN" << std::endl;
             }
         }
 	| RIGHT_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> RIGHT_ASSIGN" << std::endl;
             }
         }
 	| AND_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> AND_ASSIGN" << std::endl;
             }
         }
 	| XOR_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> XOR_ASSIGN" << std::endl;
             }
         }
 	| OR_ASSIGN
         {
+            std::strcpy($$, yytext);
             if (printProductions) {
                 std::cout << "assignment_operator -> OR_ASSIGN" << std::endl;
             }
