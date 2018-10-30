@@ -59,8 +59,7 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <node> string identifier direct_declarator 
-%type <node> declaration declaration_specifiers type_specifier constant
+%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant
 
 %start translation_unit
 %%
@@ -1159,6 +1158,7 @@ assignment_expression
         }
 	| unary_expression assignment_operator assignment_expression
         {
+            
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
             }
@@ -1476,6 +1476,7 @@ cast_expression
 unary_expression
 	: postfix_expression
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "unary_expression -> postfix_expression" << std::endl;
             }
@@ -1554,6 +1555,7 @@ unary_operator
 postfix_expression
 	: primary_expression
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "postfix_expression -> primary_expression" << std::endl;
             }
@@ -1605,18 +1607,21 @@ postfix_expression
 primary_expression
 	: identifier
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "primary_expression -> identifier" << std::endl;
             }
         }
 	| constant
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "primary_expression -> constant" << std::endl;
             }
         }
 	| string
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "primary_expression -> string" << std::endl;
             }
