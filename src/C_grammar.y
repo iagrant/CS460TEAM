@@ -59,8 +59,8 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <ASTNode> string identifier
-%type <ASTNode> declaration declaration_specifiers type_specifier
+%type <node> string identifier direct_declarator 
+%type <node> declaration declaration_specifiers type_specifier constant
 
 %start translation_unit
 %%
@@ -242,6 +242,7 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
+        
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(voidS);
@@ -604,6 +605,7 @@ declarator
 direct_declarator
 	: identifier
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "direct_declarator -> identifier" << std::endl;
             }
@@ -1645,18 +1647,27 @@ argument_expression_list
 constant
 	: INTEGER_CONSTANT
         {
+            constantNode *tmpNode = new constantNode("INTEGER_CONSTANT");
+            tmpNode->intConst = std::stoi(yytext);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> INTEGER_CONSTANT" << std::endl;
             }
         }
 	| CHARACTER_CONSTANT
         {
+            constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT");
+            tmpNode->charConst = yytext[0];
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> CHARACTER_CONSTANT" << std::endl;
             }
         }
 	| FLOATING_CONSTANT
         {
+            constantNode *tmpNode = new constantNode("FLOATING_CONSTANT");
+            tmpNode->doubleConst = std::stof(yytext);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> FLOATING_CONSTANT" << std::endl;
             }
@@ -1672,6 +1683,9 @@ constant
 string
 	: STRING_LITERAL
         {
+            constantNode *tmpNode = new constantNode("STRING_LITERAL");
+            tmpNode->stringConst = yytext+'\0';
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "string -> STRING_LITERAL" << std::endl;
             }
@@ -1684,7 +1698,7 @@ identifier
             
             idNode * tmpNode = new idNode("IDENTIFIER");
             tmpNode->name = yytext;
-            $$=tmpNode;
+            $$ = tmpNode;
             globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();

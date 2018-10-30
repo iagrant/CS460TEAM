@@ -39,6 +39,21 @@ class idNode : public ASTnode {
     
 };
 
+class constantNode : public ASTnode {
+    public:
+        std::string name;
+        int intConst; 
+        char charConst;
+        double doubleConst;
+        std::string stringConst = "";
+        constantNode(std::string productionIn){production = productionIn; printASTnode();}
+        void printASTnode() {
+            std::cout << "NODE: " << production << std::endl;
+            std::cout << "TYPE: " << "IDNode" << std::endl;
+        }
+    
+};
+
 class ifNode : public ASTnode {
     public:
     ifNode(std::string productionIn){production = productionIn; printASTnode();}
