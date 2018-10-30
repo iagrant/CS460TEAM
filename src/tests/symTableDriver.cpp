@@ -4,11 +4,11 @@
 #include <iterator>
 #include <string>
 #include <list>
-#include "symbolTable.cpp"
+#include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
@@ -41,26 +41,30 @@ int main () {
     a.setSigned(sign1);
     a.setName(name1);
     a.setLine(line1);
+    a.setScope(0);
 
     b.setTypeSpec(type2);
     b.setName(name2);
     b.setLine(line2);
+    b.setScope(0);
 
     c.setTypeSpec(type3);
     c.setName(name3);
     c.setLine(line3);
+    c.setScope(1);
 
     d.setTypeSpec(type4);
     d.setName(name4);
     d.setLine(line4);
+    d.setScope(1);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.addNewScope();
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
+    st.mode = lookup;
     st.printST();
     st.writeST("symbolTable.txt");
     //st.writeST("out.txt");
