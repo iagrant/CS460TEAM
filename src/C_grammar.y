@@ -2109,8 +2109,9 @@ additive_expression
         }
 	| additive_expression PLUS multiplicative_expression
         {
-            ASTnode *tmpNode = new ASTnode("+");
+            mathNode *tmpNode = new mathNode("+");
             tmpNode->addNode($1);
+            tmpNode -> operation = addOp;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2122,8 +2123,9 @@ additive_expression
         }
 	| additive_expression MINUS multiplicative_expression
         {
-            ASTnode *tmpNode = new ASTnode("-");
+            mathNode *tmpNode = new mathNode("-");
             tmpNode->addNode($1);
+            tmpNode -> operation = subOp;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2148,10 +2150,12 @@ multiplicative_expression
         }
 	| multiplicative_expression STAR cast_expression
         {
-            ASTnode *tmpNode = new ASTnode("*");
+            mathNode *tmpNode = new mathNode("*");
             tmpNode -> addNode($1);
+            tmpNode -> operation = mulOp;
             tmpNode -> addNode($3);
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression STAR cast_expression" << std::endl;
             }
@@ -2161,10 +2165,12 @@ multiplicative_expression
         }
 	| multiplicative_expression FORSLASH cast_expression
         {
-            ASTnode *tmpNode = new ASTnode("/");
+            mathNode *tmpNode = new mathNode("/");
             tmpNode -> addNode($1);
+            tmpNode -> operation = divOp;
             tmpNode -> addNode($3);
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression FORSLASH cast_expression" << std::endl;
             }
@@ -2174,8 +2180,9 @@ multiplicative_expression
         }
 	| multiplicative_expression PERCENT cast_expression
         {
-            ASTnode *tmpNode = new ASTnode("%");
+            mathNode *tmpNode = new mathNode("%");
             tmpNode -> addNode($1);
+            tmpNode -> operation = modOp;
             tmpNode -> addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2222,6 +2229,10 @@ unary_expression
         }
 	| INC_OP unary_expression
         {
+            mathNode *tmpNode = new mathNode("++");
+            tmpNode -> addNode($2);
+            tmpNode -> operation = incOp;
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "unary_expression -> INC_OP unary_expression" << std::endl;
             }
@@ -2231,6 +2242,10 @@ unary_expression
         }
 	| DEC_OP unary_expression
         {
+            mathNode *tmpNode = new mathNode("--");
+            tmpNode -> addNode($2);
+            tmpNode -> operation = decOp;
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "unary_expression -> DEC_OP unary_expression" << std::endl;
             }
