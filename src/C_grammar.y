@@ -2142,6 +2142,10 @@ multiplicative_expression
         }
 	| multiplicative_expression STAR cast_expression
         {
+            ASTnode *tmpNode = new ASTnode("*");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression STAR cast_expression" << std::endl;
             }
@@ -2151,6 +2155,10 @@ multiplicative_expression
         }
 	| multiplicative_expression FORSLASH cast_expression
         {
+            ASTnode *tmpNode = new ASTnode("/");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression FORSLASH cast_expression" << std::endl;
             }
@@ -2160,6 +2168,10 @@ multiplicative_expression
         }
 	| multiplicative_expression PERCENT cast_expression
         {
+            ASTnode *tmpNode = new ASTnode("%");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression PERCENT cast_expression" << std::endl;
             }
