@@ -12,15 +12,15 @@ class ASTnode {
 public:
     std::vector<ASTnode*> child;
     std::string production;
-    std::string infoString;
+    std::string infoString = "";
     int printLabel;
     ASTnode(){}
     ASTnode(std::string productionIn){
         production = productionIn;
     }
     virtual std::string printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "GenericNode" << std::endl;
+        infoString.append(production);
+        return infoString;
     }
     void addNode(ASTnode * newPointer) {
         child.push_back(newPointer);
@@ -32,9 +32,11 @@ class idNode : public ASTnode {
     public:
         std::string name;
         idNode(std::string productionIn){production = productionIn;}
+
         std::string printASTnode() {
-            std::cout << "NODE: " << production << std::endl;
-            std::cout << "TYPE: " << "IDNode" << std::endl;
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append(name);
             return infoString;
         }
 
@@ -43,14 +45,34 @@ class idNode : public ASTnode {
 class constantNode : public ASTnode {
     public:
         std::string name;
-        int intConst;
-        char charConst;
-        double doubleConst;
-        std::string stringConst = "";
+        int intConst = NULL;
+        char charConst = NULL;
+        double doubleConst = NULL;
+        std::string stringConst = ""; 
         constantNode(std::string productionIn){production = productionIn;}
+
         std::string printASTnode() {
-            std::cout << "NODE: " << production << std::endl;
-            std::cout << "TYPE: " << "CONSTANTNode" << std::endl;
+            if (intConst != NULL) {
+                infoString.append(production);
+                infoString.append("\n");
+                infoString.append(std::to_string(intConst));
+            }
+            else if(doubleConst != NULL) {
+                infoString.append(production);
+                infoString.append("\n");
+                infoString.append(std::to_string(doubleConst));
+            }
+            else if(stringConst != "") {
+                infoString.append(production);
+                infoString.append("\n");
+                infoString.append(stringConst);
+            }
+            else {
+                infoString.append(production);
+                infoString.append("\n");
+                infoString.push_back(charConst);
+            }
+
             return infoString;
         }
 
@@ -59,9 +81,9 @@ class constantNode : public ASTnode {
 class ifNode : public ASTnode {
     public:
     ifNode(std::string productionIn){production = productionIn;}
+
     std::string printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "IFNode" << std::endl;
+        infoString.append(production);
         return infoString;
     }
 
@@ -70,9 +92,9 @@ class ifNode : public ASTnode {
 class functionNode : public ASTnode {
     public:
     functionNode(std::string productionIn){production = productionIn;}
+
     std::string printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "FunctionNode" << std::endl;
+        infoString.append(production);
         return infoString;
     }
 
@@ -81,9 +103,9 @@ class functionNode : public ASTnode {
 class forNode : public ASTnode {
     public:
     forNode(std::string productionIn){production = productionIn;}
+
     std::string printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "FORNode" << std::endl;
+        infoString.append(production);
         return infoString;
     }
 
@@ -93,8 +115,7 @@ class whileNode : public ASTnode {
     public:
     whileNode(std::string productionIn){production = productionIn;}
     std::string printASTnode() {
-        std::cout << "NODE: " << production << std::endl;
-        std::cout << "TYPE: " << "WHILENode" << std::endl;
+        infoString.append(production);
         return infoString;
     }
 

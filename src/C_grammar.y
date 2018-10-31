@@ -2476,8 +2476,7 @@ argument_expression_list
 constant
 	: INTEGER_CONSTANT
         {
-            std::string tempInt = "INTEGER_CONSTANT\n";
-            constantNode *tmpNode = new constantNode(tempInt + yytext);
+            constantNode *tmpNode = new constantNode("INTEGER_CONSTANT");
             tmpNode->intConst = std::stoi(yytext);
             $$ = tmpNode;
             if (printProductions) {
@@ -2526,7 +2525,6 @@ string
 	: STRING_LITERAL
         {
             constantNode *tmpNode = new constantNode("STRING_LITERAL");
-            tmpNode->stringConst = yytext+'\0';
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "string -> STRING_LITERAL" << std::endl;
@@ -2540,8 +2538,7 @@ string
 identifier
 	: IDENTIFIER
         {
-            std::string identifier = "IDENTIFIER\n";
-            idNode * tmpNode = new idNode(identifier + yytext);
+            idNode * tmpNode = new idNode("IDENTIFIER");
             tmpNode->name = yytext;
             $$ = tmpNode;
             globalTempNode.setName(yytext+'\0');

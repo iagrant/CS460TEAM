@@ -676,8 +676,8 @@ void printSubTree (ASTnode * parent) {
     {
         static int inc = 0;
         parent->printLabel = inc;
-        astFileP << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
-        std::cout << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
+        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+        std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
         inc++;
 
         for (int i = 0; i < parent->child.size(); i++) 
