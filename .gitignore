@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+#Gross Mac Stuff
+.DS_Store
+
 #bins
 scanner
 fcc
@@ -15,6 +18,11 @@ funkyFuncs
 lex.yy.*
 *.tab.*
 C_grammar.output
+
+#output files
+*.png
+*.dot
+*.txt
 
 # Compiled Object files
 *.slo
