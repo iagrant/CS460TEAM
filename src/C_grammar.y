@@ -87,7 +87,6 @@ translation_unit
         }
 	| translation_unit external_declaration
 		{
-            globalASTnode->addNode($1);
             globalASTnode->addNode($2);
             if (printProductions) {
                 std::cout << "translational_unit -> translational_unit external_declaration" << std::endl;
@@ -2109,7 +2108,10 @@ additive_expression
         }
 	| additive_expression PLUS multiplicative_expression
         {
-            ASTnode tmpNode("+");
+            ASTnode *tmpNode = new ASTnode("+");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
@@ -2119,7 +2121,10 @@ additive_expression
         }
 	| additive_expression MINUS multiplicative_expression
         {
-            ASTnode tmpNode("-");
+            ASTnode *tmpNode = new ASTnode("-");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
             }
