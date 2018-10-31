@@ -16,6 +16,11 @@ lex.yy.*
 *.tab.*
 C_grammar.output
 
+#output files
+*.png
+*.dot
+*.txt
+
 # Compiled Object files
 *.slo
 *.lo

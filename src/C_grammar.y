@@ -1,6 +1,7 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
+    #include <cstring>
 	#include <stdlib.h>
 	#include <iostream>
 
@@ -607,6 +608,10 @@ init_declarator_list
         }
 	| init_declarator_list COMMA init_declarator
 		{
+            ASTnode* tmpNode = new ASTnode("INIT_DECL_LIST");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator_list" << std::endl;
             }
