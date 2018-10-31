@@ -125,7 +125,7 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
-            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
@@ -139,7 +139,7 @@ function_definition
         }
 	| declarator declaration_list compound_statement
 		{
-            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
@@ -153,7 +153,7 @@ function_definition
         }
 	| declaration_specifiers declarator compound_statement
 		{
-            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
@@ -168,7 +168,7 @@ function_definition
         }
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
-            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
