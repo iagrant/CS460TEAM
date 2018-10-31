@@ -87,6 +87,8 @@ translation_unit
         }
 	| translation_unit external_declaration
 		{
+            globalASTnode->addNode($1);
+            globalASTnode->addNode($2);
             if (printProductions) {
                 std::cout << "translational_unit -> translational_unit external_declaration" << std::endl;
             }
@@ -123,6 +125,10 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
+            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
@@ -133,6 +139,11 @@ function_definition
         }
 	| declarator declaration_list compound_statement
 		{
+            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
             }
@@ -157,6 +168,12 @@ function_definition
         }
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
+            ASTnode *tmpNode = new ASTnode("FUNCTION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            tmpNode->addNode($3);
+            tmpNode->addNode($4);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
             }
@@ -1449,6 +1466,11 @@ statement_list
 selection_statement
 	: IF OPEN expression CLOSE statement
         {
+            ifNode *parentNode = new ifNode("IF_STATEMENT");
+            parentNode->addNode($3);
+            parentNode->addNode($5);
+            $$ = parentNode;
+
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement" << std::endl;
             }
@@ -1458,6 +1480,11 @@ selection_statement
         }
 	| IF OPEN expression CLOSE statement ELSE statement
         {
+            ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT");
+            parentNode->addNode($3);
+            parentNode->addNode($5);
+            parentNode->addNode($7);
+            $$ = parentNode;
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement ELSE statement" << std::endl;
             }
@@ -1479,10 +1506,17 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            ASTnode* tmpNode = new ASTnode("WHILE");
-            tmpNode -> addNode($3);
-            tmpNode -> addNode($5);
-            $$ = tmpNode;
+            if ($5 != NULL) {
+                ASTnode* tmpNode = new ASTnode("WHILE");
+                tmpNode -> addNode($3);
+                tmpNode -> addNode($5);
+                $$ = tmpNode;
+            }
+            else {
+                ASTnode* tmpNode = new ASTnode("WHILE");
+                tmpNode -> addNode($3);
+                $$ = tmpNode;
+            }
             if (printProductions) {
                 std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
