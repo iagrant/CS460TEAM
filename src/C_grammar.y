@@ -17,6 +17,7 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
+    extern enum int operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
     extern ASTnode *globalASTnode = new ASTnode("translation_unit");;
     std::ofstream fileP;
     void  yyerror(char *msg)
