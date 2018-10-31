@@ -14,6 +14,7 @@ public:
     std::string production;
     std::string infoString = "";
     int printLabel;
+    int lineNum;
     ASTnode(){}
     ASTnode(std::string productionIn){
         production = productionIn;
@@ -118,5 +119,47 @@ class whileNode : public ASTnode {
         infoString.append(production);
         return infoString;
     }
+
+};
+
+class mathNode : public ASTnode {
+    public:
+        enum int operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+        int operation;
+        mathNode(std::string productionIn){production = productionIn;}
+        std::string printASTnode() {
+            infoString.append(production);
+            return infoString;
+    }
+        /* FOR USE WITH MATH OPERATIONS
+            switch (operation) {
+                case addOp:
+                    break;
+                case subOp:
+                    break;
+                case mulOp:
+                    break;
+                case divOp:
+                    break;
+                case incOp:
+                    break;
+                case decOp:
+                    break;
+                case modOp:
+                    break;
+                case shlOp:
+                    break;
+                case shrOp:
+                    break;
+                case andOp:
+                    break;
+                case orOp:
+                    break;
+                case xorOp:
+                    break;
+                case notOp:
+                    break;
+            }
+            */
 
 };
