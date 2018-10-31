@@ -21,6 +21,9 @@ public:
     }
     virtual std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
     void addNode(ASTnode * newPointer) {
@@ -38,6 +41,9 @@ class idNode : public ASTnode {
             infoString.append(production);
             infoString.append("\n");
             infoString.append(name);
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
             return infoString;
         }
 
@@ -74,6 +80,10 @@ class constantNode : public ASTnode {
                 infoString.push_back(charConst);
             }
 
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
+
             return infoString;
         }
 
@@ -85,6 +95,9 @@ class ifNode : public ASTnode {
 
     std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 
@@ -96,6 +109,9 @@ class functionNode : public ASTnode {
 
     std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 
@@ -107,6 +123,9 @@ class forNode : public ASTnode {
 
     std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 
@@ -117,6 +136,9 @@ class whileNode : public ASTnode {
     whileNode(std::string productionIn){production = productionIn;}
     std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 
@@ -124,11 +146,14 @@ class whileNode : public ASTnode {
 
 class mathNode : public ASTnode {
     public:
-        enum int operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+        enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
         int operation;
         mathNode(std::string productionIn){production = productionIn;}
         std::string printASTnode() {
             infoString.append(production);
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
             return infoString;
     }
         /* FOR USE WITH MATH OPERATIONS
