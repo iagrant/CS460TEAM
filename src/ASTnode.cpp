@@ -12,12 +12,13 @@ class ASTnode {
 public:
     std::vector<ASTnode*> child;
     std::string production;
+    std::string infoString;
     int printLabel;
     ASTnode(){}
     ASTnode(std::string productionIn){
         production = productionIn;
     }
-    virtual void printASTnode() {
+    virtual std::string printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "GenericNode" << std::endl;
     }
@@ -31,9 +32,10 @@ class idNode : public ASTnode {
     public:
         std::string name;
         idNode(std::string productionIn){production = productionIn;}
-        void printASTnode() {
+        std::string printASTnode() {
             std::cout << "NODE: " << production << std::endl;
             std::cout << "TYPE: " << "IDNode" << std::endl;
+            return infoString;
         }
 
 };
@@ -46,9 +48,10 @@ class constantNode : public ASTnode {
         double doubleConst;
         std::string stringConst = "";
         constantNode(std::string productionIn){production = productionIn;}
-        void printASTnode() {
+        std::string printASTnode() {
             std::cout << "NODE: " << production << std::endl;
             std::cout << "TYPE: " << "CONSTANTNode" << std::endl;
+            return infoString;
         }
 
 };
@@ -56,9 +59,10 @@ class constantNode : public ASTnode {
 class ifNode : public ASTnode {
     public:
     ifNode(std::string productionIn){production = productionIn;}
-    void printASTnode() {
+    std::string printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "IFNode" << std::endl;
+        return infoString;
     }
 
 };
@@ -66,9 +70,10 @@ class ifNode : public ASTnode {
 class functionNode : public ASTnode {
     public:
     functionNode(std::string productionIn){production = productionIn;}
-    void printASTnode() {
+    std::string printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "FunctionNode" << std::endl;
+        return infoString;
     }
 
 };
@@ -76,9 +81,10 @@ class functionNode : public ASTnode {
 class forNode : public ASTnode {
     public:
     forNode(std::string productionIn){production = productionIn;}
-    void printASTnode() {
+    std::string printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "FORNode" << std::endl;
+        return infoString;
     }
 
 };
@@ -86,9 +92,10 @@ class forNode : public ASTnode {
 class whileNode : public ASTnode {
     public:
     whileNode(std::string productionIn){production = productionIn;}
-    void printASTnode() {
+    std::string printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "WHILENode" << std::endl;
+        return infoString;
     }
 
 };
