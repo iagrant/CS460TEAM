@@ -31,10 +31,10 @@
 %}
 %union {
     ASTnode *node;
-  int ival;
-  char cval;
-  char sval[32];
-  double dval;
+    int ival;
+    char cval;
+    char sval[32];
+    double dval;
 }
 
 %token <sval> IDENTIFIER
@@ -61,7 +61,13 @@
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ERROR DEBUG
 
-%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant assignment_expression initializer translation_unit external_declaration function_definition declarator compound_statement init_declarator_list init_declarator declaration declaration_list declaration_specifiers logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression shift_expression additive_expression multiplicative_expression cast_expression conditional_expression and_expression equality_expression relational_expression statement statement_list
+%type <node> string identifier direct_declarator primary_expression postfix_expression unary_expression constant
+%type <node> assignment_expression initializer translation_unit external_declaration function_definition declarator
+%type <node> compound_statement init_declarator_list init_declarator declaration declaration_list declaration_specifiers
+%type <node> logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression shift_expression
+%type <node> additive_expression multiplicative_expression cast_expression conditional_expression and_expression
+%type <node> equality_expression relational_expression statement statement_list iteration_statement
+%type <node> expression
 %type <sval> assignment_operator type_specifier
 
 %start translation_unit
@@ -1289,6 +1295,7 @@ statement
         }
 	| iteration_statement
         {
+            $$ = $1;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "statement -> iteration_statement" << std::endl;
@@ -1460,6 +1467,10 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
+            ASTnode* tmpNode = new ASTnode("WHILE");
+            tmpNode -> addNode($3);
+            tmpNode -> addNode($5);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
@@ -1610,6 +1621,7 @@ jump_statement
 expression
 	: assignment_expression
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "expression -> assignment_expression" << std::endl;
             }
@@ -1955,6 +1967,10 @@ relational_expression
         }
 	| relational_expression LESS_OP shift_expression
         {
+            ASTnode* tmpNode = new ASTnode("LESS_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LESS_OP shift_expression" << std::endl;
             }
@@ -1964,6 +1980,10 @@ relational_expression
         }
 	| relational_expression GREAT_OP shift_expression
         {
+            ASTnode* tmpNode = new ASTnode("GREAT_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GREAT_OP shift_expression" << std::endl;
             }
@@ -1973,6 +1993,10 @@ relational_expression
         }
 	| relational_expression LE_OP shift_expression
         {
+            ASTnode* tmpNode = new ASTnode("LE_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LE_OP shift_expression" << std::endl;
             }
@@ -1982,6 +2006,10 @@ relational_expression
         }
 	| relational_expression GE_OP shift_expression
         {
+            ASTnode* tmpNode = new ASTnode("GE_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GE_OP shift_expression" << std::endl;
             }

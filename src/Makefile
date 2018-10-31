@@ -21,4 +21,4 @@ RedefinitionTest: tests/symbolTableRedefinitionTest.cpp
 pushPopTest: tests/symbolTablePushPop.cpp
 	g++ -w -std=c++11 tests/symbolTablePushPop.cpp -o $@
 clean:
-	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest *.png *.dot
+	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest *.png *.dot *.txt
