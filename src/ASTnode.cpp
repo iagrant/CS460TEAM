@@ -11,7 +11,7 @@ enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
 class ASTnode {
 public:
     std::vector<ASTnode*> child;
-    std::string production; 
+    std::string production;
     int printLabel;
     ASTnode(){}
     ASTnode(std::string productionIn){
@@ -35,22 +35,22 @@ class idNode : public ASTnode {
             std::cout << "NODE: " << production << std::endl;
             std::cout << "TYPE: " << "IDNode" << std::endl;
         }
-    
+
 };
 
 class constantNode : public ASTnode {
     public:
         std::string name;
-        int intConst; 
+        int intConst;
         char charConst;
         double doubleConst;
         std::string stringConst = "";
         constantNode(std::string productionIn){production = productionIn;}
         void printASTnode() {
             std::cout << "NODE: " << production << std::endl;
-            std::cout << "TYPE: " << "IDNode" << std::endl;
+            std::cout << "TYPE: " << "CONSTANTNode" << std::endl;
         }
-    
+
 };
 
 class ifNode : public ASTnode {
@@ -79,6 +79,16 @@ class forNode : public ASTnode {
     void printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "FORNode" << std::endl;
+    }
+
+};
+
+class whileNode : public ASTnode {
+    public:
+    whileNode(std::string productionIn){production = productionIn;}
+    void printASTnode() {
+        std::cout << "NODE: " << production << std::endl;
+        std::cout << "TYPE: " << "WHILENode" << std::endl;
     }
 
 };
