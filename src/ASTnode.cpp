@@ -30,7 +30,7 @@ public:
 class idNode : public ASTnode {
     public:
         std::string name;
-        idNode(std::string productionIn){production = productionIn; printASTnode();}
+        idNode(std::string productionIn){production = productionIn;}
         void printASTnode() {
             std::cout << "NODE: " << production << std::endl;
             std::cout << "TYPE: " << "IDNode" << std::endl;
@@ -45,7 +45,7 @@ class constantNode : public ASTnode {
         char charConst;
         double doubleConst;
         std::string stringConst = "";
-        constantNode(std::string productionIn){production = productionIn; printASTnode();}
+        constantNode(std::string productionIn){production = productionIn;}
         void printASTnode() {
             std::cout << "NODE: " << production << std::endl;
             std::cout << "TYPE: " << "IDNode" << std::endl;
@@ -55,7 +55,7 @@ class constantNode : public ASTnode {
 
 class ifNode : public ASTnode {
     public:
-    ifNode(std::string productionIn){production = productionIn; printASTnode();}
+    ifNode(std::string productionIn){production = productionIn;}
     void printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "IFNode" << std::endl;
@@ -65,7 +65,7 @@ class ifNode : public ASTnode {
 
 class functionNode : public ASTnode {
     public:
-    functionNode(std::string productionIn){production = productionIn; printASTnode();}
+    functionNode(std::string productionIn){production = productionIn;}
     void printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "FunctionNode" << std::endl;
@@ -75,7 +75,7 @@ class functionNode : public ASTnode {
 
 class forNode : public ASTnode {
     public:
-    forNode(std::string productionIn){production = productionIn; printASTnode();}
+    forNode(std::string productionIn){production = productionIn;}
     void printASTnode() {
         std::cout << "NODE: " << production << std::endl;
         std::cout << "TYPE: " << "FORNode" << std::endl;

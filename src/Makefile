@@ -9,8 +9,8 @@ lex.yy.c: scanner.lex C_grammar.tab.h
 fcc: lex.yy.c C_grammar.tab.c C_grammar.tab.h
 	g++ -w -std=c++11 -o $@ lex.yy.c
 
-symbolDriver: symTableDriver.cpp
-	g++ -w -std=c++11 symTableDriver.cpp -o $@
+symbolDriver: tests/symTableDriver.cpp
+	g++ -w -std=c++11 tests/symTableDriver.cpp -o $@
 
 shadowTest: tests/symbolTableShadowing.cpp
 	g++ -w -std=c++11 tests/symbolTableShadowing.cpp -o $@
