@@ -11,6 +11,7 @@
 	extern bool printProductions;
 	extern bool printSymbol;
 	extern bool printFile;
+    extern bool printGraphviz;
 	extern std::string buffer;
 	extern std::string srcFile;
 	extern std::string outSrcFile;
@@ -1799,6 +1800,7 @@ int main (int argc, char** argv)
     std::string tokenFlag = "-dl";
 	std::string symbolFlag = "-ds";
 	std::string productionFlag = "-dp";
+    std::string graphFlag = "-dg";
 	std::string fhFlag = "-fh";
     std::string inputFlag = "-i";
     std::string outputFlag = "-o";
@@ -1825,6 +1827,10 @@ int main (int argc, char** argv)
     if((fhFlag.compare(argv[i])) == 0)
     {
       unleash();
+    }
+    if((graphFlag.compare(argv[i])) == 0)
+    {
+        printGraphviz = true;
     }
     if ((productionFlag.compare(argv[i])) == 0)
     {

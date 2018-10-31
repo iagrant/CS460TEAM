@@ -36,6 +36,7 @@ bool printFile = true;
 bool printSource = false;
 bool buildingFunction = false;
 bool firstPrint = true;
+bool printGraphviz = false;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
@@ -674,7 +675,8 @@ void printSubTree (ASTnode * parent) {
     static int inc = 0;
     parent->printLabel = inc;
     astFileP << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
-    std::cout << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
+    if (printGraphviz)
+        std::cout << parent->printLabel << " \[label=\"" << parent->production << "\"\];" << std::endl;
     inc++;
 
     for (int i = 0; i < parent->child.size(); i++) 
@@ -683,7 +685,8 @@ void printSubTree (ASTnode * parent) {
         {
             printSubTree(parent->child[i]);
             astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-            std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+            if (printGraphviz)
+                std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
         }
     }
 }
