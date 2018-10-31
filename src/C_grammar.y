@@ -68,7 +68,7 @@
 %type <node> logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression shift_expression
 %type <node> additive_expression multiplicative_expression cast_expression conditional_expression and_expression
 %type <node> equality_expression relational_expression statement statement_list iteration_statement
-%type <node> expression
+%type <node> expression expression_statement selection_statement jump_statement labeled_statement
 %type <sval> assignment_operator type_specifier
 
 %start translation_unit
@@ -1264,6 +1264,7 @@ direct_abstract_declarator
 statement
 	: labeled_statement
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "statement -> labeled_statement" << std::endl;
             }
@@ -1273,6 +1274,7 @@ statement
         }
 	| compound_statement
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "statement -> compound_statement" << std::endl;
             }
@@ -1282,6 +1284,7 @@ statement
         }
 	| expression_statement
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "statement -> expression_statement" << std::endl;
             }
@@ -1291,6 +1294,7 @@ statement
         }
 	| selection_statement
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "statement -> selection_statement" << std::endl;
             }
@@ -1311,6 +1315,7 @@ statement
         }
 	| jump_statement
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "statement -> jump_statement" << std::endl;
             }
@@ -1364,6 +1369,7 @@ expression_statement
         }
 	| expression SEMI
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "expression_statement -> expression SEMI" << std::endl;
             }
@@ -1385,6 +1391,7 @@ compound_statement
         }
 	| CURLYOPEN statement_list CURLYCLOSE
         {
+            $$ = $2;
             if (printProductions) {
                 std::cout << "compound_statement -> CURLYOPEN statement_list CURLYCLOSE" << std::endl;
             }
@@ -2323,6 +2330,12 @@ postfix_expression
         }
 	| postfix_expression INC_OP
         {
+            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            ASTnode *incNode = new ASTnode("INC_OP");
+            parentNode->addNode($1);
+            parentNode->addNode(incNode);
+            $$ = parentNode;
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression INC_OP" << std::endl;
             }
@@ -2332,6 +2345,11 @@ postfix_expression
         }
 	| postfix_expression DEC_OP
         {
+            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            ASTnode *incNode = new ASTnode("DEC_OP");
+            parentNode->addNode($1);
+            parentNode->addNode(incNode);
+            $$ = parentNode;
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression DEC_OP" << std::endl;
             }
