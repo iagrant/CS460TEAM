@@ -62,7 +62,13 @@ public:
 class idNode : public ASTnode {
     public:
         std::string name;
-        idNode(std::string productionIn){production = productionIn;}
+        int type = -1;
+        int scope = -1;
+        idNode(std::string productionIn, int scopeIn)
+        {
+            production = productionIn;
+            scope = scopeIn;
+        }
 
         std::string printASTnode() {
             infoString.append(production);
@@ -72,6 +78,9 @@ class idNode : public ASTnode {
             infoString.append("\n");
             infoString.append("LINE: ");
             infoString.append(std::to_string(lineNum));
+            infoString.append("\n");
+            infoString.append("SCOPE: ");
+            infoString.append(std::to_string(scope));
             return infoString;
         }
 
@@ -146,11 +155,12 @@ class functionNode : public ASTnode {
 
 class forNode : public ASTnode {
     public:
-    static int labelCounter;
-    std::string label;
 
     // CONSTRUCTOR
-    forNode(std::string productionIn){production = productionIn; label = "FOR_";}
+    forNode(std::string productionIn)
+    {
+        production = productionIn; 
+    }
 
     // PRINT ASTNODE
     std::string printASTnode() {
@@ -158,8 +168,6 @@ class forNode : public ASTnode {
         infoString.append("\n");
         infoString.append("LINE: ");
         infoString.append(std::to_string(lineNum));
-        infoString.append("LABEL: ");
-        infoString.append(label);
         return infoString;
     }
 };

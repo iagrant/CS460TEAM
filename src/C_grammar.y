@@ -2685,7 +2685,7 @@ string
 identifier
 	: IDENTIFIER
         {
-            idNode * tmpNode = new idNode("IDENTIFIER");
+            idNode * tmpNode = new idNode("IDENTIFIER", globalSymbolTable.currentScopeNum);
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
