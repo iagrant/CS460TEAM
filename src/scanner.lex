@@ -316,7 +316,7 @@ sizeof          {
                     std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
                     last = globalSymbolTable.getCurrentPair();
                     if (last != globalSymbolTable.getCurrentEnd()){
-                        std::cout << "BRACK: " << last->second.getName() << std::endl;
+                        //std::cout << "BRACK: " << last->second.getName() << std::endl;
                         if (last->second.getLine() == lineNum){
                             last->second.isArray=true;
                         }
@@ -354,7 +354,7 @@ sizeof          {
                     std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
                     last = globalSymbolTable.getCurrentPair();
                     if (last != globalSymbolTable.currentScope->rend()){
-                        std::cout << "PER: " << last->second.getName() << std::endl;
+                        //std::cout << "PER: " << last->second.getName() << std::endl;
                         if (last->second.getLine() == lineNum){
                             last->second.setFunction();
                             buildingFunction=true;
@@ -369,6 +369,7 @@ sizeof          {
                     if(printFile) {printToFile("CLOSE");}
                     colNum += yyleng;
                     return CLOSE;
+                    //if proto pop scope here
                 }
 \*              {
                     if(printToken) {printConsole("STAR");}

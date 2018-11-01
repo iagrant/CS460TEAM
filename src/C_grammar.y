@@ -133,6 +133,7 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
+            funcPair->second.setImplementation();
             functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -147,6 +148,7 @@ function_definition
         }
 	| declarator declaration_list compound_statement
 		{
+            funcPair->second.setImplementation();
             functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
@@ -205,6 +207,15 @@ declaration
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
+            /*
+            if (funcPair != globalSymbolTable.getCurrentEnd()){
+                if(funcPair->second.getLine() == lineNum) {
+                    funcPair->second.setProto();
+                    std::cout << globalSymbolTable.currentScopeNum << funcPair->second.getName() <<std::endl;
+                    globalSymbolTable.removeScope();
+                }
+            }
+            */
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
