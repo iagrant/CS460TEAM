@@ -21,7 +21,7 @@
 enum signedEnum {signedE,unsignedE};
 enum typeQualE {noneQ,constQ,volatileQ,bothQ};
 enum storageSpecE {noneS,autoS,registerS,staticS,externS,typedefS};
-enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS};
+enum typeSpecE {voidS,charS,shortS,intS,longS,floatS,doubleS,structS,stringS};
 enum paramTypeE {signedPT,typeQualPT,typeSpecPT};
 extern bool printSymbolNums;
 

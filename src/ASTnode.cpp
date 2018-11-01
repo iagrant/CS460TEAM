@@ -8,7 +8,6 @@
 
 std::ofstream astFileP("ASTnode.dot");
 
-enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
 bool printGraphviz = false;
 
 class ASTnode {
@@ -43,7 +42,7 @@ public:
             static int inc = 0;
             parent->printLabel = inc;
             astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
-            std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+            std::cout << parent->printLabel << " \[label=\"" << parent->infoString << "\"\];" << std::endl;
             inc++;
 
             for (int i = 0; i < parent->child.size(); i++) 
@@ -57,8 +56,6 @@ public:
             }
         }
     }
-
-
 };
 
 
@@ -83,32 +80,33 @@ class idNode : public ASTnode {
 class constantNode : public ASTnode {
     public:
         std::string name;
+        int type;
         int intConst = NULL;
         char charConst = NULL;
         double doubleConst = NULL;
         std::string stringConst = ""; 
-        constantNode(std::string productionIn){production = productionIn;}
+        constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn;}
 
         std::string printASTnode() {
-            if (intConst != NULL) {
+            if (type == intS) {
                 infoString.append(production);
                 infoString.append("\n");
                 infoString.append("VALUE: ");
                 infoString.append(std::to_string(intConst));
             }
-            else if(doubleConst != NULL) {
+            else if(type == doubleS) {
                 infoString.append(production);
                 infoString.append("\n");
                 infoString.append("VALUE: ");
                 infoString.append(std::to_string(doubleConst));
             }
-            else if(stringConst != "") {
+            else if(type == stringS) {
                 infoString.append(production);
                 infoString.append("\n");
                 infoString.append("VALUE: ");
                 infoString.append(stringConst);
             }
-            else {
+            else if(type == charS){
                 infoString.append(production);
                 infoString.append("\n");
                 infoString.append("VALUE: ");
@@ -121,7 +119,6 @@ class constantNode : public ASTnode {
 
             return infoString;
         }
-
 };
 
 class ifNode : public ASTnode {
@@ -135,7 +132,6 @@ class ifNode : public ASTnode {
         infoString.append(std::to_string(lineNum));
         return infoString;
     }
-
 };
 
 class functionNode : public ASTnode {
@@ -146,21 +142,26 @@ class functionNode : public ASTnode {
         infoString.append(production);
         return infoString;
     }
-
 };
 
 class forNode : public ASTnode {
     public:
-    forNode(std::string productionIn){production = productionIn;}
+    static int labelCounter;
+    std::string label;
 
+    // CONSTRUCTOR
+    forNode(std::string productionIn){production = productionIn; label = "FOR_";}
+
+    // PRINT ASTNODE
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
         infoString.append("LINE: ");
         infoString.append(std::to_string(lineNum));
+        infoString.append("LABEL: ");
+        infoString.append(label);
         return infoString;
     }
-
 };
 
 class whileNode : public ASTnode {
@@ -173,7 +174,6 @@ class whileNode : public ASTnode {
         infoString.append(std::to_string(lineNum));
         return infoString;
     }
-
 };
 
 class mathNode : public ASTnode {

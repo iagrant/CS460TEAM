@@ -907,7 +907,9 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN BRACKETCLOSE
         {
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator BRACKETOPEN BRACKETCLOSE" << std::endl;
             }
@@ -917,9 +919,11 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
+            ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
+            ASTnode *sizeNode = new ASTnode("ARR_BOUND");
+            sizeNode->addNode($3);
             tmpNode->addNode($1);
-            tmpNode->addNode($3);
+            tmpNode->addNode(sizeNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
@@ -1153,6 +1157,7 @@ initializer
         }
 	| CURLYOPEN initializer_list CURLYCLOSE
         {
+            $$ = $2;
             if (printProductions) {
                 std::cout << "initializer -> CURLYOPEN initializer_list CURLYCLOSE" << std::endl;
             }
@@ -1184,6 +1189,10 @@ initializer_list
         }
 	| initializer_list COMMA initializer
         {
+            ASTnode *tmpNode = new ASTnode("INITIALIZER_LIST");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "initializer_list -> initializer_list COMMA initializer" << std::endl;
             }
@@ -1505,6 +1514,8 @@ statement_list
         }
 	| statement_list statement
         {
+            ASTnode *tmpNode = new ASTnode("STATEMENT_LIST");
+            tmpNode->addNode($2);
             if (printProductions) {
                 std::cout << "statement_list -> statement_list statement" << std::endl;
             }
@@ -1586,6 +1597,9 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($6);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI CLOSE statement" << std::endl;
@@ -1596,6 +1610,10 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($5);
+            tmpNode->addNode($7);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI expression CLOSE statement" << std::endl;
@@ -1606,6 +1624,10 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($4);
+            tmpNode->addNode($7);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI CLOSE statement" << std::endl;
@@ -1616,6 +1638,11 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($4);
+            tmpNode->addNode($6);
+            tmpNode->addNode($8);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI expression CLOSE statement" << std::endl;
@@ -1626,6 +1653,10 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($3);
+            tmpNode->addNode($7);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI CLOSE statement" << std::endl;
@@ -1636,6 +1667,11 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($3);
+            tmpNode->addNode($6);
+            tmpNode->addNode($8);
+            $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI expression CLOSE statement" << std::endl;
@@ -1646,6 +1682,11 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($3);
+            tmpNode->addNode($5);
+            tmpNode->addNode($8);
+            $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI CLOSE statement" << std::endl;
@@ -1656,6 +1697,12 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
+            forNode *tmpNode = new forNode("FOR");
+            tmpNode->addNode($3);
+            tmpNode->addNode($5);
+            tmpNode->addNode($7);
+            tmpNode->addNode($9);
+            $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI expression CLOSE statement" << std::endl;
@@ -2561,7 +2608,7 @@ argument_expression_list
 constant
 	: INTEGER_CONSTANT
         {
-            constantNode *tmpNode = new constantNode("INTEGER_CONSTANT");
+            constantNode *tmpNode = new constantNode("INTEGER_CONSTANT", intS);
             tmpNode->intConst = std::stoi(yytext);
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
@@ -2574,7 +2621,7 @@ constant
         }
 	| CHARACTER_CONSTANT
         {
-            constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT");
+            constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
             tmpNode->charConst = yytext[0];
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
@@ -2587,7 +2634,7 @@ constant
         }
 	| FLOATING_CONSTANT
         {
-            constantNode *tmpNode = new constantNode("FLOATING_CONSTANT");
+            constantNode *tmpNode = new constantNode("FLOATING_CONSTANT", doubleS);
             tmpNode->doubleConst = std::stof(yytext);
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
@@ -2612,7 +2659,7 @@ constant
 string
 	: STRING_LITERAL
         {
-            constantNode *tmpNode = new constantNode("STRING_LITERAL");
+            constantNode *tmpNode = new constantNode("STRING_LITERAL", stringS);
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
