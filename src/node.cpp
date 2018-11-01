@@ -226,7 +226,7 @@ public:
     int getTypeSpec() {return typeSpec;}
     int getTypeQual() {return typeQual;}
     int getSigned() {return signedB;}
-    int getStorageSec() {return storageSpec;}
+    int getStorageSpec() {return storageSpec;}
     int getScope() {return scope;}
 
     void setName(std::string nameIn) {name=nameIn;}
