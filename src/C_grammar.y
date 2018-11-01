@@ -2685,13 +2685,9 @@ string
 identifier
 	: IDENTIFIER
         {
-            idNode * tmpNode = new idNode("IDENTIFIER", globalSymbolTable.currentScopeNum);
-            tmpNode->name = yytext;
-            tmpNode -> lineNum = lineNum;
-            $$ = tmpNode;
-            globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
+            globalTempNode.setName(yytext+'\0');
             int scope = globalSymbolTable.currentScopeNum;
             if(globalSymbolTable.mode==insert){
                 if (buildingFunction) {
@@ -2718,6 +2714,23 @@ identifier
             if (printFile) {
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
+            idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
+            Node search;
+            search.setName(yytext);
+            search.setScope(globalSymbolTable.currentScopeNum);
+            search.setLine(lineNum);
+            tmpNode->name = yytext;
+            tmpNode -> lineNum = lineNum;
+            std::pair<bool,Node> ret = globalSymbolTable.searchTree(search);
+            tmpNode->signLocal = ret.second.getSigned();
+            tmpNode->storageSpecLocal = ret.second.getStorageSpec();
+            tmpNode->typeQualLocal = ret.second.getTypeQual();
+            if(ret.second.getTypeSpec()==0) {
+                std::cout << ret.second.getName() << std::endl;
+                std::cout << "FUCK" << std::endl;
+            }
+            tmpNode->typeSpecLocal = ret.second.getTypeSpec();
+            $$ = tmpNode;
         }
 	;
 %%

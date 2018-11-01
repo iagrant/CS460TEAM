@@ -70,10 +70,10 @@ class idNode : public ASTnode {
         std::string name;
         int type = -1;
         int scope = -1;
-        int signLocal=signedE;
-        int storageSpecLocal=noneS;
-        int typeQualLocal=noneQ;
-        int typeSpecLocal=intS;
+        int signLocal;
+        int storageSpecLocal;
+        int typeQualLocal;
+        int typeSpecLocal;
         idNode(std::string productionIn, int scopeIn)
         {
             production = productionIn;
@@ -85,7 +85,7 @@ class idNode : public ASTnode {
             infoString.append("\n");
             infoString.append("TYPE: ");
             infoString.append(printSigned(signLocal));
-            infoString.append(printTypeSpec(storageSpecLocal));
+            infoString.append(printStorageSpec(storageSpecLocal));
             infoString.append(printTypeQual(typeQualLocal));
             infoString.append(printTypeSpec(typeSpecLocal));
             infoString.append("\n");
