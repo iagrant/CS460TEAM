@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 #include "symbolTable.cpp"
 #include "ASTnode.cpp"
 #include "C_grammar.tab.h"
@@ -23,7 +24,6 @@
 */
 extern int yylex();
 extern int yyparse();
-extern std::ofstream astFileP("ASTnode.dot");
 
 int lineNum = 1;
 int tabNum = 0;
@@ -36,7 +36,6 @@ bool printFile = true;
 bool printSource = false;
 bool buildingFunction = false;
 bool firstPrint = true;
-bool printGraphviz = false;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
@@ -671,6 +670,7 @@ void printConsole (std::string token) {
     std::cout << token << std::endl;
 }
 
+/*
 void printSubTree (ASTnode * parent) {
     if (printGraphviz)
     {
@@ -691,6 +691,7 @@ void printSubTree (ASTnode * parent) {
         }
     }
 }
+*/
 
 void printToFile (std::string token) {
     scannerOut.open("ScannerOutput.txt",std::ofstream::app);

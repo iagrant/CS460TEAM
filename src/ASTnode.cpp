@@ -6,7 +6,10 @@
 #include <vector>
 #include <list>
 
+std::ofstream astFileP("ASTnode.dot");
+
 enum nodeType {idNodeE, ifNodeE, functionNodeE, forNodeE};
+bool printGraphviz = false;
 
 class ASTnode {
 public:
@@ -16,19 +19,46 @@ public:
     int printLabel;
     int lineNum;
     ASTnode(){}
+
     ASTnode(std::string productionIn){
         production = productionIn;
     }
+
     virtual std::string printASTnode() {
         infoString.append(production);
-        infoString.append("\n");
-        infoString.append("LINE: ");
-        infoString.append(std::to_string(lineNum));
         return infoString;
     }
+
     void addNode(ASTnode * newPointer) {
         child.push_back(newPointer);
     }
+
+    void printSubTree () {
+        printSubTreeHelper(this);
+    }
+
+    void printSubTreeHelper (ASTnode * parent) {
+        if (printGraphviz)
+        {
+            static int inc = 0;
+            parent->printLabel = inc;
+            astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+            std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+            inc++;
+
+            for (int i = 0; i < parent->child.size(); i++) 
+            {
+                if (parent->child.size() != 0) 
+                {
+                    printSubTreeHelper(parent->child[i]);
+                    astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                    std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                }
+            }
+        }
+    }
+
+
 };
 
 
@@ -40,6 +70,7 @@ class idNode : public ASTnode {
         std::string printASTnode() {
             infoString.append(production);
             infoString.append("\n");
+            infoString.append("NAME: ");
             infoString.append(name);
             infoString.append("\n");
             infoString.append("LINE: ");
@@ -62,21 +93,25 @@ class constantNode : public ASTnode {
             if (intConst != NULL) {
                 infoString.append(production);
                 infoString.append("\n");
+                infoString.append("VALUE: ");
                 infoString.append(std::to_string(intConst));
             }
             else if(doubleConst != NULL) {
                 infoString.append(production);
                 infoString.append("\n");
+                infoString.append("VALUE: ");
                 infoString.append(std::to_string(doubleConst));
             }
             else if(stringConst != "") {
                 infoString.append(production);
                 infoString.append("\n");
+                infoString.append("VALUE: ");
                 infoString.append(stringConst);
             }
             else {
                 infoString.append(production);
                 infoString.append("\n");
+                infoString.append("VALUE: ");
                 infoString.push_back(charConst);
             }
 
@@ -109,9 +144,6 @@ class functionNode : public ASTnode {
 
     std::string printASTnode() {
         infoString.append(production);
-        infoString.append("\n");
-        infoString.append("LINE: ");
-        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 

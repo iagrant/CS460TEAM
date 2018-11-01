@@ -17,8 +17,8 @@
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-    extern enum int operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
-    extern ASTnode *globalASTnode = new ASTnode("translation_unit");;
+    extern enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+    extern ASTnode *globalASTnode = new ASTnode("");
     std::ofstream fileP;
     void  yyerror(char *msg)
 	{
@@ -70,7 +70,11 @@
 %type <node> additive_expression multiplicative_expression cast_expression conditional_expression and_expression
 %type <node> equality_expression relational_expression statement statement_list iteration_statement
 %type <node> expression expression_statement selection_statement jump_statement labeled_statement
-%type <sval> assignment_operator type_specifier
+%type <node> parameter_type_list parameter_list parameter_declaration type_qualifier
+%type <node> specifier_qualifier_list struct_declarator_list struct_declarator
+%type <node> abstract_declarator constant_expression identifier_list type_qualifier_list
+%type <node> initializer_list pointer assignment_operator
+%type <sval> type_specifier
 
 %start translation_unit
 %%
@@ -140,6 +144,7 @@ function_definition
 	| declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
@@ -259,6 +264,7 @@ declaration_specifiers
 	| type_specifier
         {
         ASTnode *tmpNode = new ASTnode($1);
+        tmpNode -> lineNum = lineNum;
         $$ = tmpNode;
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
@@ -276,6 +282,7 @@ declaration_specifiers
         }
 	| type_qualifier
 		{
+            $$ =$1;
             if (printProductions) {
                 std::cout << "declaration_specifiers ->  type_qualifier" << std::endl;
             }
@@ -686,6 +693,8 @@ struct_declaration
 specifier_qualifier_list
 	: type_specifier
 		{
+            ASTnode *tmpNode = new ASTnode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "specifier_qualifier_list -> type_specifier" << std::endl;
             }
@@ -704,6 +713,7 @@ specifier_qualifier_list
         }
 	| type_qualifier
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "specifier_qualifier_list -> type_qualifier" << std::endl;
             }
@@ -725,6 +735,7 @@ specifier_qualifier_list
 struct_declarator_list
 	: struct_declarator
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "struct_declarator_list -> struct_declarator" << std::endl;
             }
@@ -746,6 +757,7 @@ struct_declarator_list
 struct_declarator
 	: declarator
 		{
+            $$ =$1;
             if (printProductions) {
                 std::cout << "struct_declarator -> declarator" << std::endl;
             }
@@ -880,6 +892,7 @@ direct_declarator
         }
 	| OPEN declarator CLOSE
         {
+            $$ = $2;
             if (printProductions) {
                 std::cout << "direct_declarator -> OPEN declarator CLOSE" << std::endl;
             }
@@ -889,6 +902,7 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN BRACKETCLOSE
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator BRACKETOPEN BRACKETCLOSE" << std::endl;
             }
@@ -898,6 +912,10 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
+            ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
             }
@@ -907,6 +925,7 @@ direct_declarator
         }
 	| direct_declarator OPEN CLOSE
         {
+            $$ = $1;
             globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
@@ -917,6 +936,10 @@ direct_declarator
         }
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
+            ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
@@ -927,6 +950,10 @@ direct_declarator
         }
 	| direct_declarator OPEN identifier_list CLOSE
         {
+            ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             std::cout << "The compiler does not support this feature" << std::endl;
             exit(1);
             if (printProductions) {
@@ -980,6 +1007,7 @@ pointer
 type_qualifier_list
 	: type_qualifier
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "type_qualifier_list -> type_qualifier" << std::endl;
             }
@@ -1001,6 +1029,7 @@ type_qualifier_list
 parameter_type_list
 	: parameter_list
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "parameter_type_list -> parameter_list" << std::endl;
             }
@@ -1022,6 +1051,7 @@ parameter_type_list
 parameter_list
 	: parameter_declaration
         {
+            $$ =$1;
             if (printProductions) {
                 std::cout << "parameter_list -> parameter_declaration" << std::endl;
             }
@@ -1031,6 +1061,10 @@ parameter_list
         }
 	| parameter_list COMMA parameter_declaration
         {
+            ASTnode *tmpNode = new ASTnode("PARAM_LIST");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "parameter_list -> parameter_list COMMA parameter_declaration" << std::endl;
             }
@@ -1043,6 +1077,10 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
         {
+            ASTnode *tmpNode = new ASTnode("PARAMS");
+            tmpNode->addNode($1);
+            tmpNode->addNode($2);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "parameter_declaration -> declaration_specifiers declarator" << std::endl;
             }
@@ -1052,6 +1090,7 @@ parameter_declaration
         }
 	| declaration_specifiers
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "parameter_declaration -> declaration_specifiers" << std::endl;
             }
@@ -1073,6 +1112,7 @@ parameter_declaration
 identifier_list
 	: identifier
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "identifier_list -> identifier" << std::endl;
             }
@@ -1082,6 +1122,10 @@ identifier_list
         }
 	| identifier_list COMMA identifier
         {
+            ASTnode *tmpNode = new ASTnode("IDENTIFIER_LIST");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "identifier_list -> identifier_list COMMA identifier" << std::endl;
             }
@@ -1125,6 +1169,7 @@ initializer
 initializer_list
 	: initializer
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "initializer_list -> initializer" << std::endl;
             }
@@ -1167,6 +1212,7 @@ type_name
 abstract_declarator
 	: pointer
         {
+            $$ = $1;
             if (printProductions) {
                 std::cout << "abstract_declarator -> pointer" << std::endl;
             }
@@ -1677,6 +1723,9 @@ expression
         }
 	| expression COMMA assignment_expression
         {
+            ASTnode *tmpNode = new ASTnode("EXPRESSION");
+            tmpNode->addNode($1);
+            tmpNode->addNode($3);
             if (printProductions) {
                 std::cout << "expression -> expression COMMA assignment_expression" << std::endl;
             }
@@ -1699,9 +1748,11 @@ assignment_expression
         }
 	| unary_expression assignment_operator assignment_expression
         {
-            ASTnode *assignmentNode = new ASTnode($2);
-            assignmentNode->addNode($1);
-            assignmentNode->addNode($3);
+            ASTnode *assignmentNode = new ASTnode("ASSIGNMENT_EXPRESSION");
+            
+            $2->addNode($1);
+            $2->addNode($3);
+            assignmentNode->addNode($2);
             $$ = assignmentNode;
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
@@ -1715,7 +1766,8 @@ assignment_expression
 assignment_operator
 	: EQUALS
         {
-            std::strcpy($$, "EQUALS");
+            ASTnode *assignOpNode = new ASTnode("EQUALS");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> EQUALS" << std::endl;
             }
@@ -1725,7 +1777,8 @@ assignment_operator
         }
 	| MUL_ASSIGN
         {
-            std::strcpy($$, "MUL_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("MUL_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> MUL_ASSIGN" << std::endl;
             }
@@ -1735,7 +1788,8 @@ assignment_operator
         }
 	| DIV_ASSIGN
         {
-            std::strcpy($$, "DIV_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("DIV_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> DIV_ASSIGN" << std::endl;
             }
@@ -1745,7 +1799,8 @@ assignment_operator
         }
 	| MOD_ASSIGN
         {
-            std::strcpy($$, "MOD_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("MOD_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> MOD_ASSIGN" << std::endl;
             }
@@ -1755,7 +1810,8 @@ assignment_operator
         }
 	| ADD_ASSIGN
         {
-            std::strcpy($$, "ADD_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("ADD_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> ADD_ASSIGN" << std::endl;
             }
@@ -1765,7 +1821,8 @@ assignment_operator
         }
 	| SUB_ASSIGN
         {
-            std::strcpy($$, "SUB_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("SUB_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> SUB_ASSIGN" << std::endl;
             }
@@ -1775,7 +1832,8 @@ assignment_operator
         }
 	| LEFT_ASSIGN
         {
-            std::strcpy($$, "LEFT_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("LEFT_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> LEFT_ASSIGN" << std::endl;
             }
@@ -1785,7 +1843,8 @@ assignment_operator
         }
 	| RIGHT_ASSIGN
         {
-            std::strcpy($$, "RIGHT_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("RIGHT_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> RIGHT_ASSIGN" << std::endl;
             }
@@ -1795,7 +1854,8 @@ assignment_operator
         }
 	| AND_ASSIGN
         {
-            std::strcpy($$, "AND_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("AND_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> AND_ASSIGN" << std::endl;
             }
@@ -1805,7 +1865,8 @@ assignment_operator
         }
 	| XOR_ASSIGN
         {
-            std::strcpy($$, "XOR_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("XOR_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> XOR_ASSIGN" << std::endl;
             }
@@ -1815,7 +1876,8 @@ assignment_operator
         }
 	| OR_ASSIGN
         {
-            std::strcpy($$, "OR_ASSIGN");
+            ASTnode *assignOpNode = new ASTnode("OR_ASSIGN");
+            $$ = assignOpNode;
             if (printProductions) {
                 std::cout << "assignment_operator -> OR_ASSIGN" << std::endl;
             }
@@ -2112,6 +2174,7 @@ additive_expression
             mathNode *tmpNode = new mathNode("+");
             tmpNode->addNode($1);
             tmpNode -> operation = addOp;
+            tmpNode -> lineNum = lineNum;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2126,6 +2189,7 @@ additive_expression
             mathNode *tmpNode = new mathNode("-");
             tmpNode->addNode($1);
             tmpNode -> operation = subOp;
+            tmpNode -> lineNum = lineNum;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2494,6 +2558,7 @@ constant
         {
             constantNode *tmpNode = new constantNode("INTEGER_CONSTANT");
             tmpNode->intConst = std::stoi(yytext);
+            tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> INTEGER_CONSTANT" << std::endl;
@@ -2506,6 +2571,7 @@ constant
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT");
             tmpNode->charConst = yytext[0];
+            tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> CHARACTER_CONSTANT" << std::endl;
@@ -2518,6 +2584,7 @@ constant
         {
             constantNode *tmpNode = new constantNode("FLOATING_CONSTANT");
             tmpNode->doubleConst = std::stof(yytext);
+            tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> FLOATING_CONSTANT" << std::endl;
@@ -2541,6 +2608,7 @@ string
 	: STRING_LITERAL
         {
             constantNode *tmpNode = new constantNode("STRING_LITERAL");
+            tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "string -> STRING_LITERAL" << std::endl;
@@ -2556,6 +2624,7 @@ identifier
         {
             idNode * tmpNode = new idNode("IDENTIFIER");
             tmpNode->name = yytext;
+            tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
@@ -2632,6 +2701,7 @@ int main (int argc, char** argv)
         char inputFile[n+1];
         strcpy(inputFile,srcFile.c_str());
         inputStream = fopen(inputFile,"r");
+        globalASTnode->production = srcFile;
       }
       else
       {
@@ -2659,7 +2729,8 @@ int main (int argc, char** argv)
   astFileP << "digraph AST {" << std::endl;
   fileP.open(outSrcFile);
   yyparse();
-  printSubTree(globalASTnode);
+  globalASTnode->printSubTree();
+  //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
 //  astFileP << "";
