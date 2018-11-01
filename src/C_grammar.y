@@ -13,13 +13,17 @@
 	extern bool printSymbol;
 	extern bool printFile;
     extern bool printGraphviz;
+    extern bool buildingFunction;
 	extern std::string buffer;
 	extern std::string srcFile;
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
-    extern enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
     extern ASTnode *globalASTnode = new ASTnode("");
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
     std::ofstream fileP;
+    extern std::map<std::string,Node>::reverse_iterator funcPair;
+    extern Node * funcNode;
+
     void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -229,6 +233,7 @@ declaration_list
         }
 	| declaration_list declaration
 		{
+            globalSymbolTable.mode = lookup;
             ASTnode *tmpNode = new ASTnode("DECL_LIST");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -926,7 +931,7 @@ direct_declarator
 	| direct_declarator OPEN CLOSE
         {
             $$ = $1;
-            globalSymbolTable.addNewScope();
+            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
             }
@@ -940,7 +945,7 @@ direct_declarator
             tmpNode->addNode($1);
             tmpNode->addNode($3);
             $$ = tmpNode;
-            globalSymbolTable.addNewScope();
+            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
@@ -1749,7 +1754,7 @@ assignment_expression
 	| unary_expression assignment_operator assignment_expression
         {
             ASTnode *assignmentNode = new ASTnode("ASSIGNMENT_EXPRESSION");
-            
+
             $2->addNode($1);
             $2->addNode($3);
             assignmentNode->addNode($2);
@@ -2629,15 +2634,26 @@ identifier
             globalTempNode.setName(yytext+'\0');
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
-            globalTempNode.setScope(globalSymbolTable.currentScopeNum);
+            int scope = globalSymbolTable.currentScopeNum;
             if(globalSymbolTable.mode==insert){
+                if (buildingFunction) {
+                   //scope++;
+                   if (funcPair != globalSymbolTable.getCurrentEnd()) {
+                        globalTempNode.isParam=true;
+                        funcPair->second.addParam();
+                        funcPair->second.addParamValue(signedPT,globalTempNode.getSigned());
+                        funcPair->second.addParamValue(typeQualPT,globalTempNode.getTypeQual());
+                        funcPair->second.addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
+                   }
+                }
+                globalTempNode.setScope(scope);
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
             if(globalSymbolTable.mode==lookup){
-                globalSymbolTable.searchTree(globalTempNode);
-                //globalSymbolTable.searchPrevScopes(globalTempNode);
+                //globalSymbolTable.searchTree(globalTempNode);
+                //globalSymbolTable.searchPrevScope(globalTempNode);
             }
-            //globalTempNode.resetNode();
+
             if (printProductions) {
                 std::cout << "identifier -> IDENTIFIER" << std::endl;
             }

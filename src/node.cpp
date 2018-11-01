@@ -37,11 +37,13 @@ private:
     int scope;
     int paramNum;
     int currentParam;
-    bool isFunction;
     std::list <int*> paramList;
     std::list <int*> :: iterator paramListIter;
 
 public:
+    bool isFunction;
+    bool isArray;
+    bool isParam;
     Node(){
         setName("");
         setLine(-1);
@@ -51,6 +53,8 @@ public:
         setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
+        isArray=false;
+        isParam=false;
         paramNum=0;
     }
 
@@ -156,43 +160,47 @@ public:
     }
     void printFunction(){
         //prints out function types to file stream
+        std::cout << "IS AN ARRAY: " << std::boolalpha << isArray << std::endl;
         std::cout << "IS A FUNCTION: " << std::boolalpha << isFunction << std::endl;
+        std::cout << "IS A PARAM: " << std::boolalpha << isParam << std::endl;
         if (isFunction){
-            std::cout << "Number of Function Paramiters: " << paramNum << std::endl;
-            if (printSymbolNums) {
-                std::cout << "Function Paramiters in Numbers: " << std::endl;;
+            std::cout << "Number of Function Parameters: " << paramNum << std::endl;
+            if (paramNum > 0) {
+                if (printSymbolNums) {
+                    std::cout << "Function Parameters in Numbers: " << std::endl;;
+                    paramListIter = paramList.begin();
+                    currentParam = 1;
+                    while (paramListIter != paramList.end()){
+                        std::cout << "PARAM " << currentParam << " NUM TYPE: ";
+                        int * ptr = *paramListIter;
+                        int sign = *ptr;
+                        ptr++;
+                        int typeQ = *ptr;
+                        ptr++;
+                        int typeS = *ptr;
+                        std::cout << sign << typeQ << typeS << std::endl;
+                        paramListIter++;
+                        currentParam++;
+                    }
+                }
+                std::cout << "Function Parameters: " << std::endl;;
                 paramListIter = paramList.begin();
                 currentParam = 1;
                 while (paramListIter != paramList.end()){
-                    std::cout << "PARAM " << currentParam << " NUM TYPE: ";
+                    std::cout << "PARAM " << currentParam << " TYPE: ";
                     int * ptr = *paramListIter;
                     int sign = *ptr;
                     ptr++;
                     int typeQ = *ptr;
                     ptr++;
                     int typeS = *ptr;
-                    std::cout << sign << typeQ << typeS << std::endl;
+                    printSigned(sign);
+                    printTypeQual(typeQ);
+                    printTypeSpec(typeS);
+                    std::cout << std::endl;
                     paramListIter++;
                     currentParam++;
                 }
-            }
-            std::cout << "Function Paramiters: " << std::endl;;
-            paramListIter = paramList.begin();
-            currentParam = 1;
-            while (paramListIter != paramList.end()){
-                std::cout << "PARAM " << currentParam << " TYPE: ";
-                int * ptr = *paramListIter;
-                int sign = *ptr;
-                ptr++;
-                int typeQ = *ptr;
-                ptr++;
-                int typeS = *ptr;
-                printSigned(sign);
-                printTypeQual(typeQ);
-                printTypeSpec(typeS);
-                std::cout << std::endl;
-                paramListIter++;
-                currentParam++;
             }
         }
     }
@@ -223,6 +231,9 @@ public:
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
     void setFunction() {isFunction=true;}
+    void setParam() {isFunction=true;}
+    bool getFunction() {return isFunction;}
+    bool ifParam() {return isParam;}
     void addParam(){
         paramNum++;
         int * paramType;

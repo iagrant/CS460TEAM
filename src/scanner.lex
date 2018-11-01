@@ -46,6 +46,8 @@ std::ofstream productionOut;
 std::string tokenFlag = "!!dl";
 std::string symbolFlag = "!!ds";
 std::string productionFlag = "!!dp";
+Node * funcNode;
+std::map<std::string,Node>::reverse_iterator funcPair = globalSymbolTable.currentScope->rend();
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
@@ -70,9 +72,9 @@ number  {num1}|{num2}
 						printLine();
 						firstPrint = false;
 					}
-
-                    globalTempNode.resetNode();
-                    buildingFunction=false;
+                    globalTempNode.resetNode(); //resets node to avoid any mess from getting multiline bois
+                    buildingFunction=false; //resets flag that says wheter a flag is being buitl
+                    funcPair=globalSymbolTable.getCurrentEnd(); //resets function pair
                 }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
@@ -311,6 +313,14 @@ sizeof          {
                     if(printToken) {printConsole("BRACKETOPEN");}
                     if(printFile) {printToFile("BRACKETOPEN");}
                     colNum += yyleng;
+                    std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
+                    last = globalSymbolTable.getCurrentPair();
+                    if (last != globalSymbolTable.getCurrentEnd()){
+                        std::cout << "BRACK: " << last->second.getName() << std::endl;
+                        if (last->second.getLine() == lineNum){
+                            last->second.isArray=true;
+                        }
+                    }
                     return BRACKETOPEN;
                 }
 \]              {
@@ -341,6 +351,17 @@ sizeof          {
                     if(printToken) {printConsole("OPEN");}
                     if(printFile) {printToFile("OPEN");}
                     colNum += yyleng;
+                    std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
+                    last = globalSymbolTable.getCurrentPair();
+                    if (last != globalSymbolTable.currentScope->rend()){
+                        std::cout << "PER: " << last->second.getName() << std::endl;
+                        if (last->second.getLine() == lineNum){
+                            last->second.setFunction();
+                            buildingFunction=true;
+                            funcPair=last;
+                            globalSymbolTable.addNewScope();
+                        }
+                    }
                     return OPEN;
                 }
 \)              {
@@ -680,9 +701,9 @@ void printSubTree (ASTnode * parent) {
         std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
         inc++;
 
-        for (int i = 0; i < parent->child.size(); i++) 
+        for (int i = 0; i < parent->child.size(); i++)
         {
-            if (parent->child.size() != 0) 
+            if (parent->child.size() != 0)
             {
                 printSubTree(parent->child[i]);
                 astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;

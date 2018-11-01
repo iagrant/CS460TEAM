@@ -1,4 +1,6 @@
-all: fcc symbolDriver shadowTest RedefinitionTest pushPopTest
+all: fcc
+
+tests:symbolDriver shadowTest RedefinitionTest pushPopTest
 
 C_grammar.tab.c C_grammar.tab.h:	C_grammar.y
 	bison -d -t C_grammar.y
@@ -20,5 +22,8 @@ RedefinitionTest: tests/symbolTableRedefinitionTest.cpp
 
 pushPopTest: tests/symbolTablePushPop.cpp
 	g++ -w -std=c++11 tests/symbolTablePushPop.cpp -o $@
+
 clean:
 	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest *.png *.dot *.txt
+
+graph: dot -Tpng ASTnode.dot -o ASTnode.png

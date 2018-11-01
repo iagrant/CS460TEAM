@@ -31,6 +31,7 @@ extern bool printProductions;
 extern bool printSymbol;
 extern bool printSymbolNums;
 extern bool printFile;
+extern bool buildingFunction;
 extern std::string buffer;
 extern std::string srcFile;
 extern std::string outSrcFile;
@@ -39,10 +40,10 @@ class SymbolTable {
 
   private:
     std::list<std::map<std::string,Node>> symbolTable;
-    std::list <std::map<std::string,Node>> :: iterator currentScope;
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
     std::map<std::string,Node> :: iterator currentEntry;
   public:
+    std::list <std::map<std::string,Node>> :: iterator currentScope;
     int currentScopeNum = 0;
     int mode = insert;
     bool globalSearch=false;
@@ -80,7 +81,15 @@ class SymbolTable {
         if (mode == insert) {
             if (!searchTopLevel(symbol)) {
                 //checks if current symbol is in scope
+                /*
+                std::map<std::string,Node>::reverse_iterator last = getCurrentPair();
+                bool test = last->second.getFunction();
                 globalSearch = searchPrevScope(symbol);
+                int tempScope = last->second.getScope();
+                if (test)
+                    tempScope++;
+                symbol.setScope(tempScope);
+                */
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             }
         }
@@ -110,8 +119,10 @@ class SymbolTable {
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> currentScopeLoop = *currentLooker;
-            std::cout << "SIZE OF ST SCOPE: " << currentScopeLoop.size() << std::endl;
-            std::cout << std::endl;
+            if (currentScopeLoop.size() > 0){
+                std::cout << "SIZE OF ST SCOPE: " << currentScopeLoop.size() << std::endl;
+                std::cout << std::endl;
+            }
             for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
                 Node treeNode = iter->second;
@@ -142,7 +153,7 @@ class SymbolTable {
                 {
                     std::cout << "\e[31;1m ERROR: \e[0m Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
                     printError();
-                    exit(1);
+                    //exit(1);
 					return true;
                 }
 				if ((treeNode.getName().compare(node.getName())==0) && (node.getLine() != treeNode.getLine()))
@@ -205,6 +216,19 @@ class SymbolTable {
         return ret;
     }
     std::list <std::map<std::string,Node>> :: iterator getCurrentScope() {return currentScope;}
-    std::map<std::string,Node> :: iterator getCurrentEntry() {return currentEntry;}
-    void nextEntry() {currentEntry++;}
+    //std::map<std::string,Node> :: iterator getCurrentPair() {return currentScope->rbegin();}
+    std::map<std::string,Node>::reverse_iterator getCurrentEnd(){
+        return currentScope->rend();
+    }
+    std::map<std::string,Node>::reverse_iterator getCurrentPair(){
+        std::map<std::string,Node>::reverse_iterator ret = currentScope->rend();
+        if (!currentScope->empty())
+            return currentScope->rbegin();
+        return ret;
+    }
+    Node * getLatestNode() {
+        //pointer to last map
+        std::map<std::string,Node> * currentScopeMap = &symbolTable.back();
+        return &(currentScopeMap->rbegin()->second);
+    }
 };
