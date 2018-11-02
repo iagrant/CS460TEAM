@@ -1,8 +1,7 @@
-!!dp
-int add (int c, int d){ d=c+d;}
-!!dp
-
 int main () {
-    int a = 1, b = 5;
-    add(a,b);
+	int array[1] = {1};
+	int k;
+            !!dp
+    array[k + 1] = array[k];
+            !!dp
 }
