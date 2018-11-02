@@ -165,7 +165,6 @@ function_definition
 	| declaration_specifiers declarator compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
-            tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             $$ = tmpNode;
@@ -180,7 +179,6 @@ function_definition
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
-            tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
@@ -217,7 +215,6 @@ declaration
             }
             */
             ASTnode *tmpNode = new ASTnode("DECLARATION");
-            tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
             globalSymbolTable.mode = lookup;
@@ -279,9 +276,9 @@ declaration_specifiers
         }
 	| type_specifier
         {
-        ASTnode *tmpNode = new ASTnode($1);
-        tmpNode -> lineNum = lineNum;
-        $$ = tmpNode;
+        //ASTnode *tmpNode = new ASTnode($1);
+        //tmpNode -> lineNum = lineNum;
+        //$$ = tmpNode;
         if (printProductions){
                 std::cout << "declaration_specifiers -> type_specifier" << std::endl;}
         if (printFile){
@@ -378,7 +375,7 @@ storage_class_specifier
 type_specifier
 	: VOID
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(voidS);
@@ -393,7 +390,7 @@ type_specifier
         }
 	| CHAR
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(charS);
@@ -408,7 +405,7 @@ type_specifier
         }
 	| SHORT
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(shortS);
@@ -423,7 +420,7 @@ type_specifier
         }
 	| INT
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(intS);
@@ -438,7 +435,7 @@ type_specifier
         }
 	| LONG
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(longS);
@@ -453,7 +450,7 @@ type_specifier
         }
 	| FLOAT
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(floatS);
@@ -468,7 +465,7 @@ type_specifier
         }
 	| DOUBLE
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setTypeSpec(doubleS);
@@ -483,7 +480,7 @@ type_specifier
         }
 	| SIGNED
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(signedE);
@@ -498,7 +495,7 @@ type_specifier
         }
 	| UNSIGNED
 		{
-            std::strcpy($$, yytext);
+            //std::strcpy($$, yytext);
             globalSymbolTable.mode = insert;
             if(globalSymbolTable.mode == insert){
                 globalTempNode.setSigned(unsignedE);
@@ -708,8 +705,8 @@ struct_declaration
 specifier_qualifier_list
 	: type_specifier
 		{
-            ASTnode *tmpNode = new ASTnode($1);
-            $$ = tmpNode;
+            //ASTnode *tmpNode = new ASTnode($1);
+            //$$ = tmpNode;
             if (printProductions) {
                 std::cout << "specifier_qualifier_list -> type_specifier" << std::endl;
             }
@@ -728,7 +725,7 @@ specifier_qualifier_list
         }
 	| type_qualifier
 		{
-            $$ = $1;
+            //$$ = $1;
             if (printProductions) {
                 std::cout << "specifier_qualifier_list -> type_qualifier" << std::endl;
             }
@@ -1026,7 +1023,7 @@ pointer
 type_qualifier_list
 	: type_qualifier
         {
-            $$ = $1;
+            //$$ = $1;
             if (printProductions) {
                 std::cout << "type_qualifier_list -> type_qualifier" << std::endl;
             }
