@@ -644,7 +644,9 @@ struct_declaration_list
 init_declarator_list
 	: init_declarator
 		{
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator" << std::endl;
             }
@@ -654,10 +656,7 @@ init_declarator_list
         }
 	| init_declarator_list COMMA init_declarator
 		{
-            ASTnode* tmpNode = new ASTnode("INIT_DECL_LIST");
-            tmpNode->addNode($1);
-            tmpNode->addNode($3);
-            $$ = tmpNode;
+            $$ ->addNode($3);
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator_list" << std::endl;
             }
@@ -1190,7 +1189,9 @@ initializer
 initializer_list
 	: initializer
         {
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("INITIALIZER_LIST");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "initializer_list -> initializer" << std::endl;
             }
@@ -1200,10 +1201,7 @@ initializer_list
         }
 	| initializer_list COMMA initializer
         {
-            ASTnode *tmpNode = new ASTnode("INITIALIZER_LIST");
-            tmpNode->addNode($1);
-            tmpNode->addNode($3);
-            $$ = tmpNode;
+            $$ ->addNode($3);
             if (printProductions) {
                 std::cout << "initializer_list -> initializer_list COMMA initializer" << std::endl;
             }
@@ -2479,6 +2477,12 @@ postfix_expression
         }
 	| postfix_expression BRACKETOPEN expression BRACKETCLOSE
         {
+            ASTnode *postNode = new ASTnode("POSTFIX_EXPRESSION");
+            postNode->addNode($1);
+            ASTnode *tmpNode = new ASTnode("ARR_BOUND");
+            tmpNode->addNode($3);
+            postNode->addNode(tmpNode);
+            $$ = postNode;
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression BRACKETOPEN expression BRACKETCLOSE" << std::endl;
             }

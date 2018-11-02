@@ -260,8 +260,6 @@ class forNode : public ASTnode {
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
-        infoString.append("LINE: ");
-        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 };
