@@ -954,7 +954,8 @@ direct_declarator
         {
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
-            tmpNode->addNode($3);
+            if ($3 != NULL)
+                tmpNode->addNode($3);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1510,7 +1511,9 @@ compound_statement
 statement_list
 	: statement
         {
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("STATEMENT_LIST");
+            tmpNode->addNode($1);
+            $$=tmpNode;
             if (printProductions) {
                 std::cout << "statement_list -> statement" << std::endl;
             }
@@ -1520,8 +1523,7 @@ statement_list
         }
 	| statement_list statement
         {
-            ASTnode *tmpNode = new ASTnode("STATEMENT_LIST");
-            tmpNode->addNode($2);
+            $$->addNode($2);
             if (printProductions) {
                 std::cout << "statement_list -> statement_list statement" << std::endl;
             }

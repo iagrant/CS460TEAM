@@ -1,10 +1,4 @@
-//
-// Created by Clayton Franklin on 8/27/18.
-//
-//#include <stdio.h>
-
-int main (void)
-{
+int main() {
 	int array[10] = {1, 4, 5, 2, 8, 12, 3, 97, 14, 9};
 	int i,j,k,l;
 
@@ -26,10 +20,4 @@ int main (void)
 			}
 		}
 	}
-
-	for (l = 0; l < 9; l++)
-	{
-        l=10;
-	}
-
 }
