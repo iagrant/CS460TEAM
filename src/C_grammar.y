@@ -24,6 +24,77 @@
     extern std::map<std::string,Node>::reverse_iterator funcPair;
     extern Node * funcNode;
 
+int assignmentCoercion (int lhs, int rhs) {
+    if (lhs == rhs)
+    {
+        std::cout << "Types are the same" << std::endl;
+        return lhs;
+    }
+    else if (lhs == intS && rhs == doubleS)
+    {
+        std::cout << "Warning: Coercing type double -> int" << std::endl;
+        return intS;
+    }
+    else if (lhs == intS && rhs == charS) 
+    {
+        std::cout << "Warning: Coercing type int -> char" << std::endl;
+        return intS;
+    }
+    else if (lhs == charS && rhs == doubleS)
+    {
+        std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else if (lhs == charS && rhs == intS)
+    {
+        std::cout << "Warning: Coercing int -> char" << std::endl;
+        return charS;
+    }
+    else if (lhs == doubleS && rhs == intS)
+    {
+        std::cout << "Warning: Coercing int -> double" << std::endl;
+        return doubleS;
+    }
+    else if (lhs == doubleS && rhs == charS)
+    {
+        std::cout << "Warning: Coercing char -> double" << std::endl;
+        return doubleS;
+    }
+    else
+    {
+        std::cout << "Error: Types not specified" << std::endl;
+        exit(1);
+    }
+}
+
+int mathCoercion (int lhs, int rhs) {
+    if (lhs == rhs)
+    {
+        std::cout << "Types are the same" << std::endl;
+        return lhs;
+    }
+    else if ((lhs == intS && rhs == doubleS) || (lhs == doubleS && rhs == intS))
+    {
+        std::cout << "Warning: Coercing type int -> double" << std::endl;
+        return doubleS;
+    }
+    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS)) 
+    {
+        std::cout << "Warning: Coercing type char -> int" << std::endl;
+        return intS;
+    }
+    else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
+    {
+        std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else
+    {
+        std::cout << "Error: Types not specified" << std::endl;
+        exit(1);
+    }
+}
+
     void  yyerror(char *msg)
 	{
     	std::ifstream srcFileP(srcFile);
@@ -679,6 +750,7 @@ init_declarator
             ASTnode *tmpNode = new ASTnode("EQUALS");
             tmpNode->addNode($1);
             tmpNode->addNode($3);
+            assignmentCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -1813,6 +1885,7 @@ assignment_expression
             $2->addNode($1);
             $2->addNode($3);
             assignmentNode->addNode($2);
+            assignmentNode->typeSpec = assignmentCoercion($1->typeSpec, $3->typeSpec);
             $$ = assignmentNode;
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
@@ -2237,6 +2310,7 @@ additive_expression
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($3);
             $$ = tmpNode;
+            std::cout << mathCoercion($1->typeSpec, $3->typeSpec) << std::endl;
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
@@ -2625,6 +2699,7 @@ constant
             constantNode *tmpNode = new constantNode("INTEGER_CONSTANT", intS);
             tmpNode->intConst = std::stoi(yytext);
             tmpNode -> lineNum = lineNum;
+            tmpNode -> typeSpec = intS;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> INTEGER_CONSTANT" << std::endl;
@@ -2638,6 +2713,7 @@ constant
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
             tmpNode->charConst = yytext[0];
             tmpNode -> lineNum = lineNum;
+            tmpNode -> typeSpec = charS;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> CHARACTER_CONSTANT" << std::endl;
@@ -2651,6 +2727,7 @@ constant
             constantNode *tmpNode = new constantNode("FLOATING_CONSTANT", doubleS);
             tmpNode->doubleConst = std::stof(yytext);
             tmpNode -> lineNum = lineNum;
+            tmpNode -> typeSpec = doubleS;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "constant -> FLOATING_CONSTANT" << std::endl;
@@ -2738,6 +2815,7 @@ identifier
 	;
 %%
 extern int column;
+
 
 int main (int argc, char** argv)
 {
