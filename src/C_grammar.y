@@ -35,7 +35,7 @@ int assignmentCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type double -> int" << std::endl;
         return intS;
     }
-    else if (lhs == intS && rhs == charS) 
+    else if (lhs == intS && rhs == charS)
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
         return intS;
@@ -77,7 +77,7 @@ int mathCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type int -> double" << std::endl;
         return doubleS;
     }
-    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS)) 
+    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
         return intS;
@@ -997,7 +997,7 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            if ($3->typeSpec != intS || $3->typeSpec != charS) 
+            if ($3->typeSpec != intS || $3->typeSpec != charS)
             {
                 ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
                 ASTnode *sizeNode = new ASTnode("ARR_BOUND");
@@ -2723,7 +2723,7 @@ constant
 	| CHARACTER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
-            tmpNode->charConst = yytext[0];
+            tmpNode->charConst = yytext[1];
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = charS;
             $$ = tmpNode;
