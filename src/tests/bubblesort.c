@@ -8,6 +8,7 @@ int main (void)
 	int array[10] = {1, 4, 5, 2, 8, 12, 3, 97, 14, 9};
 	int i,j,k,l;
 
+    !!dp
 	for (i = 0; i < 9; i++)
 	{
         i=10;
@@ -26,10 +27,11 @@ int main (void)
 			}
 		}
 	}
+    !!dp
 
 	for (l = 0; l < 9; l++)
 	{
-        l=10;
+        l = 10;
 	}
 
 }
