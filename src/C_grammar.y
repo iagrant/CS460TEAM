@@ -313,6 +313,9 @@ declaration
                 }
             }
             */
+            //remove scope of prototype
+            if (buildingFunction)
+                globalSymbolTable.removeScope();
             globalSymbolTable.mode = lookup;
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($2);
