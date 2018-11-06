@@ -7,13 +7,12 @@ int main (void)
 {
 	int array[10] = {1, 4, 5, 2, 8, 12, 3, 97, 14, 9};
 	int i,j,k,l;
-	printf("Array before being sorted: \n");
 
+    !!dp
 	for (i = 0; i < 9; i++)
 	{
-	printf("%d ",array[i]);
+        i = 0;
 	}
-	printf("\n");
 
 	for (j = 0; j < 8; j++)
 	{
@@ -28,11 +27,11 @@ int main (void)
 			}
 		}
 	}
+    !!dp
 
-	printf("Array after being sorted: \n");
 	for (l = 0; l < 9; l++)
 	{
-		printf("%d ",array[i]);
+        l = 10;
 	}
 
 	return 0;
