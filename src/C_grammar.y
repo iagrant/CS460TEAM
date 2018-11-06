@@ -2310,8 +2310,8 @@ additive_expression
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($3);
+            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
-            std::cout << mathCoercion($1->typeSpec, $3->typeSpec) << std::endl;
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
@@ -2326,6 +2326,7 @@ additive_expression
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($3);
+            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
@@ -2353,6 +2354,7 @@ multiplicative_expression
             tmpNode -> addNode($1);
             tmpNode -> operation = mulOp;
             tmpNode -> addNode($3);
+            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2368,6 +2370,7 @@ multiplicative_expression
             tmpNode -> addNode($1);
             tmpNode -> operation = divOp;
             tmpNode -> addNode($3);
+            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2383,6 +2386,7 @@ multiplicative_expression
             tmpNode -> addNode($1);
             tmpNode -> operation = modOp;
             tmpNode -> addNode($3);
+            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression PERCENT cast_expression" << std::endl;

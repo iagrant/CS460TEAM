@@ -1,7 +1,6 @@
 int main () {
-	int array[1] = {1};
-	int k;
-            !!dp
-    array[k + 1] = array[k];
-            !!dp
+    int a = 4.0 + 1;
+    int b = 'a' + 1;
+    double c = 4.0 + 1;
+    double d = 'd' + 1;
 }
