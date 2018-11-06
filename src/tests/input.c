@@ -11,4 +11,3 @@ int main() {
     int array[5];
   !!ds
 }
-
