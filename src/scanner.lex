@@ -337,6 +337,8 @@ sizeof          {
                     //reset node on comma to fix func param types
                     if (buildingFunction)
                         globalTempNode.resetNode();
+                    else
+                        globalSymbolTable.mode = insert;
                     return COMMA;
                 }
 \.              {

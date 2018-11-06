@@ -35,7 +35,12 @@ int assignmentCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type double -> int" << std::endl;
         return intS;
     }
-    else if (lhs == intS && rhs == charS) 
+    else if (lhs == intS && rhs == floatS)
+    {
+        std::cout << "Warning: Coercing type float -> int" << std::endl;
+        return floatS;
+    }
+    else if (lhs == intS && rhs == charS)
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
         return intS;
@@ -43,6 +48,11 @@ int assignmentCoercion (int lhs, int rhs) {
     else if (lhs == charS && rhs == doubleS)
     {
         std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else if (lhs == charS && rhs == floatS)
+    {
+        std::cout << "Error: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else if (lhs == charS && rhs == intS)
@@ -59,6 +69,16 @@ int assignmentCoercion (int lhs, int rhs) {
     {
         std::cout << "Warning: Coercing char -> double" << std::endl;
         return doubleS;
+    }
+    else if (lhs == floatS && rhs == intS)
+    {
+        std::cout << "Warning: Coercing int -> float" << std::endl;
+        return floatS;
+    }
+    else if (lhs == floatS && rhs == charS)
+    {
+        std::cout << "Warning: Coercing char -> float" << std::endl;
+        return floatS;
     }
     else
     {
@@ -77,7 +97,12 @@ int mathCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type int -> double" << std::endl;
         return doubleS;
     }
-    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS)) 
+    else if ((lhs == intS && rhs == floatS) || (lhs == floatS && rhs == intS))
+    {
+        std::cout << "Warning: Coercing type int -> float" << std::endl;
+        return floatS;
+    }
+    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
         return intS;
@@ -85,6 +110,11 @@ int mathCoercion (int lhs, int rhs) {
     else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
     {
         std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else if ((lhs == charS && rhs == floatS) || (lhs == floatS && rhs == charS))
+    {
+        std::cout << "Error: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else
@@ -997,7 +1027,7 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            if ($3->typeSpec != intS || $3->typeSpec != charS) 
+            if ($3->typeSpec != intS || $3->typeSpec != charS)
             {
                 ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
                 ASTnode *sizeNode = new ASTnode("ARR_BOUND");
@@ -2808,12 +2838,11 @@ identifier
             if (globalSymbolTable.mode==insert)
                 flip=true;
             //FIXME dirty code to fix wackness
-            globalSymbolTable.printST();
             globalSymbolTable.mode=lookup;
             std::pair<bool,Node> ret = globalSymbolTable.searchTree(yytext);
             //FIXME dirty code to fix wackness
-            if (flip)
-                globalSymbolTable.mode=insert;
+            //if (flip)
+            //    globalSymbolTable.mode=insert;
 
             if (ret.first) {
                 tmpNode->signedB = ret.second.getSigned();
