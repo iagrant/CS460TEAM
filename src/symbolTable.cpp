@@ -80,6 +80,7 @@ class SymbolTable {
     void insertSymbol (Node symbol) {
         if (mode == insert) {
             std::pair<bool,Node> searchRes = searchTopLevel(symbol.getName());
+            searchTree(symbol.getName());
             if (!searchRes.first) {
                 //checks if current symbol is in scope
                 /*
@@ -154,7 +155,7 @@ class SymbolTable {
                 }
                 */
 
-				if ((treeNode.getName().compare(name)==0) && searchWindow == currentScope)
+				if ((treeNode.getName().compare(name)==0) && currentScopeNum == treeNode.getScope())
                 {
                     ret.second = treeNode;
                     ret.first = true;
@@ -163,7 +164,7 @@ class SymbolTable {
                     exit(1);
 					return ret;
                 }
-				if ((treeNode.getName().compare(name)==0) && searchWindow != currentScope)
+				if ((treeNode.getName().compare(name)==0) && currentScopeNum != treeNode.getScope())
                 {
                     ret.second = treeNode;
                     ret.first = true;
