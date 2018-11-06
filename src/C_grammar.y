@@ -285,6 +285,7 @@ declaration
                 }
             }
             */
+            globalSymbolTable.mode = lookup;
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($2);
             $$ = tmpNode;
@@ -2771,7 +2772,6 @@ identifier
             int scope = globalSymbolTable.currentScopeNum;
             if(globalSymbolTable.mode==insert){
                 if (buildingFunction) {
-                   //scope++;
                    if (funcPair != globalSymbolTable.getCurrentEnd()) {
                         globalTempNode.isParam=true;
                         funcPair->second.addParam();
@@ -2802,14 +2802,10 @@ identifier
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             std::pair<bool,Node> ret = globalSymbolTable.searchTree(search);
-            tmpNode->signLocal = ret.second.getSigned();
-            tmpNode->storageSpecLocal = ret.second.getStorageSpec();
-            tmpNode->typeQualLocal = ret.second.getTypeQual();
-            if(ret.second.getTypeSpec()==0) {
-                std::cout << ret.second.getName() << std::endl;
-                std::cout << "FUCK" << std::endl;
-            }
-            tmpNode->typeSpecLocal = ret.second.getTypeSpec();
+            tmpNode->signedB = ret.second.getSigned();
+            tmpNode->storageSpec = ret.second.getStorageSpec();
+            tmpNode->typeQual = ret.second.getTypeQual();
+            tmpNode->typeSpec = ret.second.getTypeSpec();
             $$ = tmpNode;
         }
 	;
