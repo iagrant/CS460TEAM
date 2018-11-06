@@ -2808,12 +2808,11 @@ identifier
             if (globalSymbolTable.mode==insert)
                 flip=true;
             //FIXME dirty code to fix wackness
-            globalSymbolTable.printST();
             globalSymbolTable.mode=lookup;
             std::pair<bool,Node> ret = globalSymbolTable.searchTree(yytext);
             //FIXME dirty code to fix wackness
-            if (flip)
-                globalSymbolTable.mode=insert;
+            //if (flip)
+            //    globalSymbolTable.mode=insert;
 
             if (ret.first) {
                 tmpNode->signedB = ret.second.getSigned();
