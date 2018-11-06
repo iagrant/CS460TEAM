@@ -2723,7 +2723,7 @@ constant
 	| CHARACTER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
-            tmpNode->charConst = yytext[0];
+            tmpNode->charConst = yytext[1];
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = charS;
             $$ = tmpNode;
