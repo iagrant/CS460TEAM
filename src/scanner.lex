@@ -333,6 +333,8 @@ sizeof          {
                     if(printToken) {printConsole("COMMA");}
                     if(printFile) {printToFile("COMMA");}
                     colNum += yyleng;
+                    //reset node on comma to fix func param types
+                    globalTempNode.resetNode();
                     return COMMA;
                 }
 \.              {
