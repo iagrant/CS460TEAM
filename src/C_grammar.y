@@ -37,7 +37,7 @@ int assignmentCoercion (int lhs, int rhs) {
     }
     else if (lhs == intS && rhs == charS) 
     {
-        std::cout << "Warning: Coercing type int -> char" << std::endl;
+        std::cout << "Warning: Coercing type char -> int" << std::endl;
         return intS;
     }
     else if (lhs == charS && rhs == doubleS)
@@ -63,7 +63,6 @@ int assignmentCoercion (int lhs, int rhs) {
     else
     {
         std::cout << "Error: Types not specified" << std::endl;
-        exit(1);
     }
 }
 
@@ -91,7 +90,6 @@ int mathCoercion (int lhs, int rhs) {
     else
     {
         std::cout << "Error: Types not specified" << std::endl;
-        exit(1);
     }
 }
 
@@ -999,12 +997,20 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
-            ASTnode *sizeNode = new ASTnode("ARR_BOUND");
-            sizeNode->addNode($3);
-            tmpNode->addNode($1);
-            tmpNode->addNode(sizeNode);
-            $$ = tmpNode;
+            if ($3->typeSpec != intS || $3->typeSpec != charS) 
+            {
+                ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
+                ASTnode *sizeNode = new ASTnode("ARR_BOUND");
+                sizeNode->addNode($3);
+                tmpNode->addNode($1);
+                tmpNode->addNode(sizeNode);
+                $$ = tmpNode;
+            }
+            else
+            {
+                std::cout << "Error: Array bounds must be int type" << std::endl;
+                exit(1);
+            }
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE" << std::endl;
             }
@@ -2557,6 +2563,7 @@ postfix_expression
         {
             ASTnode *postNode = new ASTnode("POSTFIX_EXPRESSION");
             postNode->addNode($1);
+            postNode->typeSpec = $1->typeSpec;
             ASTnode *tmpNode = new ASTnode("ARR_BOUND");
             tmpNode->addNode($3);
             postNode->addNode(tmpNode);

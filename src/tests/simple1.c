@@ -1,9 +1,6 @@
 int main () {
-    float b;
-    char a;
-	int array[1] = {1};
-    double c;
-	int k;
-    array[k + 1] = c;
-    !!ds
+    int arrI[4];
+    char arrC[4];
+    arrI[1] = arrC['a'];
+
 }
