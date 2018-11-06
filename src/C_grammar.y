@@ -35,6 +35,11 @@ int assignmentCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type double -> int" << std::endl;
         return intS;
     }
+    else if (lhs == intS && rhs == floatS)
+    {
+        std::cout << "Warning: Coercing type float -> int" << std::endl;
+        return floatS;
+    }
     else if (lhs == intS && rhs == charS)
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
@@ -43,6 +48,11 @@ int assignmentCoercion (int lhs, int rhs) {
     else if (lhs == charS && rhs == doubleS)
     {
         std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else if (lhs == charS && rhs == floatS)
+    {
+        std::cout << "Error: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else if (lhs == charS && rhs == intS)
@@ -59,6 +69,16 @@ int assignmentCoercion (int lhs, int rhs) {
     {
         std::cout << "Warning: Coercing char -> double" << std::endl;
         return doubleS;
+    }
+    else if (lhs == floatS && rhs == intS)
+    {
+        std::cout << "Warning: Coercing int -> float" << std::endl;
+        return floatS;
+    }
+    else if (lhs == floatS && rhs == charS)
+    {
+        std::cout << "Warning: Coercing char -> float" << std::endl;
+        return floatS;
     }
     else
     {
@@ -77,6 +97,11 @@ int mathCoercion (int lhs, int rhs) {
         std::cout << "Warning: Coercing type int -> double" << std::endl;
         return doubleS;
     }
+    else if ((lhs == intS && rhs == floatS) || (lhs == floatS && rhs == intS))
+    {
+        std::cout << "Warning: Coercing type int -> float" << std::endl;
+        return floatS;
+    }
     else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
     {
         std::cout << "Warning: Coercing type char -> int" << std::endl;
@@ -85,6 +110,11 @@ int mathCoercion (int lhs, int rhs) {
     else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
     {
         std::cout << "Error: Type conversion error char and double" << std::endl;
+        exit(1);
+    }
+    else if ((lhs == charS && rhs == floatS) || (lhs == floatS && rhs == charS))
+    {
+        std::cout << "Error: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else
