@@ -2787,10 +2787,6 @@ identifier
                 globalTempNode.setScope(scope);
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
-            if(globalSymbolTable.mode==lookup){
-                //globalSymbolTable.searchTree(globalTempNode);
-                //globalSymbolTable.searchPrevScope(globalTempNode);
-            }
 
             if (printProductions) {
                 std::cout << "identifier -> IDENTIFIER" << std::endl;
@@ -2799,17 +2795,16 @@ identifier
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
-            Node search;
-            search.setName(yytext);
-            search.setScope(globalSymbolTable.currentScopeNum);
-            search.setLine(lineNum);
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
-            std::pair<bool,Node> ret = globalSymbolTable.searchTree(search);
-            tmpNode->signedB = ret.second.getSigned();
-            tmpNode->storageSpec = ret.second.getStorageSpec();
-            tmpNode->typeQual = ret.second.getTypeQual();
-            tmpNode->typeSpec = ret.second.getTypeSpec();
+            globalSymbolTable.mode=lookup;
+            std::pair<bool,Node> ret = globalSymbolTable.searchTree(yytext);
+            if (ret.first) {
+                tmpNode->signedB = ret.second.getSigned();
+                tmpNode->storageSpec = ret.second.getStorageSpec();
+                tmpNode->typeQual = ret.second.getTypeQual();
+                tmpNode->typeSpec = ret.second.getTypeSpec();
+            }
             $$ = tmpNode;
         }
 	;
