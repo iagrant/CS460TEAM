@@ -2804,8 +2804,17 @@ identifier
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
+            bool flip = false;
+            if (globalSymbolTable.mode==insert)
+                flip=true;
+            //FIXME dirty code to fix wackness
+            globalSymbolTable.printST();
             globalSymbolTable.mode=lookup;
             std::pair<bool,Node> ret = globalSymbolTable.searchTree(yytext);
+            //FIXME dirty code to fix wackness
+            if (flip)
+                globalSymbolTable.mode=insert;
+
             if (ret.first) {
                 tmpNode->signedB = ret.second.getSigned();
                 tmpNode->storageSpec = ret.second.getStorageSpec();

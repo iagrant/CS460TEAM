@@ -335,7 +335,8 @@ sizeof          {
                     if(printFile) {printToFile("COMMA");}
                     colNum += yyleng;
                     //reset node on comma to fix func param types
-                    globalTempNode.resetNode();
+                    if (buildingFunction)
+                        globalTempNode.resetNode();
                     return COMMA;
                 }
 \.              {
