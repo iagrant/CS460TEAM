@@ -79,10 +79,9 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (mode == insert) {
-            std::pair<bool,Node> searchRes = searchTopLevel(symbol.getName());
-            searchTree(symbol.getName());
+            std::pair<bool,Node> searchRes = searchTopLevel(symbol.getName()); //search top level for just redecls
+            searchTree(symbol.getName()); //search whole tree for shadowing
             if (!searchRes.first) {
-                //checks if current symbol is in scope
                 /*
                 std::map<std::string,Node>::reverse_iterator last = getCurrentPair();
                 bool test = last->second.getFunction();
@@ -178,6 +177,7 @@ class SymbolTable {
 		{
 			for(std::map<std::string,Node> :: iterator iter = currentScopeMap.begin(); iter != currentScopeMap.end(); iter++)
 			{
+                //node is 2nd in map pair
                 Node treeNode = iter->second;
 				if (treeNode.getName().compare(name)==0)
                 {
@@ -202,6 +202,13 @@ class SymbolTable {
             return top;
         if (all.first)
             return all;
+        if (mode==lookup){
+            //if it got here did not find id there for it wasn't declared
+            //FIXME NO DECLARATION CHECK BROKEN :(
+            std::cout << "\e[31;1m ERROR: \e[0m No declaration of Variable: " << name << std::endl;
+            printError();
+            exit(1);
+        }
         return ret;
     }
     void printError () {
