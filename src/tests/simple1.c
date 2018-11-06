@@ -1,7 +1,9 @@
 int main () {
+    float b;
+    char a;
 	int array[1] = {1};
+    double c;
 	int k;
-            !!dp
-    array[k + 1] = array[k];
-            !!dp
+    array[k + 1] = c;
+    !!ds
 }

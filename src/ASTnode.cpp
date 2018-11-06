@@ -200,6 +200,12 @@ class constantNode : public ASTnode {
                 infoString.append("VALUE: ");
                 infoString.append(std::to_string(doubleConst));
             }
+            else if(type == floatS) {
+                infoString.append(production);
+                infoString.append("\n");
+                infoString.append("VALUE: ");
+                infoString.append(std::to_string(doubleConst));
+            }
             else if(type == stringS) {
                 infoString.append(production);
                 infoString.append("\n");
