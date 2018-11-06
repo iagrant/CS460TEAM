@@ -299,6 +299,7 @@ sizeof          {
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
                     //globalSymbolTable.addNewScope();
+                    globalSymbolTable.mode == lookup;
                     return CURLYOPEN;
                 }
 \}              {
