@@ -44,8 +44,8 @@ public:
     bool isFunction;
     bool isArray;
     bool isParam;
-    bool isProto;
-    bool isImplementation;
+    bool hasProto;
+    bool hasImplementation;
     Node(){
         setName("");
         setLine(-1);
@@ -57,8 +57,8 @@ public:
         isFunction=false;
         isArray=false;
         isParam=false;
-        isProto=false;
-        isImplementation=false;
+        hasProto=false;
+        hasImplementation=false;
         paramNum=0;
     }
 
@@ -168,8 +168,8 @@ public:
         std::cout << "IS A FUNCTION: " << std::boolalpha << isFunction << std::endl;
         std::cout << "IS A PARAM: " << std::boolalpha << isParam << std::endl;
         if (isFunction){
-            std::cout << "IS A PROTOTYPE: " << std::boolalpha << isProto << std::endl;
-            std::cout << "IS A IMPLEMENTATION: " << std::boolalpha << isImplementation << std::endl;
+            std::cout << "HAS A PROTOTYPE: " << std::boolalpha << hasProto << std::endl;
+            std::cout << "HAS A IMPLEMENTATION: " << std::boolalpha << hasImplementation << std::endl;
             std::cout << "Number of Function Parameters: " << paramNum << std::endl;
             if (paramNum > 0) {
                 if (printSymbolNums) {
@@ -237,8 +237,8 @@ public:
     void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
     void setFunction() {isFunction=true;}
-    void setProto() {isProto=true;}
-    void setImplementation() {isImplementation=true;}
+    void setProto() {hasProto=true;}
+    void setImplementation() {hasImplementation=true;}
     void setParam() {isFunction=true;}
     bool getFunction() {return isFunction;}
     bool ifParam() {return isParam;}

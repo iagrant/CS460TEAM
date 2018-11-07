@@ -79,18 +79,14 @@ class SymbolTable {
 
     void insertSymbol (Node symbol) {
         if (mode == insert) {
-            std::pair<bool,Node> searchRes = searchTopLevel(symbol.getName()); //search top level for just redecls
-            searchTree(symbol.getName()); //search whole tree for shadowing
+            //the result of top level gets stored in pair
+            //cuz only redecl matters for insertion
+            std::pair<bool,Node*> searchRes = searchTopLevel(symbol.getName()); //search top level for just redecls
+            //search whole tree for shadowing but don't care about result
+            //cuz result handled in it if shadowing
+            if (currentScopeNum != 0)
+                searchTree(symbol.getName());
             if (!searchRes.first) {
-                /*
-                std::map<std::string,Node>::reverse_iterator last = getCurrentPair();
-                bool test = last->second.getFunction();
-                globalSearch = searchPrevScope(symbol);
-                int tempScope = last->second.getScope();
-                if (test)
-                    tempScope++;
-                symbol.setScope(tempScope);
-                */
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             }
         }
@@ -132,42 +128,43 @@ class SymbolTable {
         }
     }
 
-    std::pair<bool,Node> searchTopLevel (std::string name) {
+    std::pair<bool,Node*> searchTopLevel (std::string name) {
         return searchScope(name,currentScope); //searches top level scope which is currentScope
     }
-    std::pair<bool,Node> searchScope (std::string name, std::list <std::map<std::string,Node>> :: iterator searchWindow){
+    std::pair<bool,Node*> searchScope (std::string name, std::list <std::map<std::string,Node>> :: iterator searchWindow){
         Node retNode;
-        std::pair<bool,Node> ret = std::pair<bool,Node>(false,retNode);
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
         std::map<std::string,Node> currentScopeMap = *searchWindow;
         if (mode == insert){
 			for(std::map<std::string,Node> :: iterator iter = currentScopeMap.begin(); iter != currentScopeMap.end(); iter++)
 			{
                 //
                 //node is 2nd in map pair
-                Node treeNode = iter->second;
+                Node * treeNode = &(iter->second);
                 //function proto block
-                /*
-                if (treeNode.isProto && node.isImplementation){
+                if (treeNode->hasProto && (treeNode->getName().compare(name)==0)){
+                    //Doesn't work for some reason
+                    //iter->second.setImplementation();
+                    //treeNode->setImplementation();
                     ret.second = treeNode;
                     ret.first = true;
                     return ret;
                 }
-                */
 
-				if ((treeNode.getName().compare(name)==0) && currentScopeNum == treeNode.getScope())
+				if ((treeNode->getName().compare(name)==0) && currentScopeNum == treeNode->getScope())
                 {
                     ret.second = treeNode;
                     ret.first = true;
-                    std::cout << "\e[31;1m ERROR: \e[0m Redifinition of Variable: " << name << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    std::cout << "\e[31;1m ERROR: \e[0m Redifinition of Variable: " << name << " previous declaration on line " << treeNode->getLine() << std::endl;
                     printError();
                     exit(1);
 					return ret;
                 }
-				if ((treeNode.getName().compare(name)==0) && currentScopeNum != treeNode.getScope())
+				if ((treeNode->getName().compare(name)==0) && currentScopeNum != treeNode->getScope())
                 {
                     ret.second = treeNode;
                     ret.first = true;
-                    std::cout << "\e[33;1m WARNING: \e[0m Shadowing of Variable: " << name << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    std::cout << "\e[33;1m WARNING: \e[0m Shadowing of Variable: " << name << " previous declaration on line " << treeNode->getLine() << std::endl;
 					return ret;
                 }
 			}
@@ -178,8 +175,8 @@ class SymbolTable {
 			for(std::map<std::string,Node> :: iterator iter = currentScopeMap.begin(); iter != currentScopeMap.end(); iter++)
 			{
                 //node is 2nd in map pair
-                Node treeNode = iter->second;
-				if (treeNode.getName().compare(name)==0)
+                Node * treeNode = &(iter->second);
+				if (treeNode->getName().compare(name)==0)
                 {
                     ret.second = treeNode;
                     ret.first = true;
@@ -193,11 +190,11 @@ class SymbolTable {
     // searchTree
     // Searches for a symbol on the top stack ie current scope
     // returns true if found a symbol already in ST
-    std::pair<bool,Node>searchTree (std::string name){
+    std::pair<bool,Node*>searchTree (std::string name){
         Node retNode;
-        std::pair<bool,Node> ret = std::pair<bool,Node>(false,retNode);
-        std::pair<bool,Node> top = searchTopLevel(name);
-        std::pair<bool,Node> all = searchPrevScope(name);
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
+        std::pair<bool,Node*> top = searchTopLevel(name);
+        std::pair<bool,Node*> all = searchPrevScope(name);
         if (top.first)
             return top;
         if (all.first)
@@ -222,10 +219,10 @@ class SymbolTable {
         srcFileP.close();
     }
     //searches past scopes for symbols
-    std::pair<bool,Node> searchPrevScope(std::string name)
+    std::pair<bool,Node*> searchPrevScope(std::string name)
     {
         Node retNode;
-        std::pair<bool,Node> ret = std::pair<bool,Node>(false,retNode);
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
         //std::cout << "SEARCHING PREVIOUS SCOPE" << std::endl;
         currentLooker = currentScope;
         while (currentLooker != symbolTable.begin())

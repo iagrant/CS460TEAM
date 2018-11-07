@@ -219,7 +219,6 @@ external_declaration
 	: function_definition
 		{
             $$ = $1;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "external_declaration -> function definition" << std::endl;
             }
@@ -229,7 +228,6 @@ external_declaration
         }
 	| declaration
 		{
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "external_declaration -> declaration" << std::endl;
             }
@@ -242,7 +240,6 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
-            funcPair->second.setImplementation();
             functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -257,7 +254,6 @@ function_definition
         }
 	| declarator declaration_list compound_statement
 		{
-            funcPair->second.setImplementation();
             functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
@@ -314,18 +310,15 @@ declaration
         }
 	| declaration_specifiers init_declarator_list SEMI
 		{
-            /*
-            if (funcPair != globalSymbolTable.getCurrentEnd()){
-                if(funcPair->second.getLine() == lineNum) {
-                    funcPair->second.setProto();
-                    std::cout << globalSymbolTable.currentScopeNum << funcPair->second.getName() <<std::endl;
-                    globalSymbolTable.removeScope();
-                }
-            }
-            */
             //remove scope of prototype
-            if (buildingFunction)
+            if (buildingFunction){
+                if (funcPair != globalSymbolTable.getCurrentEnd()){
+                    if(funcPair->second.getLine() == lineNum) {
+                        funcPair->second.setProto();
+                    }
+                }
                 globalSymbolTable.removeScope();
+            }
             globalSymbolTable.mode = lookup;
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($2);
@@ -1063,6 +1056,7 @@ direct_declarator
         }
 	| direct_declarator OPEN CLOSE
         {
+            //func def no params
             $$ = $1;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1074,6 +1068,9 @@ direct_declarator
         }
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
+            //func def
+            if (funcPair != globalSymbolTable.getCurrentEnd())
+                funcPair->second.setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
             if ($3 != NULL)
@@ -2620,6 +2617,7 @@ postfix_expression
         }
 	| postfix_expression OPEN CLOSE
         {
+            //func call
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN CLOSE" << std::endl;
             }
@@ -2629,6 +2627,7 @@ postfix_expression
         }
 	| postfix_expression OPEN argument_expression_list CLOSE
         {
+            //func call with args
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN argument_expression_list CLOSE" << std::endl;
             }
@@ -2852,16 +2851,16 @@ identifier
                 flip=true;
             //FIXME dirty code to fix wackness
             globalSymbolTable.mode=lookup;
-            std::pair<bool,Node> ret = globalSymbolTable.searchTree(yytext);
+            std::pair<bool,Node*> ret = globalSymbolTable.searchTree(yytext);
             //FIXME dirty code to fix wackness
             //if (flip)
             //    globalSymbolTable.mode=insert;
 
             if (ret.first) {
-                tmpNode->signedB = ret.second.getSigned();
-                tmpNode->storageSpec = ret.second.getStorageSpec();
-                tmpNode->typeQual = ret.second.getTypeQual();
-                tmpNode->typeSpec = ret.second.getTypeSpec();
+                tmpNode->signedB = ret.second->getSigned();
+                tmpNode->storageSpec = ret.second->getStorageSpec();
+                tmpNode->typeQual = ret.second->getTypeQual();
+                tmpNode->typeSpec = ret.second->getTypeSpec();
             }
             $$ = tmpNode;
         }
