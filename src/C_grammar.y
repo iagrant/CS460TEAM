@@ -1027,7 +1027,7 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            if ($3->typeSpec != intS || $3->typeSpec != charS)
+            if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
                 ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
                 ASTnode *sizeNode = new ASTnode("ARR_BOUND");
