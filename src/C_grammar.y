@@ -30,59 +30,64 @@ int assignmentCoercion (int lhs, int rhs) {
         std::cout << "Types are the same" << std::endl;
         return lhs;
     }
+    if (lhs == floatS && rhs == doubleS)
+    {
+        std::cout << "Types are the same" << std::endl;
+        return lhs;
+    }
     else if (lhs == intS && rhs == doubleS)
     {
-        std::cout << "Warning: Coercing type double -> int" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type double -> int" << std::endl;
         return intS;
     }
     else if (lhs == intS && rhs == floatS)
     {
-        std::cout << "Warning: Coercing type float -> int" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type float -> int" << std::endl;
         return floatS;
     }
     else if (lhs == intS && rhs == charS)
     {
-        std::cout << "Warning: Coercing type char -> int" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
         return intS;
     }
     else if (lhs == charS && rhs == doubleS)
     {
-        std::cout << "Error: Type conversion error char and double" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
     else if (lhs == charS && rhs == floatS)
     {
-        std::cout << "Error: Type conversion error char and float" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else if (lhs == charS && rhs == intS)
     {
-        std::cout << "Warning: Coercing int -> char" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> char" << std::endl;
         return charS;
     }
     else if (lhs == doubleS && rhs == intS)
     {
-        std::cout << "Warning: Coercing int -> double" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> double" << std::endl;
         return doubleS;
     }
     else if (lhs == doubleS && rhs == charS)
     {
-        std::cout << "Warning: Coercing char -> double" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> double" << std::endl;
         return doubleS;
     }
     else if (lhs == floatS && rhs == intS)
     {
-        std::cout << "Warning: Coercing int -> float" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> float" << std::endl;
         return floatS;
     }
     else if (lhs == floatS && rhs == charS)
     {
-        std::cout << "Warning: Coercing char -> float" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> float" << std::endl;
         return floatS;
     }
     else
     {
-        std::cout << "Error: Types not specified" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
     }
 }
 
@@ -92,34 +97,39 @@ int mathCoercion (int lhs, int rhs) {
         std::cout << "Types are the same" << std::endl;
         return lhs;
     }
+    if (lhs == floatS && rhs == doubleS)
+    {
+        std::cout << "Types are the same" << std::endl;
+        return lhs;
+    }
     else if ((lhs == intS && rhs == doubleS) || (lhs == doubleS && rhs == intS))
     {
-        std::cout << "Warning: Coercing type int -> double" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
         return doubleS;
     }
     else if ((lhs == intS && rhs == floatS) || (lhs == floatS && rhs == intS))
     {
-        std::cout << "Warning: Coercing type int -> float" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
         return floatS;
     }
     else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
     {
-        std::cout << "Warning: Coercing type char -> int" << std::endl;
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
         return intS;
     }
     else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
     {
-        std::cout << "Error: Type conversion error char and double" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
     else if ((lhs == charS && rhs == floatS) || (lhs == floatS && rhs == charS))
     {
-        std::cout << "Error: Type conversion error char and float" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else
     {
-        std::cout << "Error: Types not specified" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
     }
 }
 
@@ -1030,7 +1040,7 @@ direct_declarator
         }
 	| direct_declarator BRACKETOPEN constant_expression BRACKETCLOSE
         {
-            if ($3->typeSpec != intS || $3->typeSpec != charS)
+            if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
                 ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
                 ASTnode *sizeNode = new ASTnode("ARR_BOUND");
@@ -1041,7 +1051,7 @@ direct_declarator
             }
             else
             {
-                std::cout << "Error: Array bounds must be int type" << std::endl;
+                std::cout << "\e[31;1m Error: \e[0m: Array bounds must be int type" << std::endl;
                 exit(1);
             }
             if (printProductions) {
