@@ -228,6 +228,7 @@ external_declaration
         }
 	| declaration
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "external_declaration -> declaration" << std::endl;
             }
@@ -1187,7 +1188,9 @@ parameter_type_list
 parameter_list
 	: parameter_declaration
         {
-            $$ =$1;
+            ASTnode *tmpNode = new ASTnode("PARAM_LIST");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "parameter_list -> parameter_declaration" << std::endl;
             }
@@ -1197,10 +1200,7 @@ parameter_list
         }
 	| parameter_list COMMA parameter_declaration
         {
-            ASTnode *tmpNode = new ASTnode("PARAM_LIST");
-            tmpNode->addNode($1);
-            tmpNode->addNode($3);
-            $$ = tmpNode;
+            $$-> addNode($3);
             if (printProductions) {
                 std::cout << "parameter_list -> parameter_list COMMA parameter_declaration" << std::endl;
             }
@@ -1213,10 +1213,19 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
         {
-            ASTnode *tmpNode = new ASTnode("PARAMS");
-            tmpNode->addNode($1);
-            tmpNode->addNode($2);
-            $$ = tmpNode;
+            if ($1 != NULL)
+            {
+                ASTnode *tmpNode = new ASTnode("PARAMS");
+                tmpNode->addNode($1);
+                tmpNode->addNode($2);
+                $$ = tmpNode;
+            }
+            else 
+            {
+                ASTnode *tmpNode = new ASTnode("PARAMS");
+                tmpNode->addNode($2);
+                $$ = tmpNode;
+            }
             if (printProductions) {
                 std::cout << "parameter_declaration -> declaration_specifiers declarator" << std::endl;
             }
@@ -1715,6 +1724,10 @@ iteration_statement
         }
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
+            whileNode *iterNode = new whileNode("DO WHILE");
+            iterNode->addNode($2);
+            iterNode->addNode($5);
+            $$ = iterNode;
             if (printProductions) {
                 std::cout << "iteration_statement -> DO statement WHILE OPEN expression CLOSE SEMI" << std::endl;
             }
