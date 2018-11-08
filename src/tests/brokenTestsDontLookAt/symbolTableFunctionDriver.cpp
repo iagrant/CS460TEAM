@@ -6,20 +6,20 @@
 #include <list>
 #include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
     SymbolTable st;
 
-    int sign1 = unsignedE;
-    int type1 = intS;
+    int sign1 = unsignedE; //unsigned
+    int type1 = intS; //int
     string name1 = "my_var1";
     int line1 = 144;
 
-    int type2 = charS;
+    int type2 = charS; //char
     string name2 = "my_var2";
     int line2 = 1337;
 
@@ -31,17 +31,17 @@ int main () {
     string name4 = "my_var4";
     int line4 = 123;
 
-    // REDEFINITION TEST
-    int type0 = intS; //int
-    string name0 = "my_var1";
-    int line0 = 244;
+    //function
+    int type5 = intS;
+    string name5 = "funcTest";
+    int line5 = 350;
 
     // CREATE NODES
     Node a;
     Node b;
     Node c;
     Node d;
-    Node z;
+    Node f;
 
     a.setTypeSpec(type1);
     a.setSigned(sign1);
@@ -64,20 +64,28 @@ int main () {
     d.setLine(line4);
     d.setScope(1);
 
-    z.setTypeSpec(type0);
-    z.setName(name0);
-    z.setLine(line0);
-    z.setScope(1);
+    f.setTypeSpec(type5);
+    f.setName(name5);
+    f.setLine(line5);
+    f.setScope(1);
+    f.setFunction();
+    f.addParam();
+    f.addParamValue(signedPT,unsignedE);
+    f.addParamValue(typeQualPT,volatileQ);
+    f.addParamValue(typeSpecPT,intS);
+    f.addParam();
+    f.addParamValue(typeQualPT,constQ);
+    f.addParamValue(typeSpecPT,charS);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.addNewScope();
-    st.insertSymbol(z);
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
-    st.searchTree(z);
+    st.insertSymbol(f);
+    st.mode = lookup;
     st.printST();
+    //st.writeST("symbolTable.txt");
     return 0;
 }

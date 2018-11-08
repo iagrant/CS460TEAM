@@ -6,20 +6,20 @@
 #include <list>
 #include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
     SymbolTable st;
 
-    int sign1 = unsignedE; //unsigned
-    int type1 = intS; //int
+    int sign1 = unsignedE;
+    int type1 = intS;
     string name1 = "my_var1";
     int line1 = 144;
 
-    int type2 = charS; //char
+    int type2 = charS;
     string name2 = "my_var2";
     int line2 = 1337;
 
@@ -47,32 +47,42 @@ int main () {
     a.setSigned(sign1);
     a.setName(name1);
     a.setLine(line1);
+    a.setScope(0);
 
     b.setTypeSpec(type2);
     b.setName(name2);
     b.setLine(line2);
+    b.setScope(0);
 
     c.setTypeSpec(type3);
     c.setName(name3);
     c.setLine(line3);
+    c.setScope(1);
 
     d.setTypeSpec(type4);
     d.setName(name4);
     d.setLine(line4);
+    d.setScope(1);
 
     z.setTypeSpec(type0);
     z.setName(name0);
     z.setLine(line0);
+    z.setScope(1);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
-    st.insertSymbol(z);
     st.addNewScope();
+    st.insertSymbol(z);
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
+    st.mode = lookup;
     st.searchTree(z);
+    std::cout << "BEOFRE POP" << std::endl;
+    st.printST();
+    st.removeScope();
+    std::cout << "POPPED" << std::endl;
+    std::cout << "AFTER POP" << std::endl;
     st.printST();
     return 0;
 }

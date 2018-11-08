@@ -11,7 +11,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 #include "symbolTable.cpp"
+#include "ASTnode.cpp"
 #include "C_grammar.tab.h"
 
 #define POS_INT_MAX 2147483646
@@ -28,21 +30,29 @@ int tabNum = 0;
 int colNum = 1;
 bool printToken = false;
 bool printSymbol = false;
+bool printSymbolNums = false;
 bool printProductions = false;
 bool printFile = true;
+bool printSource = false;
+bool buildingFunction = false;
+bool firstPrint = true;
 std::string buffer = "";
 std::string srcFile = "";
 std::string outSrcFile = "output.txt";
 SymbolTable globalSymbolTable; // construct Symbol Table
-Node globalTempNode;
-
+Node globalTempNode;           // temp ST node for pass around
+std::ofstream scannerOut; 		// File pointer for scanner
+std::ofstream productionOut;
 std::string tokenFlag = "!!dl";
 std::string symbolFlag = "!!ds";
 std::string productionFlag = "!!dp";
+Node * funcNode;
+std::map<std::string,Node>::reverse_iterator funcPair = globalSymbolTable.currentScope->rend();
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
 void printToFile (std::string token);
+void printLine ();
 
 %}
 
@@ -56,10 +66,19 @@ escaped \\[anrtbfv0]
 number  {num1}|{num2}
 
 %%
-\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;}
+\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;
+                    //print the buffer
+                    if(printSource){
+						printLine();
+						firstPrint = false;
+					}
+                    globalTempNode.resetNode(); //resets node to avoid any mess from getting multiline bois
+                    buildingFunction=false; //resets flag that says wheter a flag is being buitl
+                    funcPair=globalSymbolTable.getCurrentEnd(); //resets function pair
+                }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
-\t		{tabNum++;/* inc tab num for errMsg */}
+\t		        {tabNum++;/* inc tab num for errMsg */}
 "/*"   			{
 			        int c;
 
@@ -92,16 +111,22 @@ number  {num1}|{num2}
                     if (productionFlag.compare(yytext)==0)
                     {
                         if(printProductions)
+                        {
                             printProductions = false;
+                            printSource = false;
+                        }
                         else
+                        {
+                            printLine();
                             printProductions = true;
+                            printSource = true;
+
+                        }
                     }
                     if (symbolFlag.compare(yytext)==0)
                     {
-                        if(printSymbol)
-                            printSymbol = false;
-                        else
-                            printSymbol = true;
+                        std::cout << "CURRENT SCOPE LEVEL: " << globalSymbolTable.currentScopeNum << std::endl;
+                        globalSymbolTable.printST();
                     }
                 }
 [-]?[0-9]+      {
@@ -273,18 +298,30 @@ sizeof          {
                     if(printToken) {printConsole("CURLYOPEN");}
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
+                    //globalSymbolTable.addNewScope();
+                    globalSymbolTable.mode == lookup;
                     return CURLYOPEN;
                 }
 \}              {
                     if(printToken) {printConsole("CURLYCLOSE");}
                     if(printFile) {printToFile("CURLYCLOSE");}
                     colNum += yyleng;
+                    if (lineNum != globalTempNode.getLine())
+                        globalSymbolTable.removeScope();
                     return CURLYCLOSE;
                 }
 \[              {
                     if(printToken) {printConsole("BRACKETOPEN");}
                     if(printFile) {printToFile("BRACKETOPEN");}
                     colNum += yyleng;
+                    std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
+                    last = globalSymbolTable.getCurrentPair();
+                    if (last != globalSymbolTable.getCurrentEnd()){
+                        //std::cout << "BRACK: " << last->second.getName() << std::endl;
+                        if (last->second.getLine() == lineNum){
+                            last->second.isArray=true;
+                        }
+                    }
                     return BRACKETOPEN;
                 }
 \]              {
@@ -297,6 +334,11 @@ sizeof          {
                     if(printToken) {printConsole("COMMA");}
                     if(printFile) {printToFile("COMMA");}
                     colNum += yyleng;
+                    //reset node on comma to fix func param types
+                    if (buildingFunction)
+                        globalTempNode.resetNode();
+                    else
+                        globalSymbolTable.mode = insert;
                     return COMMA;
                 }
 \.              {
@@ -315,6 +357,17 @@ sizeof          {
                     if(printToken) {printConsole("OPEN");}
                     if(printFile) {printToFile("OPEN");}
                     colNum += yyleng;
+                    std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.currentScope->rend();
+                    last = globalSymbolTable.getCurrentPair();
+                    if (last != globalSymbolTable.currentScope->rend()){
+                        //std::cout << "PER: " << last->second.getName() << std::endl;
+                        if (last->second.getLine() == lineNum){
+                            last->second.setFunction();
+                            buildingFunction=true;
+                            funcPair=last;
+                            globalSymbolTable.addNewScope();
+                        }
+                    }
                     return OPEN;
                 }
 \)              {
@@ -322,6 +375,7 @@ sizeof          {
                     if(printFile) {printToFile("CLOSE");}
                     colNum += yyleng;
                     return CLOSE;
+                    //if proto pop scope here
                 }
 \*              {
                     if(printToken) {printConsole("STAR");}
@@ -538,12 +592,14 @@ if              {
                     if(printToken) {printConsole("IF");}
                     if(printFile) {printToFile("IF");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return IF;
                 }
 else            {
                     if(printToken) {printConsole("ELSE");}
                     if(printFile) {printToFile("ELSE");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return ELSE;
                 }
 switch          {
@@ -556,6 +612,7 @@ while           {
                     if(printToken) {printConsole("WHILE");}
                     if(printFile) {printToFile("WHILE");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return WHILE;
                 }
 do              {
@@ -568,6 +625,7 @@ for             {
                     if(printToken) {printConsole("FOR");}
                     if(printFile) {printToFile("FOR");}
                     colNum += yyleng;
+                    globalSymbolTable.addNewScope();
                     return FOR;
                 }
 goto            {
@@ -597,6 +655,8 @@ return          {
 {name}          {
                     if(printToken) {printConsole("IDENTIFIER");}
                     if(printFile) {printToFile("IDENTIFIER");}
+					if (printSource && firstPrint)
+						printLine();
                     colNum += yyleng;
                     if (yyleng > 31)
                     {
@@ -624,14 +684,47 @@ void printError (int colNum, std::string errorTok) {
     srcFileP.close();
 }
 
+void printLine () {
+    std::ifstream srcFileP(srcFile);
+    for (int i = 0; i < lineNum; i++) {
+        std::getline(srcFileP,buffer);
+    }
+    std::cout << lineNum << " " << buffer << std::endl;
+	productionOut << lineNum << " " << buffer << std::endl;
+    srcFileP.close();
+}
+
 void printConsole (std::string token) {
     std::cout << token << std::endl;
 }
 
+/*
+void printSubTree (ASTnode * parent) {
+    if (printGraphviz)
+    {
+        static int inc = 0;
+        parent->printLabel = inc;
+        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+        std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
+        inc++;
+
+        for (int i = 0; i < parent->child.size(); i++)
+        {
+            if (parent->child.size() != 0)
+            {
+                printSubTree(parent->child[i]);
+                astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+            }
+        }
+    }
+}
+*/
+
 void printToFile (std::string token) {
-    std::ofstream fileP(outSrcFile,std::ios::app);
-    fileP << token << std::endl;
-    fileP.close();
+    scannerOut.open("ScannerOutput.txt",std::ofstream::app);
+    scannerOut << token << std::endl;
+    scannerOut.close();
 }
 
 void unleash () {

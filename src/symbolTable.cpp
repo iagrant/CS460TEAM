@@ -29,20 +29,24 @@ extern int colNum;
 extern bool printToken;
 extern bool printProductions;
 extern bool printSymbol;
+extern bool printSymbolNums;
 extern bool printFile;
+extern bool buildingFunction;
 extern std::string buffer;
 extern std::string srcFile;
 extern std::string outSrcFile;
-int mode = insert;
 
 class SymbolTable {
 
   private:
     std::list<std::map<std::string,Node>> symbolTable;
-    std::list <std::map<std::string,Node>> :: iterator currentScope;
     std::list <std::map<std::string,Node>> :: iterator currentLooker;
     std::map<std::string,Node> :: iterator currentEntry;
   public:
+    std::list <std::map<std::string,Node>> :: iterator currentScope;
+    int currentScopeNum = 0;
+    int mode = insert;
+    bool globalSearch=false;
 
     //Default Constructor
     SymbolTable () {
@@ -58,6 +62,7 @@ class SymbolTable {
         std::map<std::string,Node> ret = symbolTable.back();
         symbolTable.pop_back();
         currentScope--;
+        currentScopeNum--;
         currentEntry = currentScope->begin();
         return ret;
     }
@@ -68,18 +73,20 @@ class SymbolTable {
         std::map <std::string,Node> newMap;
         symbolTable.push_back(newMap);
         currentScope++;
+        currentScopeNum++;
         currentEntry = currentScope->begin();
     }
 
     void insertSymbol (Node symbol) {
         if (mode == insert) {
-            if (!searchTree(symbol)) //checks if current symbol is in scope
-                //if here it's new symbol
-                currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
-            else
-            {
-                //if it got here it's just shadowing if it was redec it would of
-                //errored out inside the search
+            //the result of top level gets stored in pair
+            //cuz only redecl matters for insertion
+            std::pair<bool,Node*> searchRes = searchTopLevel(symbol.getName()); //search top level for just redecls
+            //search whole tree for shadowing but don't care about result
+            //cuz result handled in it if shadowing
+            if (currentScopeNum != 0)
+                searchTree(symbol.getName());
+            if (!searchRes.first) {
                 currentScope->insert(std::pair <std::string,Node> (symbol.getName(), symbol));
             }
         }
@@ -105,9 +112,14 @@ class SymbolTable {
     }
 
     void printST () {
+        std::cout << "Symbol Table Output:" << std::endl << std::endl;
         for(currentLooker = symbolTable.begin(); currentLooker != symbolTable.end(); currentLooker++)
         {
             std::map<std::string,Node> currentScopeLoop = *currentLooker;
+            if (currentScopeLoop.size() > 0){
+                std::cout << "SIZE OF ST SCOPE: " << currentScopeLoop.size() << std::endl;
+                std::cout << std::endl;
+            }
             for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
             {
                 Node treeNode = iter->second;
@@ -116,41 +128,85 @@ class SymbolTable {
         }
     }
 
-    // searchTree
-    // Searches for a symbol on the top stack ie current scope
-    bool searchTree (Node node) {
-        if (insert){
-            std::map<std::string,Node> currentScopeLoop = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
+    std::pair<bool,Node*> searchTopLevel (std::string name) {
+        return searchScope(name,currentScope); //searches top level scope which is currentScope
+    }
+    std::pair<bool,Node*> searchScope (std::string name, std::list <std::map<std::string,Node>> :: iterator searchWindow){
+        Node retNode;
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
+        std::map<std::string,Node> currentScopeMap = *searchWindow;
+        if (mode == insert){
+			for(std::map<std::string,Node> :: iterator iter = currentScopeMap.begin(); iter != currentScopeMap.end(); iter++)
 			{
-                Node treeNode = iter->second;
-				if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()) && (treeNode.getLine() != node.getLine()))
+                //
+                //node is 2nd in map pair
+                Node * treeNode = &(iter->second);
+                //function proto block
+                if (treeNode->hasProto && (treeNode->getName().compare(name)==0)){
+                    //Doesn't work for some reason
+                    //iter->second.setImplementation();
+                    //treeNode->setImplementation();
+                    ret.second = treeNode;
+                    ret.first = true;
+                    return ret;
+                }
+
+				if ((treeNode->getName().compare(name)==0) && currentScopeNum == treeNode->getScope())
                 {
-                    std::cout << "ERROR: Redifinition of Variable: " << node.getName() << " previous declaration on line " << treeNode.getLine() << std::endl;
+                    ret.second = treeNode;
+                    ret.first = true;
+                    std::cout << "\e[31;1m ERROR: \e[0m Redifinition of Variable: " << name << " previous declaration on line " << treeNode->getLine() << std::endl;
                     printError();
                     exit(1);
-					return true;
+					return ret;
                 }
-				else if ((treeNode.getName().compare(node.getName())==0) && (treeNode.getScope() == node.getScope()))
+				if ((treeNode->getName().compare(name)==0) && currentScopeNum != treeNode->getScope())
                 {
-                    std::cout << "Warning shadowing variable " << node.getName() << ", previous declared on line " << treeNode.getLine() << std::endl;
-					return true;
+                    ret.second = treeNode;
+                    ret.first = true;
+                    std::cout << "\e[33;1m WARNING: \e[0m Shadowing of Variable: " << name << " previous declaration on line " << treeNode->getLine() << std::endl;
+					return ret;
                 }
 			}
+            return ret;
         }
-		else if (lookup)
+		else if (mode == lookup)
 		{
-            std::map<std::string,Node> currentScopeLoop = *currentScope;
-			for(std::map<std::string,Node> :: iterator iter = currentScopeLoop.begin(); iter != currentScopeLoop.end(); iter++)
+			for(std::map<std::string,Node> :: iterator iter = currentScopeMap.begin(); iter != currentScopeMap.end(); iter++)
 			{
-                Node treeNode = iter->second;
-				if (treeNode.getName().compare(treeNode.getName())==0)
+                //node is 2nd in map pair
+                Node * treeNode = &(iter->second);
+				if (treeNode->getName().compare(name)==0)
                 {
-					return true;
+                    ret.second = treeNode;
+                    ret.first = true;
+					return ret;
                 }
             }
 		}
-      	return false;
+      	return ret;
+    }
+
+    // searchTree
+    // Searches for a symbol on the top stack ie current scope
+    // returns true if found a symbol already in ST
+    std::pair<bool,Node*>searchTree (std::string name){
+        Node retNode;
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
+        std::pair<bool,Node*> top = searchTopLevel(name);
+        std::pair<bool,Node*> all = searchPrevScope(name);
+        if (top.first)
+            return top;
+        if (all.first)
+            return all;
+        if (mode==lookup){
+            //if it got here did not find id there for it wasn't declared
+            //FIXME NO DECLARATION CHECK BROKEN :(
+            std::cout << "\e[31;1m ERROR: \e[0m No declaration of Variable: " << name << std::endl;
+            printError();
+            exit(1);
+        }
+        return ret;
     }
     void printError () {
         std::ifstream srcFileP(srcFile);
@@ -163,17 +219,36 @@ class SymbolTable {
         srcFileP.close();
     }
     //searches past scopes for symbols
-    void searchPrevScope(Node node)
+    std::pair<bool,Node*> searchPrevScope(std::string name)
     {
-        currentLooker = getCurrentScope();
-        currentLooker--;
-        bool ret = false;
+        Node retNode;
+        std::pair<bool,Node*> ret = std::pair<bool,Node*>(false,&retNode);
+        //std::cout << "SEARCHING PREVIOUS SCOPE" << std::endl;
+        currentLooker = currentScope;
         while (currentLooker != symbolTable.begin())
         {
-            searchTree(node);
+            currentLooker--;
+            //std::cout << "SEARCHING PREVIOUS SCOPE" << std::endl;
+            ret = searchScope(name,currentLooker);
+            if (ret.first)
+                return ret;
         }
+        return ret;
     }
     std::list <std::map<std::string,Node>> :: iterator getCurrentScope() {return currentScope;}
-    std::map<std::string,Node> :: iterator getCurrentEntry() {return currentEntry;}
-    void nextEntry() {currentEntry++;}
+    //std::map<std::string,Node> :: iterator getCurrentPair() {return currentScope->rbegin();}
+    std::map<std::string,Node>::reverse_iterator getCurrentEnd(){
+        return currentScope->rend();
+    }
+    std::map<std::string,Node>::reverse_iterator getCurrentPair(){
+        std::map<std::string,Node>::reverse_iterator ret = currentScope->rend();
+        if (!currentScope->empty())
+            return currentScope->rbegin();
+        return ret;
+    }
+    Node * getLatestNode() {
+        //pointer to last map
+        std::map<std::string,Node> * currentScopeMap = &symbolTable.back();
+        return &(currentScopeMap->rbegin()->second);
+    }
 };

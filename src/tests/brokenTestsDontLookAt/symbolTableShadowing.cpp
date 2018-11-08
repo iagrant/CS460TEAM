@@ -6,9 +6,9 @@
 #include <list>
 #include "../symbolTable.cpp"
 
-extern int mode;
 std::string srcFile = "tests/input";
 int lineNum = 42;
+bool printSymbolNums=false;
 using namespace std;
 
 int main () {
@@ -16,24 +16,24 @@ int main () {
 
     int sign1 = unsignedE;
     int type1 = intS;
-    string name1 = "my_var1";
+    string name1 = "myvar1";
     int line1 = 144;
 
     int type2 = charS;
-    string name2 = "my_var2";
+    string name2 = "myvar2";
     int line2 = 1337;
 
     int type3 = charS; //char
-    string name3 = "my_var3";
+    string name3 = "myvar3";
 	int line3 = 145;
 
     int type4 = charS; //char
-    string name4 = "my_var4";
+    string name4 = "myvar4";
     int line4 = 123;
 
-    // REDEFINITION TEST
+    // Shadowing TEST
     int type0 = intS; //int
-    string name0 = "my_var1";
+    string name0 = "myvar1";
     int line0 = 244;
 
     // CREATE NODES
@@ -69,20 +69,14 @@ int main () {
     z.setLine(line0);
     z.setScope(1);
 
-    mode = insert;
+    st.mode = insert;
     st.insertSymbol(a);
     st.insertSymbol(b);
     st.addNewScope();
     st.insertSymbol(z);
     st.insertSymbol(c);
     st.insertSymbol(d);
-    mode = lookup;
-    st.searchTree(z);
-    std::cout << "BEOFRE POP" << std::endl;
-    st.printST();
-    st.removeScope();
-    std::cout << "POPPED" << std::endl;
-    std::cout << "AFTER POP" << std::endl;
+    st.mode = lookup;
     st.printST();
     return 0;
 }

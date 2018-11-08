@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+#Gross Mac Stuff
+.DS_Store
+
 #bins
 scanner
 fcc
@@ -9,11 +12,17 @@ pushPopTest
 RedefinitionTest
 shadowTest
 symbolDriver
+funkyFuncs
 
 #lex and bison files
 lex.yy.*
 *.tab.*
 C_grammar.output
+
+#output files
+*.png
+*.dot
+*.txt
 
 # Compiled Object files
 *.slo
