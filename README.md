@@ -9,9 +9,12 @@ Work Distribution
 We pair programmed together for the majority of the project.    
 Some areas of individual effort are the following:  
 
-Ian: Symbol Table, Debug Flags in Source Code, Node Class, Symbol Table Drivers, Symbol Table test cases, and Symbol Table integration.  
-Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument, README, wiki, website.  
-Jared: Helped design Symbol Table, Command Line Debug Flags, Yacc, Lex, base Symbol Table Driver, Symbol Table Integration, Logging of Lex and Bision 
+Ian: Symbol Table, Debug Flags in Source Code, Symbol Table Node Class, Symbol Table Drivers, Symbol Table test cases, Symbol Table integration, Types in AST, AST ID & Constant Node, Type Checking.  
+   
+
+Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument, README, wiki, AST test cases.  
+
+Jared: Command Line Debug Flags, Yacc, Lex, Logging of Lex and Bision, AST Generic Node, AST Unique Nodes, Printing of AST, AST Creation in grammar productions, Type Checking.
 
 ## Building
 #### Dependencies
@@ -24,7 +27,7 @@ Run make in the src folder in local terminal
 make
 ```
 #### Running
-The binary is called fcc for Fred C Compliler.
+The binary is called fcc which stands for Fred C Compliler.
 ###### Command Line Options:
     * -i <inputfile>: (Required) Provide a file to compile
     * -o <outputfile>: (Optional) Provide a file to output debug options to.
@@ -32,6 +35,7 @@ The binary is called fcc for Fred C Compliler.
     * -dl: This will print out all of the tokens
     * -dp: This will print out all of the productions with the source code
     * -ds: This will print out all of the contents of the Symbol Table
+    * -dg: This will print out contents of the graphviz file to screen and to file so the graph can be created
     * -fh: Prints our inspiration -Ian
 
 ###### Source Code Debug Options
