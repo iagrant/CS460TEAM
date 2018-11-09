@@ -1220,7 +1220,7 @@ parameter_declaration
                 tmpNode->addNode($2);
                 $$ = tmpNode;
             }
-            else 
+            else
             {
                 ASTnode *tmpNode = new ASTnode("PARAMS");
                 tmpNode->addNode($2);
@@ -2127,6 +2127,10 @@ logical_or_expression
         }
 	| logical_or_expression OR_OP logical_and_expression
         {
+            ASTnode* tmpNode = new ASTnode("OR_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_or_expression -> logical_or_expression OR_OP logical_and_expression" << std::endl;
             }
@@ -2149,6 +2153,10 @@ logical_and_expression
         }
 	| logical_and_expression AND_OP inclusive_or_expression
         {
+            ASTnode* tmpNode = new ASTnode("AND_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_and_expression -> logical_and_expression AND_OP inclusive_or_expression" << std::endl;
             }
@@ -2237,6 +2245,10 @@ equality_expression
         }
 	| equality_expression EQ_OP relational_expression
         {
+            ASTnode* tmpNode = new ASTnode("EQ_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "equality_expression -> equality_expression EQ_OP relational_expression" << std::endl;
             }
@@ -2246,6 +2258,10 @@ equality_expression
         }
 	| equality_expression NE_OP relational_expression
 		{
+            ASTnode* tmpNode = new ASTnode("NE_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            $$ = tmpNode;
 			if (printProductions) {
 				std::cout << "equality_expression -> equality_expression NE_OP relational_expression" << std::endl;
 			}
