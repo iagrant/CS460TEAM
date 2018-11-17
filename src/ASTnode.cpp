@@ -177,6 +177,54 @@ class idNode : public ASTnode {
 
 };
 
+class castNode : public ASTnode {
+    public:
+        int oldType, newType;
+        castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;}
+        
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("TYPE CONVERSION: ");
+            infoString.append("\n");
+            infoString.append(printTypeSpec(oldType));
+            infoString.append(" -> ");
+            infoString.append(printTypeSpec(newType));
+            return infoString;
+        }
+
+        std::string printTypeSpec(int input) {
+            switch(input)
+            {
+                case voidS:
+                    return "void ";
+                    break;
+                case charS:
+                    return "char ";
+                    break;
+                case shortS:
+                    return "short ";
+                    break;
+                case intS:
+                    return "int ";
+                    break;
+                case longS:
+                    return "long ";
+                    break;
+                case floatS:
+                    return "float ";
+                    break;
+                case doubleS:
+                    return "double ";
+                    break;
+                case structS:
+                    return "struct ";
+                    break;
+            }
+            return "";
+        }
+};
+
 class constantNode : public ASTnode {
     public:
         std::string name;
