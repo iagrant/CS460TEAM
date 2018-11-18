@@ -1757,17 +1757,11 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            if ($5 != NULL) {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
+            ASTnode* tmpNode = new ASTnode("WHILE");
+            tmpNode -> addNode($3);
+            if ($5 != NULL)
                 tmpNode -> addNode($5);
-                $$ = tmpNode;
-            }
-            else {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
-                $$ = tmpNode;
-            }
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
@@ -1778,7 +1772,8 @@ iteration_statement
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
             whileNode *iterNode = new whileNode("DO WHILE");
-            iterNode->addNode($2);
+            if ($2 != NULL)
+                iterNode->addNode($2);
             iterNode->addNode($5);
             $$ = iterNode;
             if (printProductions) {
@@ -1791,7 +1786,8 @@ iteration_statement
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($6);
+            if ($6 != NULL)
+                tmpNode->addNode($6);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1805,7 +1801,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($5);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1819,7 +1816,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($4);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1834,7 +1832,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($4);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1848,7 +1847,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1863,7 +1863,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1878,7 +1879,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
             tmpNode->addNode($5);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1894,7 +1896,8 @@ iteration_statement
             tmpNode->addNode($3);
             tmpNode->addNode($5);
             tmpNode->addNode($7);
-            tmpNode->addNode($9);
+            if ($9 != NULL)
+                tmpNode->addNode($9);
             $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
@@ -3073,7 +3076,7 @@ int main (int argc, char** argv)
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
-//  astFileP << "";
+  //  astFileP << "";
   astFileP.close();
   fileP.close();
 

@@ -43,22 +43,21 @@ public:
     }
 
     void printSubTreeHelper (ASTnode * parent) {
+        static int inc = 0;
+        parent->printLabel = inc;
+        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
         if (printGraphviz)
-        {
-            static int inc = 0;
-            parent->printLabel = inc;
-            astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
             std::cout << parent->printLabel << " \[label=\"" << parent->infoString << "\"\];" << std::endl;
-            inc++;
+        inc++;
 
-            for (int i = 0; i < parent->child.size(); i++)
+        for (int i = 0; i < parent->child.size(); i++)
+        {
+            if (parent->child.size() != 0)
             {
-                if (parent->child.size() != 0)
-                {
-                    printSubTreeHelper(parent->child[i]);
-                    astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                printSubTreeHelper(parent->child[i]);
+                astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                if (printGraphviz)
                     std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-                }
             }
         }
     }
