@@ -4,6 +4,7 @@
     #include <cstring>
 	#include <stdlib.h>
 	#include <iostream>
+    #include "3ac.cpp"
 
 	extern int lineNum;
 	extern int tabNum;
@@ -2979,6 +2980,8 @@ int main (int argc, char** argv)
   fileP.open(outSrcFile);
   yyparse();
   globalASTnode->printSubTree();
+  walk(globalASTnode);
+
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
