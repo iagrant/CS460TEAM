@@ -25,66 +25,74 @@
     extern std::map<std::string,Node>::reverse_iterator funcPair;
     extern Node * funcNode;
 
-int assignmentCoercion (int lhs, int rhs) {
-    if (lhs == rhs)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    if (lhs == floatS && rhs == doubleS)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    else if (lhs == intS && rhs == doubleS)
+ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
+    std::cout << lhs->typeSpec << std::endl;
+    std::cout << rhs->typeSpec << std::endl;
+    if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type double -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", doubleS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == intS && rhs == floatS)
+    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type float -> int" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", floatS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == intS && rhs == charS)
+    else if (lhs->typeSpec == intS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == charS && rhs == doubleS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
-    else if (lhs == charS && rhs == floatS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
     }
-    else if (lhs == charS && rhs == intS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> char" << std::endl;
-        return charS;
+        castNode* tmp = new castNode("CAST", intS, charS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == doubleS && rhs == intS)
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == doubleS && rhs == charS)
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", charS, doubleS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == floatS && rhs == intS)
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == floatS && rhs == charS)
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", charS, floatS);
+        tmp->addNode(rhs);
+        return tmp;
     }
     else
     {
@@ -92,38 +100,74 @@ int assignmentCoercion (int lhs, int rhs) {
     }
 }
 
-int mathCoercion (int lhs, int rhs) {
-    if (lhs == rhs)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    if (lhs == floatS && rhs == doubleS)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    else if ((lhs == intS && rhs == doubleS) || (lhs == doubleS && rhs == intS))
+mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
+    
+    if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
     }
-    else if ((lhs == intS && rhs == floatS) || (lhs == floatS && rhs == intS))
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
+    }
+    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS) 
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
     }
-    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
+    }
+    else if (lhs->typeSpec == intS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
     }
-    else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
+    else if (lhs->typeSpec == charS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
+    }
+    else if ((lhs->typeSpec == charS && rhs->typeSpec == doubleS) || (lhs->typeSpec == doubleS && rhs->typeSpec == charS))
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
-    else if ((lhs == charS && rhs == floatS) || (lhs == floatS && rhs == charS))
+    else if ((lhs->typeSpec == charS && rhs->typeSpec == floatS) || (lhs->typeSpec == floatS && rhs->typeSpec == charS))
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
@@ -131,6 +175,7 @@ int mathCoercion (int lhs, int rhs) {
     else
     {
         std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        exit(1);
     }
 }
 
@@ -785,9 +830,17 @@ init_declarator
 	| declarator EQUALS initializer
 		{
             ASTnode *tmpNode = new ASTnode("EQUALS");
-            tmpNode->addNode($1);
-            tmpNode->addNode($3);
-            assignmentCoercion($1->typeSpec, $3->typeSpec);
+
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else 
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode(assignmentCoercion($1, $3));
+            }
+
             $$ = tmpNode;
 
             if (printProductions) {
@@ -1705,17 +1758,11 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            if ($5 != NULL) {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
+            ASTnode* tmpNode = new ASTnode("WHILE");
+            tmpNode -> addNode($3);
+            if ($5 != NULL)
                 tmpNode -> addNode($5);
-                $$ = tmpNode;
-            }
-            else {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
-                $$ = tmpNode;
-            }
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
@@ -1726,7 +1773,8 @@ iteration_statement
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
             whileNode *iterNode = new whileNode("DO WHILE");
-            iterNode->addNode($2);
+            if ($2 != NULL)
+                iterNode->addNode($2);
             iterNode->addNode($5);
             $$ = iterNode;
             if (printProductions) {
@@ -1739,7 +1787,8 @@ iteration_statement
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($6);
+            if ($6 != NULL)
+                tmpNode->addNode($6);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1753,7 +1802,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($5);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1767,7 +1817,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($4);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1782,7 +1833,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($4);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1796,7 +1848,8 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1811,7 +1864,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //globalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1826,7 +1880,8 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
             tmpNode->addNode($5);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1842,7 +1897,8 @@ iteration_statement
             tmpNode->addNode($3);
             tmpNode->addNode($5);
             tmpNode->addNode($7);
-            tmpNode->addNode($9);
+            if ($9 != NULL)
+                tmpNode->addNode($9);
             $$ = tmpNode;
             //obalSymbolTable.addNewScope();
             if (printProductions) {
@@ -1943,11 +1999,19 @@ assignment_expression
         {
             ASTnode *assignmentNode = new ASTnode("ASSIGNMENT_EXPRESSION");
 
-            $2->addNode($1);
-            $2->addNode($3);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                $2->addNode($1);
+                $2->addNode($3);
+            } else 
+            {
+                $2->addNode($1);
+                $2->addNode(assignmentCoercion($1, $3));
+            }
+
             assignmentNode->addNode($2);
-            assignmentNode->typeSpec = assignmentCoercion($1->typeSpec, $3->typeSpec);
             $$ = assignmentNode;
+
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
             }
@@ -2382,12 +2446,18 @@ additive_expression
 	| additive_expression PLUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("+");
-            tmpNode->addNode($1);
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
-            tmpNode->addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
@@ -2398,12 +2468,18 @@ additive_expression
 	| additive_expression MINUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("-");
-            tmpNode->addNode($1);
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
-            tmpNode->addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
             }
@@ -2427,10 +2503,16 @@ multiplicative_expression
 	| multiplicative_expression STAR cast_expression
         {
             mathNode *tmpNode = new mathNode("*");
-            tmpNode -> addNode($1);
             tmpNode -> operation = mulOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2443,10 +2525,16 @@ multiplicative_expression
 	| multiplicative_expression FORSLASH cast_expression
         {
             mathNode *tmpNode = new mathNode("/");
-            tmpNode -> addNode($1);
             tmpNode -> operation = divOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2459,10 +2547,16 @@ multiplicative_expression
 	| multiplicative_expression PERCENT cast_expression
         {
             mathNode *tmpNode = new mathNode("%");
-            tmpNode -> addNode($1);
             tmpNode -> operation = modOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression PERCENT cast_expression" << std::endl;
@@ -2985,7 +3079,7 @@ int main (int argc, char** argv)
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
-//  astFileP << "";
+  //  astFileP << "";
   astFileP.close();
   fileP.close();
 

@@ -366,6 +366,7 @@ sizeof          {
                             buildingFunction=true;
                             funcPair=last;
                             globalSymbolTable.addNewScope();
+                            // std::cout << "NEW SCOPE: " << funcPair->second.getName() << std::endl;
                         }
                     }
                     return OPEN;
@@ -698,28 +699,6 @@ void printConsole (std::string token) {
     std::cout << token << std::endl;
 }
 
-/*
-void printSubTree (ASTnode * parent) {
-    if (printGraphviz)
-    {
-        static int inc = 0;
-        parent->printLabel = inc;
-        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
-        std::cout << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
-        inc++;
-
-        for (int i = 0; i < parent->child.size(); i++)
-        {
-            if (parent->child.size() != 0)
-            {
-                printSubTree(parent->child[i]);
-                astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-                std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-            }
-        }
-    }
-}
-*/
 
 void printToFile (std::string token) {
     scannerOut.open("ScannerOutput.txt",std::ofstream::app);

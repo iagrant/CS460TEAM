@@ -43,22 +43,21 @@ public:
     }
 
     void printSubTreeHelper (ASTnode * parent) {
+        static int inc = 0;
+        parent->printLabel = inc;
+        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
         if (printGraphviz)
-        {
-            static int inc = 0;
-            parent->printLabel = inc;
-            astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
             std::cout << parent->printLabel << " \[label=\"" << parent->infoString << "\"\];" << std::endl;
-            inc++;
+        inc++;
 
-            for (int i = 0; i < parent->child.size(); i++)
+        for (int i = 0; i < parent->child.size(); i++)
+        {
+            if (parent->child.size() != 0)
             {
-                if (parent->child.size() != 0)
-                {
-                    printSubTreeHelper(parent->child[i]);
-                    astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                printSubTreeHelper(parent->child[i]);
+                astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                if (printGraphviz)
                     std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-                }
             }
         }
     }
@@ -175,6 +174,54 @@ class idNode : public ASTnode {
             return "";
         }
 
+};
+
+class castNode : public ASTnode {
+    public:
+        int oldType, newType;
+        castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;}
+        
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("TYPE CONVERSION: ");
+            infoString.append("\n");
+            infoString.append(printTypeSpec(oldType));
+            infoString.append(" -> ");
+            infoString.append(printTypeSpec(newType));
+            return infoString;
+        }
+
+        std::string printTypeSpec(int input) {
+            switch(input)
+            {
+                case voidS:
+                    return "void ";
+                    break;
+                case charS:
+                    return "char ";
+                    break;
+                case shortS:
+                    return "short ";
+                    break;
+                case intS:
+                    return "int ";
+                    break;
+                case longS:
+                    return "long ";
+                    break;
+                case floatS:
+                    return "float ";
+                    break;
+                case doubleS:
+                    return "double ";
+                    break;
+                case structS:
+                    return "struct ";
+                    break;
+            }
+            return "";
+        }
 };
 
 class constantNode : public ASTnode {
