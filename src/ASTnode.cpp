@@ -10,13 +10,16 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN};
+
 class ASTnode {
 public:
     std::vector<ASTnode*> child;
     std::string production;
     std::string infoString = "";
+    int nodeType = genericN;
     int printLabel;
-    int lineNum;
+    int lineNum = -1;
 
     int signedB;
     int storageSpec;
@@ -180,7 +183,7 @@ class castNode : public ASTnode {
     public:
         int oldType, newType;
         castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;}
-        
+
         std::string printASTnode() {
             infoString.append(production);
             infoString.append("\n");

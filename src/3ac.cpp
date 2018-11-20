@@ -8,11 +8,10 @@
 #include <fstream>
 
 void walk(ASTnode *AST);
-
 void walkChild(ASTnode * parent);
 void functionHandle(ASTnode * AST);
 void equalHandle(ASTnode * AST);
-void constantHandle(ASTnode * AST);
+void constantHandle(constantNode * cons);
 void print3ac(std::string input);
 void printSrc();
 
@@ -27,32 +26,37 @@ std::list<std::string> triACStruct;
 std::string tempString = "";
 
 void walk(ASTnode *AST) {
-    if (AST->production.compare("FUNCTION") == 0) {
+    if (AST->lineNum != currentLineNum && AST->lineNum != -1){
+        currentLineNum=AST->lineNum;
+        printSrc();
+    }
+    //function node
+    if (AST->nodeType == funcN) {
         functionHandle(AST);
         walkChild(AST->child[0]);
     }
-    if (AST->production.compare("IDENTIFIER") == 0) {
+    //id node
+    if (AST->nodeType == idN) {
         walkChild(AST);
         //idHandle(AST);
-    }
-    if (AST->production.compare("DECLARATION") == 0) {
     }
     if (AST->production.compare("EQUALS") == 0) {
         equalHandle(AST);
     }
-    if (AST->production.compare("+") == 0) {
+    //math Node
+    if (AST->nodeType == mathN) {
         //addHandle(AST);
     }
-    if (AST->production.compare("FOR") == 0) {
+    if (AST->nodeType == forN) {
         //go all the way through the statement node
         //then implement the check of the for below it
     }
-    if (AST->production.compare("IF") == 0) {
+    if (AST->nodeType == ifN) {
     }
-    if (AST->production.compare("WHILE") == 0) {
+    if (AST->nodeType == whileN) {
     }
-    if (AST->production.find("CONSTANT") != std::string::npos) {
-        constantHandle(AST);
+    if (AST->nodeType == constantN) {
+        //constantHandle(AST);
     }
     else
         walkChild(AST);
@@ -71,7 +75,7 @@ void functionHandle(ASTnode * AST) {
     idNode * id = (idNode *) (AST->child[0]);
     tempString = "";
     tempString.append(id->name.append(":"));
-    print3ac(tempString);
+    triACStruct.push_back(tempString);
     tempString = "";
 }
 void equalHandle(ASTnode * AST) {
@@ -81,47 +85,79 @@ void equalHandle(ASTnode * AST) {
             idNode * id = (idNode *) (AST->child[0]);
             tempString = id->name;
             tempString.append(" = ");
-            if (AST->child[1]->production.find("CONSTANT") != std::string::npos) {
+            if (AST->child[1]->nodeType == constantN) {
                 constantNode * cons = (constantNode *) (AST->child[1]);
-                if (AST->child[1]->production.compare("INTEGER_CONSTANT") == 0) {
-                    tempString.append(std::to_string(cons->intConst));
-                }
-                if (AST->child[1]->production.compare("FLOATING_CONSTANT") == 0) {
-                    //show that the tempReg is a float
-                    tempString.append(std::to_string(cons->doubleConst));
-                }
-                if (AST->child[1]->production.compare("CHARACTER_CONSTANT") == 0) {
-                    tempString.append(std::to_string((int)cons->charConst));
+                constantHandle(cons);
+            }
+            if (AST->child.size() > 2) {
+                if (AST->child[2]->nodeType == mathN) {
+                    mathNode * math = (mathNode *) (AST->child[2]);
+                    tempString.append(math->production);
+                    tempCount++;
+                    std::string test = "t"+std::to_string(tempCount);
+                    tempString.append(test);
                 }
             }
         }
-        print3ac(tempString);
+        triACStruct.push_back(tempString);
         tempString = "";
     }
 }
-void constantHandle(ASTnode * AST) {
-
+void constantHandle(constantNode * cons) {
+    //prbly won't use this lol
+    if (cons->intConst != NULL) {
+        tempString.append(std::to_string(cons->intConst));
+    }
+    if (cons->doubleConst != NULL) {
+        //show that the tempReg is a float
+        tempString.append(std::to_string(cons->doubleConst));
+    }
+    if (cons->charConst != NULL) {
+        tempString.append(std::to_string((int)cons->charConst));
+    }
+    if (cons->production.compare("STRING_LITERAL") == 0) {
+        //break each letter up and load the int val of the letter into a temp
+        //then? idk
+        //but def not this lmao
+        //tempString.append(std::to_string(cons->stringConst));
+    }
 }
 
+//change this from printing to adding src code lines to triACStruct
 void printSrc () {
     std::ifstream srcFileP(srcFile);
     std::string buffer="";
+    std::string out="##";
     for (int i = 0; i < currentLineNum; i++)
     {
         std::getline(srcFileP,buffer);
     }
-    print3ac(buffer);
+    out.append(buffer);
     srcFileP.close();
+    triACStruct.push_back(out);
 }
-void print3ac(std::string input) {
-    std::ofstream fileP(filename,std::ios::app);
+void clear3ac(std::string input) {
+    std::ofstream fileP(filename);
+    fileP.close();
+}
+void print3ac() {
+    //std::ofstream fileP(filename,std::ios::app);
+    std::ofstream fileP(filename);
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::cout.rdbuf(fileP.rdbuf()); //changes cout to print to file stream
-    std::cout << input << std::endl;
+    std::string buff = ""; //it's a strong string :)
+    for (int i =0; i < triACStruct.size(); i++) {
+        buff = triACStruct.front();
+        triACStruct.pop_front();
+    }
+    std::cout << buff << std::endl;
     fileP.close();
     std::cout.rdbuf(coutbuf); //resets cout to stdout
     if (debug) {
-        std::cout << input << std::endl;
+        for (int i =0; i < triACStruct.size(); i++) {
+            buff = triACStruct.front();
+            triACStruct.pop_front();
+        }
     }
 }
         /*

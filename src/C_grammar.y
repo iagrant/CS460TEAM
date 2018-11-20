@@ -26,8 +26,8 @@
     extern Node * funcNode;
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
-    std::cout << lhs->typeSpec << std::endl;
-    std::cout << rhs->typeSpec << std::endl;
+    //std::cout << lhs->typeSpec << std::endl;
+    //std::cout << rhs->typeSpec << std::endl;
     if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type double -> int" << std::endl;
@@ -101,7 +101,7 @@ ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
 }
 
 mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
-    
+
     if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
@@ -122,7 +122,7 @@ mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
         center->addNode(tmp);
         return center;
     }
-    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS) 
+    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
         castNode* tmp = new castNode("CAST", intS, floatS);
@@ -288,6 +288,7 @@ function_definition
 	: declarator compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            tmpNode -> nodeType = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
@@ -302,6 +303,7 @@ function_definition
 	| declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            tmpNode -> nodeType = funcN;
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -317,6 +319,7 @@ function_definition
 	| declaration_specifiers declarator compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            tmpNode -> nodeType = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             $$ = tmpNode;
@@ -331,6 +334,7 @@ function_definition
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            tmpNode -> nodeType = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
@@ -835,7 +839,7 @@ init_declarator
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
-            } else 
+            } else
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode(assignmentCoercion($1, $3));
@@ -2003,7 +2007,7 @@ assignment_expression
             {
                 $2->addNode($1);
                 $2->addNode($3);
-            } else 
+            } else
             {
                 $2->addNode($1);
                 $2->addNode(assignmentCoercion($1, $3));
@@ -2446,6 +2450,7 @@ additive_expression
 	| additive_expression PLUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("+");
+            tmpNode -> nodeType = mathN;
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2468,6 +2473,7 @@ additive_expression
 	| additive_expression MINUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("-");
+            tmpNode -> nodeType = mathN;
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2503,6 +2509,7 @@ multiplicative_expression
 	| multiplicative_expression STAR cast_expression
         {
             mathNode *tmpNode = new mathNode("*");
+            tmpNode -> nodeType = mathN;
             tmpNode -> operation = mulOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2525,6 +2532,7 @@ multiplicative_expression
 	| multiplicative_expression FORSLASH cast_expression
         {
             mathNode *tmpNode = new mathNode("/");
+            tmpNode -> nodeType = mathN;
             tmpNode -> operation = divOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2547,6 +2555,7 @@ multiplicative_expression
 	| multiplicative_expression PERCENT cast_expression
         {
             mathNode *tmpNode = new mathNode("%");
+            tmpNode -> nodeType = mathN;
             tmpNode -> operation = modOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2603,6 +2612,7 @@ unary_expression
 	| INC_OP unary_expression
         {
             mathNode *tmpNode = new mathNode("++");
+            tmpNode -> nodeType = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = incOp;
             $$ = tmpNode;
@@ -2616,6 +2626,7 @@ unary_expression
 	| DEC_OP unary_expression
         {
             mathNode *tmpNode = new mathNode("--");
+            tmpNode -> nodeType = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = decOp;
             $$ = tmpNode;
@@ -2875,6 +2886,7 @@ constant
 	: INTEGER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("INTEGER_CONSTANT", intS);
+            tmpNode -> nodeType = constantN;
             tmpNode->intConst = std::stoi(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = intS;
@@ -2889,6 +2901,7 @@ constant
 	| CHARACTER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
+            tmpNode -> nodeType = constantN;
             tmpNode->charConst = yytext[1];
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = charS;
@@ -2903,6 +2916,7 @@ constant
 	| FLOATING_CONSTANT
         {
             constantNode *tmpNode = new constantNode("FLOATING_CONSTANT", doubleS);
+            tmpNode -> nodeType = constantN;
             tmpNode->doubleConst = std::stof(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = doubleS;
@@ -2929,6 +2943,7 @@ string
 	: STRING_LITERAL
         {
             constantNode *tmpNode = new constantNode("STRING_LITERAL", stringS);
+            tmpNode -> nodeType = constantN;
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
@@ -2968,6 +2983,7 @@ identifier
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
+            tmpNode -> nodeType = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             bool flip = false;
@@ -3074,7 +3090,6 @@ int main (int argc, char** argv)
   fileP.open(outSrcFile);
   yyparse();
   globalASTnode->printSubTree();
-  walk(globalASTnode);
 
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
@@ -3082,6 +3097,10 @@ int main (int argc, char** argv)
   //  astFileP << "";
   astFileP.close();
   fileP.close();
+
+  //not needed anymore ... for now ...
+  //clear3ac("3ac.output");
+  walk(globalASTnode);
 
   return 0;
 }
