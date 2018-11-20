@@ -23,6 +23,7 @@ C_grammar.output
 *.png
 *.dot
 *.txt
+*.output
 
 # Compiled Object files
 *.slo
