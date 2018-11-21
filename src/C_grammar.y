@@ -22,8 +22,6 @@
     extern ASTnode *globalASTnode = new ASTnode("");
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
     std::ofstream fileP;
-    extern std::map<std::string,Node>::reverse_iterator funcPair;
-    extern Node * funcNode;
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
@@ -97,6 +95,7 @@ ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     else
     {
         std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        globalSymbolTable.printError();
     }
 }
 
@@ -287,12 +286,12 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
+            //posisble spot to pop scope in this whole block
             functionNode *tmpNode = new functionNode("FUNCTION");
             tmpNode -> nodeType = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
             }
@@ -351,7 +350,6 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
-            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
             }
@@ -363,18 +361,15 @@ declaration
 		{
             //remove scope of prototype
             if (buildingFunction){
-                if (funcPair != globalSymbolTable.getCurrentEnd()){
-                    if(funcPair->second.getLine() == lineNum) {
-                        funcPair->second.setProto();
-                    }
+                if (globalSymbolTable.lastFunc.second == lineNum) { //this check technically shouldn't matter but it's for sanity's sake
+                    std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                    lastFuncPair.second->setProto();
+                    globalSymbolTable.removeScope();
                 }
-                globalSymbolTable.removeScope();
             }
-            globalSymbolTable.mode = lookup;
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($2);
             $$ = tmpNode;
-            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
             }
@@ -388,7 +383,8 @@ declaration_list
 	: declaration
 		{
             $$ = $1;
-            globalSymbolTable.mode = lookup;
+            //FIXME by killing me
+            globalSymbolTable.setMode(lookup);
             if (printProductions) {
                 std::cout << "declaration_list -> declaration" << std::endl;
             }
@@ -398,7 +394,7 @@ declaration_list
         }
 	| declaration_list declaration
 		{
-            globalSymbolTable.mode = lookup;
+            globalSymbolTable.setMode(lookup);
             ASTnode *tmpNode = new ASTnode("DECL_LIST");
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -474,8 +470,8 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(autoS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
@@ -485,8 +481,8 @@ storage_class_specifier
         }
 	| REGISTER
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(registerS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
@@ -496,8 +492,8 @@ storage_class_specifier
         }
 	| STATIC
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(staticS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
@@ -507,8 +503,8 @@ storage_class_specifier
         }
 	| EXTERN
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(externS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
@@ -518,8 +514,8 @@ storage_class_specifier
         }
 	| TYPEDEF
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(typedefS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -533,8 +529,8 @@ type_specifier
 	: VOID
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(voidS);
                 globalTempNode.setLine(lineNum);
             }
@@ -548,8 +544,8 @@ type_specifier
 	| CHAR
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(charS);
                 globalTempNode.setLine(lineNum);
             }
@@ -563,8 +559,8 @@ type_specifier
 	| SHORT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(shortS);
                 globalTempNode.setLine(lineNum);
             }
@@ -578,8 +574,8 @@ type_specifier
 	| INT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(intS);
                 globalTempNode.setLine(lineNum);
             }
@@ -593,8 +589,8 @@ type_specifier
 	| LONG
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(longS);
                 globalTempNode.setLine(lineNum);
             }
@@ -608,8 +604,8 @@ type_specifier
 	| FLOAT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(floatS);
                 globalTempNode.setLine(lineNum);
             }
@@ -623,8 +619,8 @@ type_specifier
 	| DOUBLE
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(doubleS);
                 globalTempNode.setLine(lineNum);
             }
@@ -638,8 +634,8 @@ type_specifier
 	| SIGNED
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setSigned(signedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -653,8 +649,8 @@ type_specifier
 	| UNSIGNED
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setSigned(unsignedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -697,7 +693,8 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeQual(constQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -710,7 +707,8 @@ type_qualifier
         }
 	| VOLATILE
 		{
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeQual(volatileQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -1117,7 +1115,6 @@ direct_declarator
         {
             //func def no params
             $$ = $1;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
             }
@@ -1128,14 +1125,13 @@ direct_declarator
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
             //func def
-            if (funcPair != globalSymbolTable.getCurrentEnd())
-                funcPair->second.setImplementation();
+            std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+            lastFuncPair.second->setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
             if ($3 != NULL)
                 tmpNode->addNode($3);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
@@ -1575,7 +1571,6 @@ statement
 	| iteration_statement
         {
             $$ = $1;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "statement -> iteration_statement" << std::endl;
             }
@@ -1794,7 +1789,6 @@ iteration_statement
             if ($6 != NULL)
                 tmpNode->addNode($6);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI CLOSE statement" << std::endl;
             }
@@ -1809,7 +1803,6 @@ iteration_statement
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI expression CLOSE statement" << std::endl;
             }
@@ -1824,7 +1817,6 @@ iteration_statement
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI CLOSE statement" << std::endl;
             }
@@ -1840,7 +1832,6 @@ iteration_statement
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
@@ -1855,7 +1846,6 @@ iteration_statement
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI CLOSE statement" << std::endl;
             }
@@ -1871,7 +1861,6 @@ iteration_statement
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI expression CLOSE statement" << std::endl;
             }
@@ -1887,7 +1876,6 @@ iteration_statement
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI CLOSE statement" << std::endl;
             }
@@ -1904,7 +1892,6 @@ iteration_statement
             if ($9 != NULL)
                 tmpNode->addNode($9);
             $$ = tmpNode;
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
@@ -2961,15 +2948,15 @@ identifier
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
             globalTempNode.setName(yytext+'\0');
-            int scope = globalSymbolTable.currentScopeNum;
-            if(globalSymbolTable.mode==insert){
+            int scope = globalSymbolTable.getCurrentScope();
+            if(globalSymbolTable.getMode()==insert){
                 if (buildingFunction) {
-                   if (funcPair != globalSymbolTable.getCurrentEnd()) {
-                        globalTempNode.isParam=true;
-                        funcPair->second.addParam();
-                        funcPair->second.addParamValue(signedPT,globalTempNode.getSigned());
-                        funcPair->second.addParamValue(typeQualPT,globalTempNode.getTypeQual());
-                        funcPair->second.addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
+                   std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                   if (globalSymbolTable.lastFunc.second == lineNum && !lastFuncPair.second->hasProto) { //this check technically shouldn't matter but it's for sanity's sake
+                        lastFuncPair.second->addParam();
+                        lastFuncPair.second->addParamValue(signedPT,globalTempNode.getSigned());
+                        lastFuncPair.second->addParamValue(typeQualPT,globalTempNode.getTypeQual());
+                        lastFuncPair.second->addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
                    }
                 }
                 globalTempNode.setScope(scope);
@@ -2982,25 +2969,20 @@ identifier
             if (printFile) {
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
-            idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
+            
+            idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
             tmpNode -> nodeType = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
-            bool flip = false;
-            if (globalSymbolTable.mode==insert)
-                flip=true;
-            //FIXME dirty code to fix wackness
-            globalSymbolTable.mode=lookup;
-            std::pair<bool,Node*> ret = globalSymbolTable.searchTree(yytext);
-            //FIXME dirty code to fix wackness
-            //if (flip)
-            //    globalSymbolTable.mode=insert;
-
+            std::string searchName = yytext + '\0';
+            //2nd param is true cuz it is a search related to AST
+            std::pair<bool,Node*> ret = globalSymbolTable.searchTree(searchName,true);
             if (ret.first) {
                 tmpNode->signedB = ret.second->getSigned();
                 tmpNode->storageSpec = ret.second->getStorageSpec();
                 tmpNode->typeQual = ret.second->getTypeQual();
                 tmpNode->typeSpec = ret.second->getTypeSpec();
+                //tmpNode->offset = ret.second->getOffset();
             }
             $$ = tmpNode;
         }
@@ -3094,6 +3076,7 @@ int main (int argc, char** argv)
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
+  
   //  astFileP << "";
   astFileP.close();
   fileP.close();

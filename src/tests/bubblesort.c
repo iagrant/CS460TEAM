@@ -23,6 +23,7 @@ int main ()
 				temp = array[k + 1];
 				array[k + 1] = array[k];
 				array[k] = temp;
+                !!ds
 			}
 		}
 	}
