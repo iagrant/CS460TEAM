@@ -21,8 +21,6 @@
     extern ASTnode *globalASTnode = new ASTnode("");
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
     std::ofstream fileP;
-    extern std::map<std::string,Node>::reverse_iterator funcPair;
-    extern Node * funcNode;
 
 int assignmentCoercion (int lhs, int rhs) {
     if (lhs == rhs)
@@ -219,7 +217,6 @@ translation_unit
 external_declaration
 	: function_definition
 		{
-            globalSymbolTable.proto=false;
             $$ = $1;
             if (printProductions) {
                 std::cout << "external_declaration -> function definition" << std::endl;
@@ -313,17 +310,13 @@ declaration
 	| declaration_specifiers init_declarator_list SEMI
 		{
             //remove scope of prototype
-            /*
             if (buildingFunction){
-                if (funcPair != globalSymbolTable.getCurrentEnd()){
-                    if(funcPair->second.getLine() == lineNum) {
-                        funcPair->second.setProto();
-                        globalSymbolTable.removeScope();
-                    }
+                if (globalSymbolTable.lastFunc.second == lineNum) { //this check technically shouldn't matter but it's for sanity's sake
+                    std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                    lastFuncPair.second->setProto();
+                    globalSymbolTable.removeScope();
                 }
             }
-            */
-            funcPair->second.setProto();
             ASTnode *tmpNode = new ASTnode("DECLARATION");
             tmpNode->addNode($2);
             $$ = tmpNode;
@@ -1074,8 +1067,8 @@ direct_declarator
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
             //func def
-            if (funcPair != globalSymbolTable.getCurrentEnd())
-                funcPair->second.setImplementation();
+            std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+            lastFuncPair.second->setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
             if ($3 != NULL)
@@ -2844,28 +2837,19 @@ identifier
         {
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
-            std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.getCurrentEnd();
-            last = globalSymbolTable.getCurrentPair();
             globalTempNode.setName(yytext+'\0');
             int scope = globalSymbolTable.getCurrentScope();
             if(globalSymbolTable.getMode()==insert){
                 if (buildingFunction) {
-                   if (funcPair != globalSymbolTable.getCurrentEnd()) {
-                        funcPair->second.addParam();
-                        funcPair->second.addParamValue(signedPT,globalTempNode.getSigned());
-                        funcPair->second.addParamValue(typeQualPT,globalTempNode.getTypeQual());
-                        funcPair->second.addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
+                   std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                   if (globalSymbolTable.lastFunc.second == lineNum) { //this check technically shouldn't matter but it's for sanity's sake
+                        lastFuncPair.second->addParam();
+                        lastFuncPair.second->addParamValue(signedPT,globalTempNode.getSigned());
+                        lastFuncPair.second->addParamValue(typeQualPT,globalTempNode.getTypeQual());
+                        lastFuncPair.second->addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
                    }
                 }
                 globalTempNode.setScope(scope);
-                /*
-                if (globalSymbolTable.proto) {
-                    if (funcPair == globalSymbolTable.getCurrentEnd()) {
-                        globalSymbolTable.insertSymbol(globalTempNode);
-                    }
-                }
-                else
-                */
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
 
@@ -2979,7 +2963,7 @@ int main (int argc, char** argv)
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
-//  astFileP << "";
+  astFileP << "";
   astFileP.close();
   fileP.close();
 

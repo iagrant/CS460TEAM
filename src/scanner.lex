@@ -48,7 +48,6 @@ std::string symbolFlag = "!!ds";
 std::string productionFlag = "!!dp";
 std::string modeFlag = "!!dm";
 Node * funcNode;
-std::map<std::string,Node>::reverse_iterator funcPair = globalSymbolTable.getCurrentEnd();
 
 void printError (int colNum,std::string errorTok);
 void printConsole (std::string token);
@@ -67,7 +66,10 @@ escaped \\[anrtbfv0]
 number  {num1}|{num2}
 
 %%
-\n              {/*std::cout << "Line: " << lineNum << "   Col: " << colNum << std::endl;*/ lineNum++; colNum = 1; tabNum = 0;
+\n              {
+                    lineNum++;
+                    colNum = 1;
+                    tabNum = 0;
                     //print the buffer
                     if(printSource){
 						printLine();
@@ -75,7 +77,6 @@ number  {num1}|{num2}
 					}
                     globalTempNode.resetNode(); //resets node to avoid any mess from getting multiline bois
                     buildingFunction=false; //resets flag that says wheter a flag is being buitl
-                    funcPair=globalSymbolTable.getCurrentEnd(); //resets function pair
                 }
 \r
 [ ]	        	{colNum++; /* skip white space */ }
@@ -297,6 +298,7 @@ sizeof          {
                     if(printToken) {printConsole("SEMI");}
                     if(printFile) {printToFile("SEMI");}
                     colNum += yyleng;
+                    globalTempNode.resetNode(); //resets node
                     return SEMI;
                 }
 \:              {
@@ -310,7 +312,9 @@ sizeof          {
                     if(printFile) {printToFile("CURLYOPEN");}
                     colNum += yyleng;
                     globalSymbolTable.setMode(lookup);
-                    globalSymbolTable.addNewScope();
+                    if (globalSymbolTable.lastId.second != lineNum) //stops arrays from false trigger
+                        if (globalSymbolTable.lastFunc.second != lineNum) //this checks if last function impl is on same line cuz scope is added for its params instead of here
+                            globalSymbolTable.addNewScope();
                     return CURLYOPEN;
                 }
 \}              {
@@ -366,25 +370,23 @@ sizeof          {
                     if(printToken) {printConsole("EQUALS");}
                     if(printFile) {printToFile("EQUALS");}
                     colNum += yyleng;
+                    globalSymbolTable.setMode(lookup);
                     return EQUALS;
                 }
 \(              {
                     if(printToken) {printConsole("OPEN");}
                     if(printFile) {printToFile("OPEN");}
                     colNum += yyleng;
-                    //FIXME gotta be a better way right???
-                    std::map<std::string,Node>::reverse_iterator last = globalSymbolTable.getCurrentEnd();
-                    last = globalSymbolTable.getCurrentPair();
                     if (globalSymbolTable.getMode() == insert) {
-                        if (last != globalSymbolTable.getCurrentEnd()){
-                            std::cout << "PER: " << last->second.getName() << std::endl;
-                            if (last->second.getLine() == lineNum){
-                                last->second.setFunction();
-                                buildingFunction=true;
-                                funcPair=last;
-                                if (!globalSymbolTable.proto)
-                                    globalSymbolTable.addNewScope();
-                            }
+                        if (globalSymbolTable.lastId.second == lineNum){
+                            std::pair<bool,Node *> temp = globalSymbolTable.searchTree(globalSymbolTable.lastId.first,true);
+                            if (temp.second == NULL)
+                                std::cout << "NULL!\nTHAT'S A NONO!" << std::endl;
+                            temp.second->setFunction();
+                            buildingFunction=true;
+                            globalSymbolTable.lastFunc = globalSymbolTable.lastId;
+                            //if (!globalSymbolTable.proto)
+                            globalSymbolTable.addNewScope(); //hope no break from func protos
                         }
                     }
                     return OPEN;
@@ -610,14 +612,12 @@ if              {
                     if(printToken) {printConsole("IF");}
                     if(printFile) {printToFile("IF");}
                     colNum += yyleng;
-                    globalSymbolTable.addNewScope();
                     return IF;
                 }
 else            {
                     if(printToken) {printConsole("ELSE");}
                     if(printFile) {printToFile("ELSE");}
                     colNum += yyleng;
-                    globalSymbolTable.addNewScope();
                     return ELSE;
                 }
 switch          {
@@ -630,7 +630,6 @@ while           {
                     if(printToken) {printConsole("WHILE");}
                     if(printFile) {printToFile("WHILE");}
                     colNum += yyleng;
-                    globalSymbolTable.addNewScope();
                     return WHILE;
                 }
 do              {
@@ -643,7 +642,6 @@ for             {
                     if(printToken) {printConsole("FOR");}
                     if(printFile) {printToFile("FOR");}
                     colNum += yyleng;
-                    globalSymbolTable.addNewScope();
                     return FOR;
                 }
 goto            {
