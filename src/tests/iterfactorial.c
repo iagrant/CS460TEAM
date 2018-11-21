@@ -4,27 +4,22 @@
 
 //#include <stdio.h>
 
-int main(void)
+int main()
 {
     !!dp
     int fact = 0;
 	int result = 1;
 	int i;
-//	printf("Enter a whole number: ");
-//	scanf("%d",&fact);
 	if(fact < 0)
 	{
-		printf("Cannot take the factorial of a negative number.\n");
+        i=5;
 	}
-    !!dp
 	while (fact < 0)
 	{
-			printf("Enter a whole number: ");
-			scanf("%d",&fact);
-
+        i=5;
 		if(fact < 0)
 		{
-			printf("Cannot take the factorial of a negative number.\n");
+            i=5;
 		}
 	}
 /*
@@ -35,5 +30,4 @@ int main(void)
 
 		printf("The factorial of %d is %d.",fact,result);
 */
-	return 0;
 }
