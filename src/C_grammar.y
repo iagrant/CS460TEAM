@@ -2842,7 +2842,7 @@ identifier
             if(globalSymbolTable.getMode()==insert){
                 if (buildingFunction) {
                    std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
-                   if (globalSymbolTable.lastFunc.second == lineNum) { //this check technically shouldn't matter but it's for sanity's sake
+                   if (globalSymbolTable.lastFunc.second == lineNum && !lastFuncPair.second->hasProto) { //this check technically shouldn't matter but it's for sanity's sake
                         lastFuncPair.second->addParam();
                         lastFuncPair.second->addParamValue(signedPT,globalTempNode.getSigned());
                         lastFuncPair.second->addParamValue(typeQualPT,globalTempNode.getTypeQual());
