@@ -94,7 +94,8 @@ ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     }
     else
     {
-        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        std::cout << lhs->typeSpec << " " << rhs->typeSpec << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified [Assignment Coercion Failed]" << std::endl;
         globalSymbolTable.printError();
     }
 }
@@ -173,7 +174,7 @@ mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
     }
     else
     {
-        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified [Arithmetic Coercion Failed]" << std::endl;
         exit(1);
     }
 }
@@ -2444,6 +2445,7 @@ additive_expression
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode = mathCoercion($1, $3, tmpNode);
@@ -2467,6 +2469,7 @@ additive_expression
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode = mathCoercion($1, $3, tmpNode);
@@ -2503,6 +2506,7 @@ multiplicative_expression
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode = mathCoercion($1, $3, tmpNode);
@@ -2526,6 +2530,7 @@ multiplicative_expression
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode = mathCoercion($1, $3, tmpNode);
@@ -2549,6 +2554,7 @@ multiplicative_expression
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode = mathCoercion($1, $3, tmpNode);
@@ -3083,7 +3089,7 @@ int main (int argc, char** argv)
 
   //not needed anymore ... for now ...
   //clear3ac("3ac.output");
-  walk(globalASTnode);
+//  walk(globalASTnode);
 
   return 0;
 }
