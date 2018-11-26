@@ -322,6 +322,7 @@ function_definition
             tmpNode -> nodeType = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
+            tmpNode->activationFrameSize = $3->size;
             $$ = tmpNode;
 
             if (printProductions) {
@@ -351,6 +352,7 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
+            $$ = $1;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
             }
@@ -368,8 +370,10 @@ declaration
                     globalSymbolTable.removeScope();
                 }
             }
-            ASTnode *tmpNode = new ASTnode("DECLARATION");
+            declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
+            tmpNode->typeSpec = $2->typeSpec;
+            tmpNode->determineOffset();
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
@@ -383,7 +387,9 @@ declaration
 declaration_list
 	: declaration
 		{
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("DECL_LIST");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             //FIXME by killing me
             globalSymbolTable.setMode(lookup);
             if (printProductions) {
@@ -395,11 +401,8 @@ declaration_list
         }
 	| declaration_list declaration
 		{
+            $$ -> addNode($2);
             globalSymbolTable.setMode(lookup);
-            ASTnode *tmpNode = new ASTnode("DECL_LIST");
-            tmpNode->addNode($1);
-            tmpNode->addNode($2);
-            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "declaration_list -> declaration_list declaration" << std::endl;
             }
@@ -797,9 +800,9 @@ struct_declaration_list
 init_declarator_list
 	: init_declarator
 		{
-            ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
-            tmpNode->addNode($1);
-            $$ = tmpNode;
+            //ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
+            //tmpNode->addNode($1);
+            $$ = $1;
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator" << std::endl;
             }
@@ -838,6 +841,7 @@ init_declarator
             {
                 tmpNode->addNode($1);
                 tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
             } else
             {
                 tmpNode->addNode($1);
@@ -1679,6 +1683,9 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
+            $2->sumNode();
+            tmpNode->sumNode();
+            std::cout << tmpNode->size << std::endl;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {

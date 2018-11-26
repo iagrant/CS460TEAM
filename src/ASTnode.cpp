@@ -20,6 +20,7 @@ public:
     int nodeType = genericN;
     int printLabel;
     int lineNum = -1;
+    int size = 0;
 
     int signedB;
     int storageSpec;
@@ -64,8 +65,50 @@ public:
             }
         }
     }
+
+    void sumNode() {
+        for (int i = 0; i < child.size(); i++) {
+            size += child[i]->size;
+        }
+    }
 };
 
+class declNode : public ASTnode {
+    public:
+        int offset = 0;
+        declNode(std::string productionIn){production = productionIn;}
+
+        void determineOffset() {
+            static int currentOffset = 0;
+            offset = currentOffset;
+            switch(typeSpec) {
+                case intS: case longS: case shortS: case floatS:
+                    currentOffset += 4;
+                    size += 4;
+                    break;
+                case doubleS:
+                    currentOffset += 8;
+                    size += 8;
+                    break;
+                case charS:
+                    currentOffset += 1;
+                    size += 1;
+                    break;
+                default:
+                    std::cout << "Ya fucked up" << std::endl;
+            }
+        }
+
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\nSIZE: ");
+            infoString.append(std::to_string(size));
+            infoString.append("\nOFFSET: ");
+            infoString.append(std::to_string(offset));
+            return infoString;
+        }
+
+};
 
 class idNode : public ASTnode {
     public:
@@ -292,10 +335,13 @@ class ifNode : public ASTnode {
 
 class functionNode : public ASTnode {
     public:
+    int activationFrameSize;
     functionNode(std::string productionIn){production = productionIn;}
 
     std::string printASTnode() {
         infoString.append(production);
+        infoString.append("\nFRAME SIZE: ");
+        infoString.append(std::to_string(activationFrameSize));
         return infoString;
     }
 };
