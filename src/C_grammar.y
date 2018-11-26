@@ -322,7 +322,8 @@ function_definition
             tmpNode -> nodeType = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
-            tmpNode->activationFrameSize = $3->size;
+            tmpNode->activationFrameSize += $2->size;
+            tmpNode->activationFrameSize += $3->size;
             $$ = tmpNode;
 
             if (printProductions) {
@@ -1134,8 +1135,12 @@ direct_declarator
             lastFuncPair.second->setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
-            if ($3 != NULL)
+            if ($3 != NULL) 
+            {
                 tmpNode->addNode($3);
+                $3->sumNode();
+            }
+            tmpNode->sumNode();
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
@@ -1272,19 +1277,14 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
         {
+            declNode *tmpNode = new declNode("PARAMETER");
+            tmpNode->addNode($2);
             if ($1 != NULL)
-            {
-                ASTnode *tmpNode = new ASTnode("PARAMS");
                 tmpNode->addNode($1);
-                tmpNode->addNode($2);
-                $$ = tmpNode;
-            }
-            else
-            {
-                ASTnode *tmpNode = new ASTnode("PARAMS");
-                tmpNode->addNode($2);
-                $$ = tmpNode;
-            }
+            tmpNode->typeSpec = $2->typeSpec;
+            tmpNode->determineOffset();
+            $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "parameter_declaration -> declaration_specifiers declarator" << std::endl;
             }
@@ -1685,7 +1685,6 @@ compound_statement
             tmpNode->addNode($2);
             $2->sumNode();
             tmpNode->sumNode();
-            std::cout << tmpNode->size << std::endl;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
