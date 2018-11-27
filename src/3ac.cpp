@@ -14,6 +14,7 @@ void constantHandle(constantNode * cons);
 void print3ac(std::string input);
 void printSrc();
 void build3AC (ASTnode * currentNode);
+void labelHandle (ASTnode * AST);
 
 std::string filename = "3ac.output";
 int currentLineNum = 0;
@@ -40,6 +41,39 @@ void walkTree (ASTnode * parent)
         build3AC(parent);
     }
 }
+void mathHandle (mathNode * math) {
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+    switch (math->operation) {
+        case addOp:
+            break;
+        case subOp:
+            break;
+        case mulOp:
+            break;
+        case divOp:
+            break;
+        case incOp:
+            break;
+        case decOp:
+            break;
+        case modOp:
+            break;
+        case shlOp:
+            break;
+        case shrOp:
+            break;
+        case andOp:
+            break;
+        case orOp:
+            break;
+        case xorOp:
+            break;
+        case notOp:
+            break;
+    }
+
+}
+
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
@@ -52,20 +86,22 @@ void labelHandle (ASTnode * AST) {
         case forN:
             tempString = "";
             tempString.append("FOR");
-            tempString.append(std::to_string(forCount);
+            tempString.append(std::to_string(forCount));
             tempString.append(":");
             triACStruct.push_back(tempString);
             tempString = "";
+            break;
         case whileN:
             tempString = "";
             tempString.append("WHILE");
-            tempString.append(std::to_string(whileCount);
+            tempString.append(std::to_string(whileCount));
             tempString.append(":");
             triACStruct.push_back(tempString);
             tempString = "";
             break;
     }
 }
+
 // This function just does what it needs and then returns
 void build3AC (ASTnode * currentNode)
 {
@@ -123,6 +159,7 @@ void build3AC (ASTnode * currentNode)
 void functionHandle(ASTnode * AST) {
     //might kill this moved entire thing into labelHandle
 }
+
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
@@ -137,9 +174,16 @@ void equalHandle(ASTnode * AST) {
                 if (AST->child[2]->nodeType == mathN) {
                     mathNode * math = (mathNode *) (AST->child[2]);
                     tempString.append(math->production);
-                    intTempCount++;
-                    std::string test = "iT"+std::to_string(intTempCount);
-                    tempString.append(test);
+                    if (math->typeSpec == floatS || math->typeSpec == doubleS){
+                        intTempCount++;
+                        std::string tempName = "fT"+std::to_string(floatTempCount);
+                        tempString.append(tempName);
+                    }
+                    else {
+                        intTempCount++;
+                        std::string tempName = "iT"+std::to_string(intTempCount);
+                        tempString.append(tempName);
+                    }
                 }
             }
         }
@@ -147,6 +191,7 @@ void equalHandle(ASTnode * AST) {
         tempString = "";
     }
 }
+
 void constantHandle(constantNode * cons) {
     //prbly won't use this lol
     if (cons->intConst != NULL) {
