@@ -17,7 +17,8 @@ void printSrc();
 
 std::string filename = "3ac.output";
 int currentLineNum = 0;
-int tempCount = 0;
+int intTempCount = 0;
+int floatTempCount = 0;
 bool debug = true;
 extern std::string buffer;
 extern std::string srcFile;
@@ -93,8 +94,8 @@ void equalHandle(ASTnode * AST) {
                 if (AST->child[2]->nodeType == mathN) {
                     mathNode * math = (mathNode *) (AST->child[2]);
                     tempString.append(math->production);
-                    tempCount++;
-                    std::string test = "t"+std::to_string(tempCount);
+                    intTempCount++;
+                    std::string test = "iT"+std::to_string(intTempCount);
                     tempString.append(test);
                 }
             }
