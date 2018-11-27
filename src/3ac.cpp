@@ -11,6 +11,7 @@ void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
+void labelHandle(ASTnode * AST);
 void print3ac(std::string input);
 void printSrc();
 void build3AC (ASTnode * currentNode);
@@ -43,27 +44,34 @@ void walkTree (ASTnode * parent)
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
+            {
             idNode * id = (idNode *) (AST->child[0]);
             tempString = "";
             tempString.append(id->name.append(":"));
             triACStruct.push_back(tempString);
             tempString = "";
             break;
+            }
         case forN:
+            {
             tempString = "";
             tempString.append("FOR");
-            tempString.append(std::to_string(forCount);
-            tempString.append(":");
-            triACStruct.push_back(tempString);
-            tempString = "";
-        case whileN:
-            tempString = "";
-            tempString.append("WHILE");
-            tempString.append(std::to_string(whileCount);
+            tempString.append(std::to_string(forCount));
             tempString.append(":");
             triACStruct.push_back(tempString);
             tempString = "";
             break;
+            }
+        case whileN:
+            {
+            tempString = "";
+            tempString.append("WHILE");
+            tempString.append(std::to_string(whileCount));
+            tempString.append(":");
+            triACStruct.push_back(tempString);
+            tempString = "";
+            break;
+            }
     }
 }
 // This function just does what it needs and then returns

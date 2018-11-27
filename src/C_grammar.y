@@ -3095,7 +3095,7 @@ int main (int argc, char** argv)
 
   //not needed anymore ... for now ...
   //clear3ac("3ac.output");
-//  walk(globalASTnode);
+  walkTree(globalASTnode);
 
   return 0;
 }
