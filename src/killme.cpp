@@ -6,13 +6,13 @@ At each node call function that does something depending on the type of the node
 // walks the tree similarly to how it is created by yacc bottom-up
 void walkTree (ASTnode * parent)
 {
-    build3AC(parent);
     for (int i = 0; i < parent->child.size(); i++)
     {
         if (parent->child.size() != 0)
         {
             walkTree(parent->child[i]);
         }
+        build3AC(parent);
     }
 }
 
