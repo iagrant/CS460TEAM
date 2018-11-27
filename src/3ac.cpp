@@ -1,87 +1,130 @@
 #include <stdio.h>
 #include <string.h>
-#include <list>
+#include <vector>
 #include <iterator>
 #include <cstring>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
 
-void walk(ASTnode *AST);
-void walkChild(ASTnode * parent);
+void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
 void print3ac(std::string input);
 void printSrc();
+void build3AC (ASTnode * currentNode);
 
 std::string filename = "3ac.output";
 int currentLineNum = 0;
 int intTempCount = 0;
 int floatTempCount = 0;
+int forCount = 0;
+int whileCount = 0;
 bool debug = true;
 extern std::string buffer;
 extern std::string srcFile;
 extern std::string outSrcFile;
-std::list<std::string> triACStruct;
+std::vector<std::string> triACStruct;
 std::string tempString = "";
 
-void walk(ASTnode *AST) {
-    if (AST->lineNum != currentLineNum && AST->lineNum != -1){
-        currentLineNum=AST->lineNum;
-        printSrc();
-    }
-    //function node
-    if (AST->nodeType == funcN) {
-        functionHandle(AST);
-        walkChild(AST->child[0]);
-    }
-    //id node
-    if (AST->nodeType == idN) {
-        walkChild(AST);
-        //idHandle(AST);
-    }
-    if (AST->production.compare("EQUALS") == 0) {
-        equalHandle(AST);
-    }
-    //math Node
-    if (AST->nodeType == mathN) {
-        //addHandle(AST);
-    }
-    if (AST->nodeType == forN) {
-        //go all the way through the statement node
-        //then implement the check of the for below it
-    }
-    if (AST->nodeType == ifN) {
-    }
-    if (AST->nodeType == whileN) {
-    }
-    if (AST->nodeType == constantN) {
-        //constantHandle(AST);
-    }
-    else
-        walkChild(AST);
-}
-
-void walkChild(ASTnode * parent){
+void walkTree (ASTnode * parent)
+{
     for (int i = 0; i < parent->child.size(); i++)
     {
         if (parent->child.size() != 0)
         {
-            walk(parent->child[i]);
+            labelHandle(parent->child[i]);
+            walkTree(parent->child[i]);
         }
+        build3AC(parent);
     }
 }
+void labelHandle (ASTnode * AST) {
+    switch(AST->nodeType) {
+        case funcN:
+            idNode * id = (idNode *) (AST->child[0]);
+            tempString = "";
+            tempString.append(id->name.append(":"));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            break;
+        case forN:
+            tempString = "";
+            tempString.append("FOR");
+            tempString.append(std::to_string(forCount);
+            tempString.append(":");
+            triACStruct.push_back(tempString);
+            tempString = "";
+        case whileN:
+            tempString = "";
+            tempString.append("WHILE");
+            tempString.append(std::to_string(whileCount);
+            tempString.append(":");
+            triACStruct.push_back(tempString);
+            tempString = "";
+            break;
+    }
+}
+// This function just does what it needs and then returns
+void build3AC (ASTnode * currentNode)
+{
+    /*  FIXME kindof work but mostly no work lol
+    if (currentNode->lineNum != currentLineNum && currentNode->lineNum != -1){
+        currentLineNum=AST->lineNum;
+        printSrc();
+    }
+    */
+    if (currentNode->nodeType == funcN)
+    {
+        // need to know the frame size
+        // ticket counter for the function
+        // return type?
+    }
+    else if (currentNode->nodeType == idN)
+    {
+        // should just return because will be handled by the operator node
+    }
+    else if (currentNode->production.compare("EQUALS") == 0)
+    {
+        // needs to assign "ASSIGN des src"
+        equalHandle(currentNode);
+    }
+    else if (currentNode->nodeType == mathN)
+    {
+        // This side executes before the equals
+        // Create temp var for each operator
+        // T0 = 4
+        // T1 = 5 - T0
+        // T2 = 6 * T1
+        //mathHandle(currentNode); forgot i accidentally killed this whoops :shrug:
+    }
+    else if (currentNode->nodeType == forN)
+    {
+        // create label for iterative statement
+        // label has to go above
+    }
+    else if (currentNode->nodeType == ifN)
+    {
+
+    }
+    else if (currentNode->nodeType == whileN)
+    {
+
+    }
+    else if (currentNode->nodeType == constantN)
+    {
+
+    }
+    else
+        return;
+}
+
 void functionHandle(ASTnode * AST) {
-    idNode * id = (idNode *) (AST->child[0]);
-    tempString = "";
-    tempString.append(id->name.append(":"));
-    triACStruct.push_back(tempString);
-    tempString = "";
+    //might kill this moved entire thing into labelHandle
 }
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
-        walkChild(AST);
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             idNode * id = (idNode *) (AST->child[0]);
             tempString = id->name;
@@ -148,16 +191,15 @@ void print3ac() {
     std::cout.rdbuf(fileP.rdbuf()); //changes cout to print to file stream
     std::string buff = ""; //it's a strong string :)
     for (int i =0; i < triACStruct.size(); i++) {
-        buff = triACStruct.front();
-        triACStruct.pop_front();
+        buff = triACStruct[i];
+        std::cout << buff << std::endl;
     }
-    std::cout << buff << std::endl;
     fileP.close();
     std::cout.rdbuf(coutbuf); //resets cout to stdout
     if (debug) {
         for (int i =0; i < triACStruct.size(); i++) {
-            buff = triACStruct.front();
-            triACStruct.pop_front();
+            buff = triACStruct[i];
+            std::cout << buff << std::endl;
         }
     }
 }
