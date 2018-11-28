@@ -9,6 +9,8 @@
 
 void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
+void mathHandle(mathNode * math);
+void idHandle(idNode * id);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
 void labelHandle(ASTnode * AST);
@@ -38,8 +40,8 @@ void walkTree (ASTnode * parent)
             labelHandle(parent->child[i]);
             walkTree(parent->child[i]);
         }
-        build3AC(parent);
     }
+    build3AC(parent);
 }
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
@@ -85,21 +87,29 @@ void build3AC (ASTnode * currentNode)
     */
     if (currentNode->nodeType == funcN)
     {
+        std::cout << "Function: " << currentNode->production << std::endl;
         // need to know the frame size
         // ticket counter for the function
         // return type?
     }
     else if (currentNode->nodeType == idN)
     {
+        std::cout << "Identifier: " << currentNode->production << std::endl;
         // should just return because will be handled by the operator node
+        return;
     }
     else if (currentNode->production.compare("EQUALS") == 0)
     {
-        // needs to assign "ASSIGN des src"
         equalHandle(currentNode);
+        std::cout << "Assignment: " << currentNode->production << std::endl;
+        // needs to assign "ASSIGN des src"
     }
     else if (currentNode->nodeType == mathN)
     {
+        std::cout << "Found a math node" << std::endl;
+        mathNode * math = (mathNode *) currentNode;
+        mathHandle(math);
+        return;
         // This side executes before the equals
         // Create temp var for each operator
         // T0 = 4
@@ -122,6 +132,7 @@ void build3AC (ASTnode * currentNode)
     }
     else if (currentNode->nodeType == constantN)
     {
+        std::cout << "Found a constant node" << std::endl;
 
     }
     else
@@ -134,27 +145,124 @@ void functionHandle(ASTnode * AST) {
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
-            idNode * id = (idNode *) (AST->child[0]);
-            tempString = id->name;
-            tempString.append(" = ");
             if (AST->child[1]->nodeType == constantN) {
+                idNode * id = (idNode *) (AST->child[0]);
+                tempString = id->name;
+                tempString.append(" = ");
                 constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
-            }
-            if (AST->child.size() > 2) {
-                if (AST->child[2]->nodeType == mathN) {
-                    mathNode * math = (mathNode *) (AST->child[2]);
-                    tempString.append(math->production);
-                    intTempCount++;
-                    std::string test = "iT"+std::to_string(intTempCount);
-                    tempString.append(test);
-                }
+            } else if (AST->child[1]->nodeType == mathN){
+                mathNode * math = (mathNode *) (AST->child[1]);
+                mathHandle(math);
+                idNode * id = (idNode *) (AST->child[0]);
+                tempString = id->name;
+                tempString.append(" = ");
+                std::string test = "iT_"+std::to_string(intTempCount-1);
+                tempString.append(test);
+            } else {
+                std::cout << "Some thing else" << std::endl;
             }
         }
-        triACStruct.push_back(tempString);
-        tempString = "";
     }
+    triACStruct.push_back(tempString);
+    tempString = "";
 }
+
+void mathHandle(mathNode * math) {
+    if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == mathN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        constantNode * cons = (constantNode *) (math->child[0]);
+        constantHandle(cons);
+        tempString.append(math->production);
+        test = "iT_"+std::to_string(intTempCount);
+        tempString.append(test);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == mathN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        test = "iT_"+std::to_string(intTempCount-1);
+        tempString.append(test);
+        tempString.append(math->production);
+        test = "iT_"+std::to_string(intTempCount);
+        tempString.append(test);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == mathN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        idNode * id = (idNode *) (math->child[0]);
+        idHandle(id);
+        tempString.append(math->production);
+        test = "iT_"+std::to_string(intTempCount);
+        tempString.append(test);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == constantN) 
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        constantNode * cons1 = (constantNode *) (math->child[0]);
+        constantHandle(cons1);
+        tempString.append(" ");
+        tempString.append(math->production);
+        tempString.append(" ");
+        constantNode * cons2 = (constantNode *) (math->child[1]);
+        constantHandle(cons2);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == idN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        idNode * id1 = (idNode *) (math->child[0]);
+        idHandle(id1);
+        tempString.append(" ");
+        tempString.append(math->production);
+        tempString.append(" ");
+        idNode * id2 = (idNode *) (math->child[1]);
+        idHandle(id2);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == idN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        constantNode * cons1 = (constantNode *) (math->child[0]);
+        constantHandle(cons1);
+        tempString.append(" ");
+        tempString.append(math->production);
+        tempString.append(" ");
+        idNode * id2 = (idNode *) (math->child[1]);
+        idHandle(id2);
+        intTempCount++;
+    } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == constantN)
+    {
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(test);
+        tempString.append(" = ");
+        idNode * id2 = (idNode *) (math->child[0]);
+        idHandle(id2);
+        tempString.append(" ");
+        tempString.append(math->production);
+        tempString.append(" ");
+        constantNode * cons1 = (constantNode *) (math->child[1]);
+        constantHandle(cons1);
+        intTempCount++;
+    }
+    triACStruct.push_back(tempString);
+    tempString = "";
+}
+
+void idHandle(idNode * id) {
+    tempString.append(id->name);
+}
+
 void constantHandle(constantNode * cons) {
     //prbly won't use this lol
     if (cons->intConst != NULL) {
