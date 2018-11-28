@@ -375,9 +375,23 @@ class whileNode : public ASTnode {
     }
 };
 
+class exprNode : public ASTnode {
+    public:
+        enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEpOp,greatEqOp, orOp, andOp, notOp};
+        int exprType;
+        exprNode(std::string productionIn){production = productionIn;}
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
+            return infoString;
+    }
+};
+
 class mathNode : public ASTnode {
     public:
-        enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+        enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
         int operation;
         mathNode(std::string productionIn){production = productionIn;}
         std::string printASTnode() {
@@ -387,35 +401,4 @@ class mathNode : public ASTnode {
             infoString.append(std::to_string(lineNum));
             return infoString;
     }
-        /* FOR USE WITH MATH OPERATIONS
-            switch (operation) {
-                case addOp:
-                    break;
-                case subOp:
-                    break;
-                case mulOp:
-                    break;
-                case divOp:
-                    break;
-                case incOp:
-                    break;
-                case decOp:
-                    break;
-                case modOp:
-                    break;
-                case shlOp:
-                    break;
-                case shrOp:
-                    break;
-                case andOp:
-                    break;
-                case orOp:
-                    break;
-                case xorOp:
-                    break;
-                case notOp:
-                    break;
-            }
-            */
-
 };
