@@ -11,6 +11,7 @@ void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
+void labelHandle(ASTnode * AST);
 void print3ac(std::string input);
 void printSrc();
 void build3AC (ASTnode * currentNode);
@@ -77,13 +78,16 @@ void mathHandle (mathNode * math) {
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
+            {
             idNode * id = (idNode *) (AST->child[0]);
             tempString = "";
             tempString.append(id->name.append(":"));
             triACStruct.push_back(tempString);
             tempString = "";
             break;
+            }
         case forN:
+            {
             tempString = "";
             tempString.append("FOR");
             tempString.append(std::to_string(forCount));
@@ -91,7 +95,9 @@ void labelHandle (ASTnode * AST) {
             triACStruct.push_back(tempString);
             tempString = "";
             break;
+            }
         case whileN:
+            {
             tempString = "";
             tempString.append("WHILE");
             tempString.append(std::to_string(whileCount));
@@ -99,6 +105,7 @@ void labelHandle (ASTnode * AST) {
             triACStruct.push_back(tempString);
             tempString = "";
             break;
+            }
     }
 }
 
@@ -176,12 +183,12 @@ void equalHandle(ASTnode * AST) {
                     tempString.append(math->production);
                     if (math->typeSpec == floatS || math->typeSpec == doubleS){
                         intTempCount++;
-                        std::string tempName = "fT"+std::to_string(floatTempCount);
+                        std::string tempName = "fTEMP"+std::to_string(floatTempCount);
                         tempString.append(tempName);
                     }
                     else {
                         intTempCount++;
-                        std::string tempName = "iT"+std::to_string(intTempCount);
+                        std::string tempName = "iTEMP"+std::to_string(intTempCount);
                         tempString.append(tempName);
                     }
                 }
