@@ -11,7 +11,6 @@ void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
-void labelHandle(ASTnode * AST);
 void print3ac(std::string input);
 void printSrc();
 void build3AC (ASTnode * currentNode);
@@ -32,11 +31,11 @@ std::string tempString = "";
 
 void walkTree (ASTnode * parent)
 {
+    labelHandle(parent);
     for (int i = 0; i < parent->child.size(); i++)
     {
         if (parent->child.size() != 0)
         {
-            labelHandle(parent->child[i]);
             walkTree(parent->child[i]);
         }
         build3AC(parent);
@@ -171,7 +170,8 @@ void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             idNode * id = (idNode *) (AST->child[0]);
-            tempString = id->name;
+            tempString = ""
+            tempString.append(id->name);
             tempString.append(" = ");
             if (AST->child[1]->nodeType == constantN) {
                 constantNode * cons = (constantNode *) (AST->child[1]);
