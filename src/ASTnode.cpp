@@ -335,15 +335,15 @@ class ifNode : public ASTnode {
 
 class functionNode : public ASTnode {
     public:
-    int activationFrameSize;
-    functionNode(std::string productionIn){production = productionIn;}
+        int activationFrameSize;
+        functionNode(std::string productionIn){production = productionIn;}
 
-    std::string printASTnode() {
-        infoString.append(production);
-        infoString.append("\nFRAME SIZE: ");
-        infoString.append(std::to_string(activationFrameSize));
-        return infoString;
-    }
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\nFRAME SIZE: ");
+            infoString.append(std::to_string(activationFrameSize));
+            return infoString;
+        }
 };
 
 class forNode : public ASTnode {
