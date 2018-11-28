@@ -25,6 +25,7 @@ int floatTempCount = 0;
 int forCount = 0;
 int whileCount = 0;
 bool debug = true;
+static int tempCounter = 1;
 extern std::string buffer;
 extern std::string srcFile;
 extern std::string outSrcFile;
@@ -42,38 +43,6 @@ void walkTree (ASTnode * parent)
         }
     }
     build3AC(parent);
-}
-void mathHandle (mathNode * math) {
-    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
-    switch (math->operation) {
-        case addOp:
-            break;
-        case subOp:
-            break;
-        case mulOp:
-            break;
-        case divOp:
-            break;
-        case incOp:
-            break;
-        case decOp:
-            break;
-        case modOp:
-            break;
-        case shlOp:
-            break;
-        case shrOp:
-            break;
-        case andOp:
-            break;
-        case orOp:
-            break;
-        case xorOp:
-            break;
-        case notOp:
-            break;
-    }
-
 }
 
 void labelHandle (ASTnode * AST) {
@@ -121,40 +90,29 @@ void build3AC (ASTnode * currentNode)
     */
     if (currentNode->nodeType == funcN)
     {
-        std::cout << "Function: " << currentNode->production << std::endl;
         // need to know the frame size
         // ticket counter for the function
         // return type?
     }
     else if (currentNode->nodeType == idN)
     {
-        std::cout << "Identifier: " << currentNode->production << std::endl;
         // should just return because will be handled by the operator node
         return;
     }
     else if (currentNode->production.compare("EQUALS") == 0)
     {
         equalHandle(currentNode);
-        std::cout << "Assignment: " << currentNode->production << std::endl;
         // needs to assign "ASSIGN des src"
     }
     else if (currentNode->nodeType == mathN)
     {
-        std::cout << "Found a math node" << std::endl;
         mathNode * math = (mathNode *) currentNode;
         mathHandle(math);
         return;
-        // This side executes before the equals
-        // Create temp var for each operator
-        // T0 = 4
-        // T1 = 5 - T0
-        // T2 = 6 * T1
-        //mathHandle(currentNode); forgot i accidentally killed this whoops :shrug:
     }
     else if (currentNode->nodeType == forN)
     {
-        // create label for iterative statement
-        // label has to go above
+
     }
     else if (currentNode->nodeType == ifN)
     {
@@ -166,7 +124,6 @@ void build3AC (ASTnode * currentNode)
     }
     else if (currentNode->nodeType == constantN)
     {
-        std::cout << "Found a constant node" << std::endl;
 
     }
     else
@@ -183,16 +140,15 @@ void equalHandle(ASTnode * AST) {
             if (AST->child[1]->nodeType == constantN) {
                 idNode * id = (idNode *) (AST->child[0]);
                 tempString = id->name;
-                tempString.append(" = ");
+                tempString.append(" := ");
                 constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
             } else if (AST->child[1]->nodeType == mathN){
                 mathNode * math = (mathNode *) (AST->child[1]);
-                mathHandle(math);
                 idNode * id = (idNode *) (AST->child[0]);
                 tempString = id->name;
-                tempString.append(" = ");
-                std::string test = "iT_"+std::to_string(intTempCount-1);
+                tempString.append(" := ");
+                std::string test = "iT_"+std::to_string(intTempCount);
                 tempString.append(test);
             } else {
                 std::cout << "Some thing else" << std::endl;
@@ -208,10 +164,12 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         constantNode * cons = (constantNode *) (math->child[0]);
         constantHandle(cons);
+        tempString.append(" ");
         tempString.append(math->production);
+        tempString.append(" ");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
@@ -219,10 +177,12 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         test = "iT_"+std::to_string(intTempCount-1);
         tempString.append(test);
+        tempString.append(" ");
         tempString.append(math->production);
+        tempString.append(" ");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
@@ -230,10 +190,12 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         idNode * id = (idNode *) (math->child[0]);
         idHandle(id);
+        tempString.append(" ");
         tempString.append(math->production);
+        tempString.append(" ");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
@@ -241,7 +203,7 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         tempString.append(" ");
@@ -254,7 +216,7 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         idNode * id1 = (idNode *) (math->child[0]);
         idHandle(id1);
         tempString.append(" ");
@@ -267,7 +229,7 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         tempString.append(" ");
@@ -280,7 +242,7 @@ void mathHandle(mathNode * math) {
     {
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" = ");
+        tempString.append(" := ");
         idNode * id2 = (idNode *) (math->child[0]);
         idHandle(id2);
         tempString.append(" ");
