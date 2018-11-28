@@ -11,6 +11,7 @@ void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void mathHandle(mathNode * math);
 void idHandle(idNode * id);
+void ifHandle(ifNode * ifnode);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
 void print3ac(std::string input);
@@ -22,6 +23,7 @@ std::string filename = "3ac.output";
 int currentLineNum = 0;
 int intTempCount = 0;
 int floatTempCount = 0;
+int ifCount = 0;
 int forCount = 0;
 int whileCount = 0;
 bool debug = true;
@@ -117,7 +119,10 @@ void build3AC (ASTnode * currentNode)
     }
     else if (currentNode->nodeType == ifN)
     {
-
+        std::cout << "CUNT" << std::endl;
+        ifNode * ifnode = (ifNode *) currentNode;
+        ifHandle(ifnode);
+        return;
     }
     else if (currentNode->nodeType == whileN)
     {
@@ -264,6 +269,24 @@ void mathHandle(mathNode * math) {
     triACStruct.push_back(tempString);
     tempString = "";
 }
+void ifHandle(ifNode * ifnode) {
+    //LOGIC_OP DST SRC1 SRC2
+    //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
+    ASTnode * logicOp = ifnode->child[0];
+    tempString.append(ifnode->child[0]->production);
+    tempString.append("\t");
+    std::string test = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(test);
+    if (logicOp->child[0]->nodeType == idN && logicOp->child[1]->nodeType == constantN) {
+        idNode * id = (idNode *) logicOp->child[0];
+        tempString.append("\t");
+        tempString.append(id->name);
+        constantNode * cons = (constantNode *) logicOp->child[1];
+        tempString.append("\t");
+        constantHandle(cons);
+    }
+    intTempCount++;
+};
 
 void idHandle(idNode * id) {
     tempString.append(id->name);
@@ -283,8 +306,15 @@ void constantHandle(constantNode * cons) {
     }
     if (cons->production.compare("STRING_LITERAL") == 0) {
         //break each letter up and load the int val of the letter into a temp
-        //then? idk
-        //but def not this lmao
+        //then push onto stack and set value of id on stack table to the addr of 1st
+        //elem of the (int) char array on the stack
+        //
+        // ALERT! see below
+        //
+        //but def not this lmao or maybe mips has store string.
+        //a boi can dream
+        //aparently a boi can dream
+        //https://stackoverflow.com/questions/7969565/mips-how-to-store-user-input-string
         //tempString.append(std::to_string(cons->stringConst));
     }
 }

@@ -10,7 +10,7 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
-enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN};
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN};
 
 class ASTnode {
 public:
@@ -76,7 +76,7 @@ public:
 class declNode : public ASTnode {
     public:
         int offset = 0;
-        declNode(std::string productionIn){production = productionIn;}
+        declNode(std::string productionIn){production = productionIn;nodeType=declN;}
 
         void determineOffset() {
             static int currentOffset = 0;
@@ -120,6 +120,7 @@ class idNode : public ASTnode {
         {
             production = productionIn;
             scope = scopeIn;
+            nodeType = idN;
         }
 
         std::string printASTnode() {
@@ -225,7 +226,7 @@ class idNode : public ASTnode {
 class castNode : public ASTnode {
     public:
         int oldType, newType;
-        castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;}
+        castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;nodeType = castN;}
 
         std::string printASTnode() {
             infoString.append(production);
@@ -278,7 +279,7 @@ class constantNode : public ASTnode {
         char charConst = NULL;
         double doubleConst = NULL;
         std::string stringConst = "";
-        constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn;}
+        constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn; nodeType = constantN;}
 
         std::string printASTnode() {
             if (type == intS) {
@@ -322,7 +323,7 @@ class constantNode : public ASTnode {
 
 class ifNode : public ASTnode {
     public:
-    ifNode(std::string productionIn){production = productionIn;}
+    ifNode(std::string productionIn){production = productionIn;nodeType=ifN;}
 
     std::string printASTnode() {
         infoString.append(production);
@@ -336,7 +337,7 @@ class ifNode : public ASTnode {
 class functionNode : public ASTnode {
     public:
         int activationFrameSize;
-        functionNode(std::string productionIn){production = productionIn;}
+        functionNode(std::string productionIn){production = productionIn;nodeType = funcN;}
 
         std::string printASTnode() {
             infoString.append(production);
@@ -353,6 +354,7 @@ class forNode : public ASTnode {
     forNode(std::string productionIn)
     {
         production = productionIn;
+        nodeType = forN;
     }
 
     // PRINT ASTNODE
@@ -365,7 +367,7 @@ class forNode : public ASTnode {
 
 class whileNode : public ASTnode {
     public:
-    whileNode(std::string productionIn){production = productionIn;}
+    whileNode(std::string productionIn){production = productionIn;nodeType = whileN;}
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
@@ -379,7 +381,7 @@ class exprNode : public ASTnode {
     public:
         enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEpOp,greatEqOp, orOp, andOp, notOp};
         int exprType;
-        exprNode(std::string productionIn){production = productionIn;}
+        exprNode(std::string productionIn){production = productionIn;nodeType=exprN;}
         std::string printASTnode() {
             infoString.append(production);
             infoString.append("\n");
@@ -393,7 +395,7 @@ class mathNode : public ASTnode {
     public:
         enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
         int operation;
-        mathNode(std::string productionIn){production = productionIn;}
+        mathNode(std::string productionIn){production = productionIn;nodeType=mathN;}
         std::string printASTnode() {
             infoString.append(production);
             infoString.append("\n");
