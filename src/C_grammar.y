@@ -20,7 +20,8 @@
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
     extern ASTnode *globalASTnode = new ASTnode("");
-    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+    enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEqOp,greatEqOp, orOp, andOp, notOp};
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
@@ -801,9 +802,9 @@ struct_declaration_list
 init_declarator_list
 	: init_declarator
 		{
-            //ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
-            //tmpNode->addNode($1);
-            $$ = $1;
+            ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
+            tmpNode->addNode($1);
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "init_declarator_list -> init_declarator" << std::endl;
             }
@@ -1135,7 +1136,7 @@ direct_declarator
             lastFuncPair.second->setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
-            if ($3 != NULL) 
+            if ($3 != NULL)
             {
                 tmpNode->addNode($3);
                 $3->sumNode();
@@ -2190,9 +2191,10 @@ logical_or_expression
         }
 	| logical_or_expression OR_OP logical_and_expression
         {
-            ASTnode* tmpNode = new ASTnode("OR_OP");
+            exprNode* tmpNode = new exprNode("OR_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = orOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_or_expression -> logical_or_expression OR_OP logical_and_expression" << std::endl;
@@ -2216,9 +2218,10 @@ logical_and_expression
         }
 	| logical_and_expression AND_OP inclusive_or_expression
         {
-            ASTnode* tmpNode = new ASTnode("AND_OP");
+            exprNode* tmpNode = new exprNode("AND_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = andOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_and_expression -> logical_and_expression AND_OP inclusive_or_expression" << std::endl;
@@ -2308,9 +2311,10 @@ equality_expression
         }
 	| equality_expression EQ_OP relational_expression
         {
-            ASTnode* tmpNode = new ASTnode("EQ_OP");
+            exprNode* tmpNode = new exprNode("EQ_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = eqOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "equality_expression -> equality_expression EQ_OP relational_expression" << std::endl;
@@ -2321,9 +2325,10 @@ equality_expression
         }
 	| equality_expression NE_OP relational_expression
 		{
-            ASTnode* tmpNode = new ASTnode("NE_OP");
+            exprNode* tmpNode = new exprNode("NE_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = notEqOp;
             $$ = tmpNode;
 			if (printProductions) {
 				std::cout << "equality_expression -> equality_expression NE_OP relational_expression" << std::endl;
@@ -2347,9 +2352,10 @@ relational_expression
         }
 	| relational_expression LESS_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("LESS_OP");
+            exprNode * tmpNode = new exprNode("LESS_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = lessOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LESS_OP shift_expression" << std::endl;
@@ -2360,9 +2366,10 @@ relational_expression
         }
 	| relational_expression GREAT_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("GREAT_OP");
+            exprNode* tmpNode = new exprNode("GREAT_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = greatOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GREAT_OP shift_expression" << std::endl;
@@ -2373,9 +2380,10 @@ relational_expression
         }
 	| relational_expression LE_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("LE_OP");
+            exprNode* tmpNode = new exprNode("LE_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = lessEqOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LE_OP shift_expression" << std::endl;
@@ -2386,9 +2394,10 @@ relational_expression
         }
 	| relational_expression GE_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("GE_OP");
+            exprNode* tmpNode = new exprNode("GE_OP");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = greatEqOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GE_OP shift_expression" << std::endl;
@@ -2981,7 +2990,7 @@ identifier
             if (printFile) {
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
-            
+
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
             tmpNode -> nodeType = idN;
             tmpNode->name = yytext;
@@ -3088,7 +3097,7 @@ int main (int argc, char** argv)
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
-  
+
   //  astFileP << "";
   astFileP.close();
   fileP.close();
