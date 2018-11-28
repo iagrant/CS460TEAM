@@ -13,10 +13,10 @@ void mathHandle(mathNode * math);
 void idHandle(idNode * id);
 void equalHandle(ASTnode * AST);
 void constantHandle(constantNode * cons);
-void labelHandle(ASTnode * AST);
 void print3ac(std::string input);
 void printSrc();
 void build3AC (ASTnode * currentNode);
+void labelHandle (ASTnode * AST);
 
 std::string filename = "3ac.output";
 int currentLineNum = 0;
@@ -33,16 +33,49 @@ std::string tempString = "";
 
 void walkTree (ASTnode * parent)
 {
+    labelHandle(parent);
     for (int i = 0; i < parent->child.size(); i++)
     {
         if (parent->child.size() != 0)
         {
-            labelHandle(parent->child[i]);
             walkTree(parent->child[i]);
         }
     }
     build3AC(parent);
 }
+void mathHandle (mathNode * math) {
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+    switch (math->operation) {
+        case addOp:
+            break;
+        case subOp:
+            break;
+        case mulOp:
+            break;
+        case divOp:
+            break;
+        case incOp:
+            break;
+        case decOp:
+            break;
+        case modOp:
+            break;
+        case shlOp:
+            break;
+        case shrOp:
+            break;
+        case andOp:
+            break;
+        case orOp:
+            break;
+        case xorOp:
+            break;
+        case notOp:
+            break;
+    }
+
+}
+
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
@@ -76,6 +109,7 @@ void labelHandle (ASTnode * AST) {
             }
     }
 }
+
 // This function just does what it needs and then returns
 void build3AC (ASTnode * currentNode)
 {
@@ -142,6 +176,7 @@ void build3AC (ASTnode * currentNode)
 void functionHandle(ASTnode * AST) {
     //might kill this moved entire thing into labelHandle
 }
+
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
