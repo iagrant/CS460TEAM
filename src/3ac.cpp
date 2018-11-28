@@ -138,20 +138,25 @@ void functionHandle(ASTnode * AST) {
     tempString.append(std::to_string(func->activationFrameSize));
 }
 
+// ASSIGN DST SRC
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             if (AST->child[1]->nodeType == constantN) {
+                tempString.append("ASSIGN");
+                tempString.append("\t");
                 idNode * id = (idNode *) (AST->child[0]);
-                tempString = id->name;
-                tempString.append(" := ");
+                tempString.append(id->name);
+                tempString.append("\t");
                 constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
             } else if (AST->child[1]->nodeType == mathN){
+                tempString.append("ASSIGN");
+                tempString.append("\t");
                 mathNode * math = (mathNode *) (AST->child[1]);
                 idNode * id = (idNode *) (AST->child[0]);
-                tempString = id->name;
-                tempString.append(" := ");
+                tempString.append(id->name);
+                tempString.append("\t");
                 std::string test = "iT_"+std::to_string(intTempCount);
                 tempString.append(test);
             } else {
@@ -166,92 +171,92 @@ void equalHandle(ASTnode * AST) {
 void mathHandle(mathNode * math) {
     if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == mathN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
+        tempString.append("\t");
         constantNode * cons = (constantNode *) (math->child[0]);
         constantHandle(cons);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
     } else if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == mathN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
         test = "iT_"+std::to_string(intTempCount-1);
+        tempString.append("\t");
         tempString.append(test);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
     } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == mathN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
+        tempString.append("\t");
         idNode * id = (idNode *) (math->child[0]);
         idHandle(id);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         test = "iT_"+std::to_string(intTempCount);
         tempString.append(test);
         intTempCount++;
     } else if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == constantN)
     {
-        std::string test = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(test);
-        tempString.append(" := ");
-        constantNode * cons1 = (constantNode *) (math->child[0]);
-        constantHandle(cons1);
-        tempString.append(" ");
         tempString.append(math->production);
-        tempString.append(" ");
+        std::string test = "iT_"+std::to_string(intTempCount+1);
+        tempString.append("\t");
+        tempString.append(test);
+        constantNode * cons1 = (constantNode *) (math->child[0]);
+        tempString.append("\t");
+        constantHandle(cons1);
+        tempString.append("\t");
         constantNode * cons2 = (constantNode *) (math->child[1]);
         constantHandle(cons2);
         intTempCount++;
     } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == idN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
+        tempString.append("\t");
         idNode * id1 = (idNode *) (math->child[0]);
         idHandle(id1);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         idNode * id2 = (idNode *) (math->child[1]);
         idHandle(id2);
         intTempCount++;
     } else if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == idN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
+        tempString.append("\t");
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         idNode * id2 = (idNode *) (math->child[1]);
         idHandle(id2);
         intTempCount++;
     } else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == constantN)
     {
+        tempString.append(math->production);
+        tempString.append("\t");
         std::string test = "iT_"+std::to_string(intTempCount+1);
         tempString.append(test);
-        tempString.append(" := ");
+        tempString.append("\t");
         idNode * id2 = (idNode *) (math->child[0]);
         idHandle(id2);
-        tempString.append(" ");
-        tempString.append(math->production);
-        tempString.append(" ");
+        tempString.append("\t");
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;

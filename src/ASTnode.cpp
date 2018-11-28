@@ -95,7 +95,7 @@ class declNode : public ASTnode {
                     size += 1;
                     break;
                 default:
-                    std::cout << "Ya fucked up" << std::endl;
+                    std::cout << "Ya messed up ya offset" << std::endl;
             }
         }
 
