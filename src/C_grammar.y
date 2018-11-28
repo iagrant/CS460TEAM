@@ -2325,7 +2325,7 @@ equality_expression
         }
 	| equality_expression NE_OP relational_expression
 		{
-            exprNode* tmpNode = new exprNode("NE_OP");
+            exprNode* tmpNode = new exprNode("NE");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = notEqOp;
@@ -2352,7 +2352,7 @@ relational_expression
         }
 	| relational_expression LESS_OP shift_expression
         {
-            exprNode * tmpNode = new exprNode("LESS_OP");
+            exprNode * tmpNode = new exprNode("LT");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = lessOp;
@@ -2366,7 +2366,7 @@ relational_expression
         }
 	| relational_expression GREAT_OP shift_expression
         {
-            exprNode* tmpNode = new exprNode("GREAT_OP");
+            exprNode* tmpNode = new exprNode("GT");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = greatOp;
@@ -2380,7 +2380,7 @@ relational_expression
         }
 	| relational_expression LE_OP shift_expression
         {
-            exprNode* tmpNode = new exprNode("LE_OP");
+            exprNode* tmpNode = new exprNode("LE");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = lessEqOp;
@@ -2394,7 +2394,7 @@ relational_expression
         }
 	| relational_expression GE_OP shift_expression
         {
-            exprNode* tmpNode = new exprNode("GE_OP");
+            exprNode* tmpNode = new exprNode("GE");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = greatEqOp;
@@ -2452,7 +2452,7 @@ additive_expression
         }
 	| additive_expression PLUS multiplicative_expression
         {
-            mathNode *tmpNode = new mathNode("+");
+            mathNode *tmpNode = new mathNode("ADD");
             tmpNode -> nodeType = mathN;
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
@@ -2476,7 +2476,7 @@ additive_expression
         }
 	| additive_expression MINUS multiplicative_expression
         {
-            mathNode *tmpNode = new mathNode("-");
+            mathNode *tmpNode = new mathNode("SUB");
             tmpNode -> nodeType = mathN;
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
@@ -2513,7 +2513,7 @@ multiplicative_expression
         }
 	| multiplicative_expression STAR cast_expression
         {
-            mathNode *tmpNode = new mathNode("*");
+            mathNode *tmpNode = new mathNode("MUL");
             tmpNode -> nodeType = mathN;
             tmpNode -> operation = mulOp;
             tmpNode -> lineNum = lineNum;
@@ -2537,7 +2537,7 @@ multiplicative_expression
         }
 	| multiplicative_expression FORSLASH cast_expression
         {
-            mathNode *tmpNode = new mathNode("/");
+            mathNode *tmpNode = new mathNode("DIV");
             tmpNode -> nodeType = mathN;
             tmpNode -> operation = divOp;
             tmpNode -> lineNum = lineNum;
@@ -2561,7 +2561,7 @@ multiplicative_expression
         }
 	| multiplicative_expression PERCENT cast_expression
         {
-            mathNode *tmpNode = new mathNode("%");
+            mathNode *tmpNode = new mathNode("MOD");
             tmpNode -> nodeType = mathN;
             tmpNode -> operation = modOp;
             tmpNode -> lineNum = lineNum;
@@ -2619,7 +2619,7 @@ unary_expression
         }
 	| INC_OP unary_expression
         {
-            mathNode *tmpNode = new mathNode("++");
+            mathNode *tmpNode = new mathNode("INC");
             tmpNode -> nodeType = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = incOp;
@@ -2633,7 +2633,7 @@ unary_expression
         }
 	| DEC_OP unary_expression
         {
-            mathNode *tmpNode = new mathNode("--");
+            mathNode *tmpNode = new mathNode("DEC");
             tmpNode -> nodeType = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = decOp;
