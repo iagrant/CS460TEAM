@@ -81,6 +81,7 @@ void labelHandle (ASTnode * AST) {
             idNode * id = (idNode *) (AST->child[0]);
             tempString = "";
             tempString.append(id->name.append(":"));
+            functionHandle(AST);
             triACStruct.push_back(tempString);
             tempString = "";
             break;
@@ -164,34 +165,21 @@ void build3AC (ASTnode * currentNode)
 
 void functionHandle(ASTnode * AST) {
     //might kill this moved entire thing into labelHandle
+    functionNode * func = (functionNode *) AST;
+    tempString.append(" ");
+    tempString.append(std::to_string(func->activationFrameSize));
 }
 
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             idNode * id = (idNode *) (AST->child[0]);
-            tempString = ""
+            tempString = "";
             tempString.append(id->name);
             tempString.append(" = ");
             if (AST->child[1]->nodeType == constantN) {
                 constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
-            }
-            if (AST->child.size() > 2) {
-                if (AST->child[2]->nodeType == mathN) {
-                    mathNode * math = (mathNode *) (AST->child[2]);
-                    tempString.append(math->production);
-                    if (math->typeSpec == floatS || math->typeSpec == doubleS){
-                        intTempCount++;
-                        std::string tempName = "fTEMP"+std::to_string(floatTempCount);
-                        tempString.append(tempName);
-                    }
-                    else {
-                        intTempCount++;
-                        std::string tempName = "iTEMP"+std::to_string(intTempCount);
-                        tempString.append(tempName);
-                    }
-                }
             }
         }
         triACStruct.push_back(tempString);
