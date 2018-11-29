@@ -290,7 +290,7 @@ function_definition
 		{
             //posisble spot to pop scope in this whole block
             functionNode *tmpNode = new functionNode("FUNCTION");
-            //tmpNode -> nodeType = funcN;
+            //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
@@ -304,7 +304,7 @@ function_definition
 	| declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
-            //tmpNode -> nodeType = funcN;
+            //tmpNode -> d = funcN;
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -320,7 +320,7 @@ function_definition
 	| declaration_specifiers declarator compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
-            //tmpNode -> nodeType = funcN;
+            //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->activationFrameSize += $2->size;
@@ -337,7 +337,7 @@ function_definition
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
-            //tmpNode -> nodeType = funcN;
+            //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
@@ -2453,7 +2453,7 @@ additive_expression
 	| additive_expression PLUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("ADD");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2477,7 +2477,7 @@ additive_expression
 	| additive_expression MINUS multiplicative_expression
         {
             mathNode *tmpNode = new mathNode("SUB");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2514,7 +2514,7 @@ multiplicative_expression
 	| multiplicative_expression STAR cast_expression
         {
             mathNode *tmpNode = new mathNode("MUL");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> operation = mulOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2538,7 +2538,7 @@ multiplicative_expression
 	| multiplicative_expression FORSLASH cast_expression
         {
             mathNode *tmpNode = new mathNode("DIV");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> operation = divOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2562,7 +2562,7 @@ multiplicative_expression
 	| multiplicative_expression PERCENT cast_expression
         {
             mathNode *tmpNode = new mathNode("MOD");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> operation = modOp;
             tmpNode -> lineNum = lineNum;
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
@@ -2620,7 +2620,7 @@ unary_expression
 	| INC_OP unary_expression
         {
             mathNode *tmpNode = new mathNode("INC");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = incOp;
             $$ = tmpNode;
@@ -2634,7 +2634,7 @@ unary_expression
 	| DEC_OP unary_expression
         {
             mathNode *tmpNode = new mathNode("DEC");
-            //tmpNode -> nodeType = mathN;
+            //tmpNode -> d = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = decOp;
             $$ = tmpNode;
@@ -2894,7 +2894,7 @@ constant
 	: INTEGER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("INTEGER_CONSTANT", intS);
-            //tmpNode -> nodeType = constantN;
+            //tmpNode -> d = constantN;
             tmpNode->intConst = std::stoi(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = intS;
@@ -2909,7 +2909,7 @@ constant
 	| CHARACTER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
-            //tmpNode -> nodeType = constantN;
+            //tmpNode -> d = constantN;
             tmpNode->charConst = yytext[1];
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = charS;
@@ -2924,7 +2924,7 @@ constant
 	| FLOATING_CONSTANT
         {
             constantNode *tmpNode = new constantNode("FLOATING_CONSTANT", doubleS);
-            //tmpNode -> nodeType = constantN;
+            //tmpNode -> d = constantN;
             tmpNode->doubleConst = std::stof(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = doubleS;
@@ -2951,7 +2951,7 @@ string
 	: STRING_LITERAL
         {
             constantNode *tmpNode = new constantNode("STRING_LITERAL", stringS);
-            //tmpNode -> nodeType = constantN;
+            //tmpNode -> d = constantN;
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
@@ -2992,7 +2992,7 @@ identifier
             }
 
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
-            //tmpNode -> nodeType = idN;
+            //tmpNode -> d = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             std::string searchName = yytext + '\0';
