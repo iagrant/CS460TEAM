@@ -307,35 +307,53 @@ void mathHandle(mathNode * math) {
     tempString = "";
 }
 void ifHandleTop(ifNode * ifnode) {
-    //LOGIC_OP DST SRC1 SRC2
-    //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
-
-    std::cout << "CUNT" << std::endl;
-    exprNode * expr = (exprNode *) ifnode->child[0];
-    exprHandle(expr);
-
-    ASTnode * logicOp = ifnode->child[0];
-    tempString.append("BREQ");
-    tempString.append("\t");
-    tempString.append("IF_"+std::to_string(ifCount));
-    tempString.append("\t");
-    tempString.append("iT_"+std::to_string(intTempCount));
-    tempString.append("\t");
-    tempString.append("0");
+    //BRANCHES in MIPS the label comes last
+    //BREQ SRC1 SRC2 LABEL
+    if (ifnode->child[0]->nodeType ==constantN) {
+        tempString.append("BREQ");
+        tempString.append("\t");
+        constantNode * cons = (constantNode *) (ifnode->child[0]);
+        constantHandle(cons);
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("FI_"+std::to_string(ifCount));
+    }
+    else {
+        exprNode * expr = (exprNode *) ifnode->child[0];
+        exprHandle(expr);
+        ASTnode * logicOp = ifnode->child[0];
+        tempString.append("BREQ");
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount));
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("FI_"+std::to_string(ifCount));
+    }
+    //uncomment for nested if fix
+    //tho breaks concurent ifs
+    //ifCount++;
     triACStruct.push_back(tempString);
     tempString = "";
 };
 
 void ifHandleBot(ifNode * ifnode) {
-    tempString.append("IF"+std::to_string(ifCount)+":");
+    //uncomment for nested if fix
+    //tho breaks concurent ifs
+    //tempString.append("IF_"+std::to_string(ifCount-1)+":");
+    tempString.append("FI_"+std::to_string(ifCount)+":");
     triACStruct.push_back(tempString);
-    tempString = "";
     ifCount++;
+    tempString = "";
 };
 void idHandle(idNode * id) {
     tempString.append(id->name);
 }
 void exprHandle(exprNode * expr){
+    //LOGIC_OP DST SRC1 SRC2
+    //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
+    //1 if SRC 1 < SRC2 else 0
     tempString.append(expr->production);
     tempString.append("\t");
     std::string tempReg = "iT_"+std::to_string(intTempCount+1);
@@ -348,11 +366,62 @@ void exprHandle(exprNode * expr){
         tempString.append("\t");
         constantHandle(cons);
     }
+    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
+        constantNode * cons = (constantNode *) expr->child[0];
+        tempString.append("\t");
+        constantHandle(cons);
+        idNode * id = (idNode *) expr->child[1];
+        tempString.append("\t");
+        tempString.append(id->name);
+    }
+    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
+        constantNode * cons = (constantNode *) expr->child[0];
+        tempString.append("\t");
+        constantHandle(cons);
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount));
+    }
+    else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
+        tempString.append("\t");
+        tempReg = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(tempReg);
+        tempReg = "iT_"+std::to_string(intTempCount-1);
+        tempString.append("\t");
+        tempString.append(tempReg);
+        tempString.append("\t");
+        tempReg = "iT_"+std::to_string(intTempCount);
+        tempString.append(tempReg);
+    }
+    else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == exprN){
+        idNode * id = (idNode *) expr->child[0];
+        tempString.append("\t");
+        tempString.append(id->name);
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount+1));
+    }
+    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN){
+        constantNode * cons = (constantNode *) expr->child[0];
+        tempString.append("\t");
+        constantHandle(cons);
+        cons = (constantNode *) expr->child[1];
+        tempString.append("\t");
+        constantHandle(cons);
+    }
+    else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == idN) {
+        idNode * id = (idNode *) expr->child[0];
+        tempString.append("\t");
+        tempString.append(id->name);
+        id = (idNode *) expr->child[1];
+        tempString.append("\t");
+        tempString.append(id->name);
+    }
     triACStruct.push_back(tempString);
     tempString="";
     intTempCount++;
 };
 void constantHandle(constantNode * cons) {
+    //FIXME add cons or fcons infront of it
+    //to desinate between int const and float const
     //prbly won't use this lol
     if (cons->intConst != NULL) {
         tempString.append(std::to_string(cons->intConst));
