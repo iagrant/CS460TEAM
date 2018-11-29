@@ -354,11 +354,11 @@ void exprHandle(exprNode * expr){
     //LOGIC_OP DST SRC1 SRC2
     //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
     //1 if SRC 1 < SRC2 else 0
+    if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == constantN) {
     tempString.append(expr->production);
     tempString.append("\t");
     std::string tempReg = "iT_"+std::to_string(intTempCount+1);
     tempString.append(tempReg);
-    if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == constantN) {
         idNode * id = (idNode *) expr->child[0];
         tempString.append("\t");
         tempString.append(id->name);
@@ -367,6 +367,10 @@ void exprHandle(exprNode * expr){
         constantHandle(cons);
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         constantNode * cons = (constantNode *) expr->child[0];
         tempString.append("\t");
         constantHandle(cons);
@@ -375,6 +379,12 @@ void exprHandle(exprNode * expr){
         tempString.append(id->name);
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
+        exprNode * expr1 = (exprNode *) expr->child[1];
+        exprHandle(expr1);
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         constantNode * cons = (constantNode *) expr->child[0];
         tempString.append("\t");
         constantHandle(cons);
@@ -382,17 +392,28 @@ void exprHandle(exprNode * expr){
         tempString.append("iT_"+std::to_string(intTempCount));
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
+        exprNode * expr1 = (exprNode *) expr->child[0];
+        exprHandle(expr1);
+        exprNode * expr2 = (exprNode *) expr->child[1];
+        exprHandle(expr2);
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
         tempReg = "iT_"+std::to_string(intTempCount-1);
-        tempString.append("\t");
         tempString.append(tempReg);
         tempString.append("\t");
         tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == exprN){
+        exprNode * expr1 = (exprNode *) expr->child[1];
+        exprHandle(expr1);
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         idNode * id = (idNode *) expr->child[0];
         tempString.append("\t");
         tempString.append(id->name);
@@ -400,6 +421,10 @@ void exprHandle(exprNode * expr){
         tempString.append("iT_"+std::to_string(intTempCount+1));
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN){
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         constantNode * cons = (constantNode *) expr->child[0];
         tempString.append("\t");
         constantHandle(cons);
@@ -408,6 +433,10 @@ void exprHandle(exprNode * expr){
         constantHandle(cons);
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == idN) {
+    tempString.append(expr->production);
+    tempString.append("\t");
+    std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+    tempString.append(tempReg);
         idNode * id = (idNode *) expr->child[0];
         tempString.append("\t");
         tempString.append(id->name);
