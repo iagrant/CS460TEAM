@@ -443,7 +443,7 @@ void exprHandle(exprNode * expr){
         tempString.append(tempReg);
         tempString.append("\t");
         tempString.append("iT_"+std::to_string(intTempCount));
-        constantNode * cons = (constantNode *) expr->child[0];
+        constantNode * cons = (constantNode *) expr->child[1];
         tempString.append("\t");
         constantHandle(cons);
     }
@@ -485,7 +485,7 @@ void exprHandle(exprNode * expr){
         tempString.append(tempReg);
         tempString.append("\t");
         tempString.append("iT_"+std::to_string(intTempCount+1));
-        idNode * id = (idNode *) expr->child[0];
+        idNode * id = (idNode *) expr->child[1];
         tempString.append("\t");
         tempString.append(id->name);
     }
