@@ -859,6 +859,7 @@ init_declarator
 	| declarator EQUALS initializer
 		{
             ASTnode *tmpNode = new ASTnode("EQUALS");
+            tmpNode -> lineNum = lineNum;
 
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
             {
@@ -1784,6 +1785,7 @@ selection_statement
 	| IF OPEN expression CLOSE statement ELSE statement
         {
             ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT");
+            parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             parentNode->addNode($7);
@@ -1810,6 +1812,7 @@ iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
             whileNode *tmpNode = new whileNode("WHILE");
+            tmpNode->lineNum = $3->lineNum;
             tmpNode -> addNode($3);
             if ($5 != NULL)
                 tmpNode -> addNode($5);
@@ -1825,6 +1828,7 @@ iteration_statement
         {
             whileNode *iterNode = new whileNode("DO WHILE");
             if ($2 != NULL)
+                iterNode->lineNum = $2->lineNum;
                 iterNode->addNode($2);
             iterNode->addNode($5);
             $$ = iterNode;
@@ -2045,6 +2049,7 @@ assignment_expression
 	| unary_expression assignment_operator assignment_expression
         {
             ASTnode *assignmentNode = new ASTnode("ASSIGNMENT_EXPRESSION");
+            assignmentNode -> lineNum = lineNum;
 
             if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
             {
@@ -2240,6 +2245,7 @@ logical_or_expression
 	| logical_or_expression OR_OP logical_and_expression
         {
             exprNode* tmpNode = new exprNode("OR_OP");
+            tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = orOp;
@@ -2267,6 +2273,7 @@ logical_and_expression
 	| logical_and_expression AND_OP inclusive_or_expression
         {
             exprNode* tmpNode = new exprNode("AND_OP");
+            tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = andOp;

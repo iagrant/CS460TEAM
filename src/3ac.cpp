@@ -101,12 +101,6 @@ void labelHandle (ASTnode * AST) {
 // This function just does what it needs and then returns
 void build3ACBot (ASTnode * currentNode)
 {
-    /*  FIXME kindof work but mostly no work lol
-    if (currentNode->lineNum != currentLineNum && currentNode->lineNum != -1){
-        currentLineNum=AST->lineNum;
-        printSrc();
-    }
-    */
     if (currentNode->nodeType == funcN)
     {
         // need to know the frame size
@@ -155,13 +149,12 @@ void build3ACBot (ASTnode * currentNode)
         return;
 }
 void build3ACTop (ASTnode * currentNode){
-    labelHandle(currentNode);
-    /*  FIXME kindof work but mostly no work lol
+    //  FIXME kindof work but mostly no work lol
     if (currentNode->lineNum != currentLineNum && currentNode->lineNum != -1){
-        currentLineNum=AST->lineNum;
+        currentLineNum=currentNode->lineNum;
         printSrc();
     }
-    */
+    labelHandle(currentNode);
     if (currentNode->nodeType == funcN)
     {
         // ticket counter for the function
@@ -408,7 +401,7 @@ void equalHandle(ASTnode * AST) {
         }
         // ARRAY ASIGNMENT
         else if (AST->child[0]->production.compare("ARRAY_NODE") == 0 && AST->child[1]->nodeType != mathN) {
-            arrayHandleBottom(AST);       
+            arrayHandleBottom(AST);
         }
         else if (AST->child[1]->nodeType == mathN) {
             tempString = "";
@@ -565,7 +558,7 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
-        
+
     }
     if (math->operation == incOp) {
         //inc by 1
