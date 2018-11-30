@@ -27,6 +27,7 @@ void labelHandle (ASTnode * AST);
 std::string filename = "3ac.output";
 int currentLineNum = 0;
 int intTempCount = 0;
+int last;
 int floatTempCount = 0;
 int ifCount = 0;
 int forCount = 0;
@@ -157,6 +158,60 @@ void build3ACTop (ASTnode * currentNode){
     {
         // should just return because will be handled by the operator node
     }
+    else if (currentNode->production.compare("EQUALS") == 0) {
+        if (currentNode->child[0]->nodeType == arrayN && currentNode->child[1]->nodeType == mathN) {
+            arrayNode * arr = (arrayNode *) currentNode->child[0];
+            // ADDR OF ID
+            tempString.append("ADDR");
+            tempString.append("\t");
+            std::string tempReg = "iT_"+std::to_string(intTempCount);
+            intTempCount++;
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempString.append(arr->id);
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // ASSIGN INDEX
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            intTempCount++;
+            tempString.append(tempReg);
+            tempString.append("\t");
+            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+            tempString.append(std::to_string(tmp->intConst));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // MULT INDEX TYPESPEC
+            tempString.append("MULT");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            tempString.append(tempReg);
+            intTempCount++;
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-2);
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // ADD ADDR LASTMULT
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            tempString.append(tempReg);
+            last = intTempCount;
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-4);
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-2);
+            tempString.append(tempReg);
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+    }
     else if (currentNode->nodeType == forN)
     {
 
@@ -205,6 +260,77 @@ void equalHandle(ASTnode * AST) {
                 tempString.append(tempReg);
             } else {
             }
+        }
+        // ARRAY ASIGNMENT
+        else if (AST->child[0]->production.compare("ARRAY_NODE") == 0 && AST->child[1]->nodeType != mathN) {
+            arrayNode * arr = (arrayNode *) AST->child[0];
+            // ADDR OF ID
+            tempString.append("ADDR");
+            tempString.append("\t");
+            std::string tempReg = "iT_"+std::to_string(intTempCount);
+            intTempCount++;
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempString.append(arr->id);
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // ASSIGN INDEX
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            intTempCount++;
+            tempString.append(tempReg);
+            tempString.append("\t");
+            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+            tempString.append(std::to_string(tmp->intConst));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // MULT INDEX TYPESPEC
+            tempString.append("MULT");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            tempString.append(tempReg);
+            intTempCount++;
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-2);
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // ADD ADDR LASTMULT
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount);
+            tempString.append(tempReg);
+            intTempCount++;
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-4);
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempReg = "iT_"+std::to_string(intTempCount-2);
+            tempString.append(tempReg);
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // ASSIGN VALUE O(LASTSUM)
+            // RHS OF EQ IS CONSTANT VALUE
+            if (AST->child[1]->nodeType == constantN) {
+                tempString.append("ASSIGN");
+                tempString.append("\t");
+                constantNode * val = (constantNode *) AST->child[1];
+                tempString.append(std::to_string(val->intConst));
+            }
+            
+        }
+        else if (AST->child[1]->nodeType == mathN) {
+            tempString = "";
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            std::string tempReg = "iT_"+std::to_string(intTempCount);
+            tempString.append(tempReg);
+            tempString.append("\t");
+            tempReg = "O(iT_"+std::to_string(last)+")";
+            tempString.append(tempReg);
         }
     }
     triACStruct.push_back(tempString);
