@@ -657,7 +657,7 @@ void mathHandle(mathNode * math) {
     } else if (math->child[0]->nodeType == constantN && 
                math->child[1]->nodeType == arrayN)
     {
-        arrayNode * arr = (arrayNode *) math->child[0];
+        arrayNode * arr = (arrayNode *) math->child[1];
         arrayGetHandle(arr);
         tempString.append(math->production);
         tempString.append("\t");
@@ -667,13 +667,13 @@ void mathHandle(mathNode * math) {
         tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
-        constantNode * cons1 = (constantNode *) (math->child[1]);
+        constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == arrayN && 
-               math->child[1]->nodeType == idN)
+    } else if (math->child[0]->nodeType == idN && 
+               math->child[1]->nodeType == arrayN)
     {
-        arrayNode * arr = (arrayNode *) math->child[0];
+        arrayNode * arr = (arrayNode *) math->child[1];
         arrayGetHandle(arr);
         tempString.append(math->production);
         tempString.append("\t");
@@ -683,7 +683,7 @@ void mathHandle(mathNode * math) {
         tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
-        idNode * id1 = (idNode *) (math->child[1]);
+        idNode * id1 = (idNode *) (math->child[0]);
         idHandle(id1);
         intTempCount++;
     }
