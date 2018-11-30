@@ -63,4 +63,10 @@ the contents of the symbol table.
 ./fcc -i foo.c -dp -ds
 ```
 
+
+**For 3ac testing use the following path test/3ac/.**
+```
+./fcc -i tests/3ac/math.c
+```
+
 To find out more information on how to build and run our compiler, visit the wiki: [Semantics Wiki](https://github.com/iagrant/CS460TEAM/wiki)
