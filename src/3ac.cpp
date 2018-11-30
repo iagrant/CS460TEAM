@@ -202,10 +202,10 @@ void build3ACTop (ASTnode * currentNode){
             tempString.append(tempReg);
             last = intTempCount;
             tempString.append("\t");
-            tempReg = "iT_"+std::to_string(intTempCount-4);
+            tempReg = "iT_"+std::to_string(intTempCount-1);
             tempString.append(tempReg);
             tempString.append("\t");
-            tempReg = "iT_"+std::to_string(intTempCount-2);
+            tempReg = "iT_"+std::to_string(intTempCount-3);
             tempString.append(tempReg);
             triACStruct.push_back(tempString);
             tempString = "";
@@ -429,6 +429,20 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
+    } else if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == constantN)
+    {
+        tempString.append(math->production);
+        tempString.append("\t");
+        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(tempReg);
+        tempString.append("\t");
+        tempReg = "iT_"+std::to_string(intTempCount);
+        tempString.append(tempReg);
+        tempString.append("\t");
+        constantNode * cons1 = (constantNode *) (math->child[1]);
+        constantHandle(cons1);
+        intTempCount++;
+        
     }
     triACStruct.push_back(tempString);
     tempString = "";
