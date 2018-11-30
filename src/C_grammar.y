@@ -1141,7 +1141,6 @@ direct_declarator
                         idNode * tmpNode = (idNode *)$1;
                         sizeNode->id = tmpNode->name;
                         sizeNode->typeSpec = tmpNode->typeSpec;
-                        std::cout << "TYPE" << tmpNode->typeSpec << std::endl;
                     }
                     sizeNode->size *= tmpNode->intConst * sizeNode->determineOffset();
                     $$ = sizeNode;
