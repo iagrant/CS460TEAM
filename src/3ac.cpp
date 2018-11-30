@@ -13,6 +13,8 @@ void mathHandle(mathNode * math);
 void idHandle(idNode * id);
 void ifHandleTop(ifNode * ifnode);
 void ifHandleBot(ifNode * ifnode);
+void whileHandleTop(whileNode * wNode);
+void whileHandleBot(whileNode * wNode);
 void equalHandle(ASTnode * AST);
 void exprHandle(exprNode * expr);
 void constantHandle(constantNode * cons);
@@ -202,7 +204,6 @@ void equalHandle(ASTnode * AST) {
                 std::string tempReg = "iT_"+std::to_string(intTempCount);
                 tempString.append(tempReg);
             } else {
-                std::cout << "Some thing else" << std::endl;
             }
         }
     }
@@ -350,6 +351,8 @@ void ifHandleBot(ifNode * ifnode) {
 void idHandle(idNode * id) {
     tempString.append(id->name);
 }
+//{{{
+
 void exprHandle(exprNode * expr){
     //LOGIC_OP DST SRC1 SRC2
     //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
@@ -448,6 +451,7 @@ void exprHandle(exprNode * expr){
     tempString="";
     intTempCount++;
 };
+//}}}
 void constantHandle(constantNode * cons) {
     //FIXME add cons or fcons infront of it
     //to desinate between int const and float const
@@ -477,6 +481,55 @@ void constantHandle(constantNode * cons) {
     }
 }
 
+void whileHandleTop(whileNode * whilenode) {
+    tempString.append("BEGWHILE_"+std::to_string(whileCount));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    //BRANCHES in MIPS the label comes last
+    //BREQ SRC1 SRC2 LABEL
+    if (whilenode->child[0]->nodeType ==constantN) {
+        tempString.append("BREQ");
+        tempString.append("\t");
+        constantNode * cons = (constantNode *) (whilenode->child[0]);
+        constantHandle(cons);
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("ENDWHILE_"+std::to_string(whileCount));
+    }
+    else {
+        exprNode * expr = (exprNode *) whilenode->child[0];
+        exprHandle(expr);
+        ASTnode * logicOp = whilenode->child[0];
+        tempString.append("BREQ");
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount));
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("ENDWHILE_"+std::to_string(whileCount));
+    }
+    //uncomment for nested while fix
+    //tho breaks concurent whiles
+    //whileCount++;
+    triACStruct.push_back(tempString);
+    tempString = "";
+};
+
+void whileHandleBot(whileNode * whilenode) {
+    //uncomment for nested while fix
+    //tho breaks concurent whiles
+    //tempString.append("IF_"+std::to_string(whileCount-1)+":");
+    tempString.append("BR");
+    tempString.append("\t");
+    tempString.append("BEGWHILE_"+std::to_string(whileCount)+":");
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempString.append("ENDWHILE_"+std::to_string(whileCount)+":");
+    triACStruct.push_back(tempString);
+    tempString = "";
+    whileCount++;
+};
 //change this from printing to adding src code lines to triACStruct
 void printSrc () {
     std::ifstream srcFileP(srcFile);

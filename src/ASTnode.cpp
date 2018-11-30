@@ -10,7 +10,7 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
-enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN};
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN};
 
 class ASTnode {
 public:
@@ -20,7 +20,8 @@ public:
     int nodeType = genericN;
     int printLabel;
     int lineNum = -1;
-    int size = 0;
+    int size = 1;
+    bool isArray = false;
 
     int signedB;
     int storageSpec;
@@ -70,6 +71,23 @@ public:
         for (int i = 0; i < child.size(); i++) {
             size += child[i]->size;
         }
+        size += -1;
+    }
+
+
+    int determineOffset() {
+        static int currentOffset = 0;
+        switch(typeSpec) {
+            case intS: case longS: case shortS: case floatS:
+                currentOffset += 4;
+                return 4;
+            case doubleS:
+                currentOffset += 8;
+                return 8;
+            case charS:
+                currentOffset += 1;
+                return 1;
+        }
     }
 };
 
@@ -94,8 +112,6 @@ class declNode : public ASTnode {
                     currentOffset += 1;
                     size += 1;
                     break;
-                default:
-                    std::cout << "Ya messed up ya offset" << std::endl;
             }
         }
 
@@ -103,8 +119,6 @@ class declNode : public ASTnode {
             infoString.append(production);
             infoString.append("\nSIZE: ");
             infoString.append(std::to_string(size));
-            infoString.append("\nOFFSET: ");
-            infoString.append(std::to_string(offset));
             return infoString;
         }
 
@@ -115,6 +129,7 @@ class idNode : public ASTnode {
         std::string name;
         int type = -1;
         int scope = -1;
+        bool isArray = false;
 
         idNode(std::string productionIn, int scopeIn)
         {
@@ -361,6 +376,8 @@ class forNode : public ASTnode {
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
         return infoString;
     }
 };
@@ -403,4 +420,30 @@ class mathNode : public ASTnode {
             infoString.append(std::to_string(lineNum));
             return infoString;
     }
+};
+
+class arrayNode : public ASTnode {
+    public:
+        int bound = 1;
+        int dimentions;
+        int type = -1;
+        std::string id;
+        arrayNode(std::string productionIn){production = productionIn;nodeType=arrayN;}
+
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("IDENTIFIER: ");
+            infoString.append(id);
+            infoString.append("\n");
+            if (bound != 1) {
+                infoString.append("BOUNDS: ");
+                infoString.append(std::to_string(bound));
+                infoString.append("\n");
+                infoString.append("SIZE: ");
+                infoString.append(std::to_string(size));
+            }
+            return infoString;
+        }
+
 };

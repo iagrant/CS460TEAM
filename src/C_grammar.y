@@ -375,7 +375,18 @@ declaration
             declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
             tmpNode->typeSpec = $2->typeSpec;
-            tmpNode->determineOffset();
+
+            if (tmpNode->child[0]->child[0]->production.compare("EQUALS") == 0) {
+                tmpNode->size = tmpNode->child[0]->child[0]->size;
+            }
+            else if (tmpNode->child[0]->child.size() != 0) {
+                for (int i = 0; i < tmpNode->child[0]->child.size(); i++) {
+                    tmpNode->size += tmpNode->child[0]->child[i]->size;
+                }
+                tmpNode->size += -1;
+            }
+
+
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
@@ -389,8 +400,14 @@ declaration
 declaration_list
 	: declaration
 		{
-            ASTnode *tmpNode = new ASTnode("DECL_LIST");
+            declNode *tmpNode = new declNode("DECL_LIST");
             tmpNode->addNode($1);
+            if (tmpNode->child.size() != 0) {
+                for (int i = 0; i < tmpNode->child.size(); i++) {
+                    tmpNode->size += tmpNode->child[i]->size;
+                }
+                tmpNode->size += -1;
+            }
             $$ = tmpNode;
             //FIXME by killing me
             globalSymbolTable.setMode(lookup);
@@ -403,6 +420,7 @@ declaration_list
         }
 	| declaration_list declaration
 		{
+            $$->size += $2->size;
             $$ -> addNode($2);
             globalSymbolTable.setMode(lookup);
             if (printProductions) {
@@ -803,6 +821,9 @@ init_declarator_list
 	: init_declarator
 		{
             ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
+
+            // Call function to get offset from all children
+
             tmpNode->addNode($1);
             $$ = tmpNode;
             if (printProductions) {
@@ -849,6 +870,7 @@ init_declarator
                 tmpNode->addNode($1);
                 tmpNode->addNode(assignmentCoercion($1, $3));
             }
+            tmpNode->size = tmpNode->child[0]->size;
 
             $$ = tmpNode;
 
@@ -1065,7 +1087,12 @@ declarator
 direct_declarator
 	: identifier
         {
-            $$ = $1;
+            if ($1) {
+            //    ASTnode * tmpNode = new ASTnode("ARRAY");
+            //    tmpNode->addNode($1);
+            //    $$ = tmpNode;
+                $$ = $1;
+            }
             if (printProductions) {
                 std::cout << "direct_declarator -> identifier" << std::endl;
             }
@@ -1099,12 +1126,29 @@ direct_declarator
         {
             if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
-                ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
-                ASTnode *sizeNode = new ASTnode("ARR_BOUND");
-                sizeNode->addNode($3);
-                tmpNode->addNode($1);
-                tmpNode->addNode(sizeNode);
-                $$ = tmpNode;
+                if($1->nodeType == arrayN) {
+                    constantNode * tmpNode = (constantNode *)$3;
+                    arrayNode * arNode = (arrayNode *) $1; 
+                    std::cout << tmpNode->intConst;
+                    arNode->bound *= tmpNode->intConst;
+                    $$ = arNode;
+                }
+                else {
+                    arrayNode *sizeNode = new arrayNode("ARRAY_NODE");
+                    constantNode * tmpNode = (constantNode *)$3;
+                    sizeNode->bound *= tmpNode->intConst;
+                    if ($1->nodeType == idN) {
+                        idNode * tmpNode = (idNode *)$1;
+                        sizeNode->id = tmpNode->name;
+                        sizeNode->typeSpec = tmpNode->typeSpec;
+                        std::cout << "TYPE" << tmpNode->typeSpec << std::endl;
+                    }
+                    sizeNode->size *= tmpNode->intConst * sizeNode->determineOffset();
+                    $$ = sizeNode;
+                }
+
+                //sizeNode->addNode($3);
+                //$$->addNode(sizeNode);
             }
             else
             {
@@ -1377,6 +1421,7 @@ initializer_list
         {
             ASTnode *tmpNode = new ASTnode("INITIALIZER_LIST");
             tmpNode->addNode($1);
+            tmpNode->typeSpec = $1->typeSpec;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "initializer_list -> initializer" << std::endl;
@@ -1684,7 +1729,6 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
-            $2->sumNode();
             tmpNode->sumNode();
             tmpNode->addNode($3);
             $$ = tmpNode;
@@ -1726,6 +1770,7 @@ selection_statement
 	: IF OPEN expression CLOSE statement
         {
             ifNode *parentNode = new ifNode("IF_STATEMENT");
+            parentNode->lineNum = $3->lineNum; 
             parentNode->addNode($3);
             parentNode->addNode($5);
             $$ = parentNode;
@@ -1821,6 +1866,7 @@ iteration_statement
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $4 -> lineNum;
             tmpNode->addNode($4);
             if ($7 != NULL)
                 tmpNode->addNode($7);
@@ -1835,6 +1881,7 @@ iteration_statement
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $4 -> lineNum;
             tmpNode->addNode($4);
             tmpNode->addNode($6);
             if ($8 != NULL)
@@ -1879,6 +1926,7 @@ iteration_statement
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $5 -> lineNum;
             tmpNode->addNode($3);
             tmpNode->addNode($5);
             if ($8 != NULL)
@@ -1894,6 +1942,7 @@ iteration_statement
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $5 -> lineNum;
             tmpNode->addNode($3);
             tmpNode->addNode($5);
             tmpNode->addNode($7);
@@ -2353,6 +2402,7 @@ relational_expression
 	| relational_expression LESS_OP shift_expression
         {
             exprNode * tmpNode = new exprNode("LT");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = lessOp;
@@ -2367,6 +2417,7 @@ relational_expression
 	| relational_expression GREAT_OP shift_expression
         {
             exprNode* tmpNode = new exprNode("GT");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = greatOp;
@@ -2381,6 +2432,7 @@ relational_expression
 	| relational_expression LE_OP shift_expression
         {
             exprNode* tmpNode = new exprNode("LE");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = lessEqOp;
@@ -2395,6 +2447,7 @@ relational_expression
 	| relational_expression GE_OP shift_expression
         {
             exprNode* tmpNode = new exprNode("GE");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = greatEqOp;
@@ -2744,13 +2797,30 @@ postfix_expression
         }
 	| postfix_expression BRACKETOPEN expression BRACKETCLOSE
         {
-            ASTnode *postNode = new ASTnode("POSTFIX_EXPRESSION");
-            postNode->addNode($1);
-            postNode->typeSpec = $1->typeSpec;
-            ASTnode *tmpNode = new ASTnode("ARR_BOUND");
-            tmpNode->addNode($3);
-            postNode->addNode(tmpNode);
-            $$ = postNode;
+
+    // If there is more than one dimension
+            if($1->nodeType == arrayN) {
+                arrayNode * arNode = (arrayNode *) $1; 
+                ASTnode * bound = new ASTnode("ARRAY_INDEX");
+                bound->addNode($3);
+                arNode->addNode(bound);
+                $$ = arNode;
+            }
+    // For the first dimension of the array 
+            else {
+                arrayNode *postNode = new arrayNode("ARRAY_NODE");
+                idNode * tmpNode = (idNode *)$1;
+                postNode->id = tmpNode->name;
+                postNode->lineNum = tmpNode->lineNum;
+                postNode->typeSpec = $1->typeSpec;
+
+                ASTnode * bound = new ASTnode("ARRAY_INDEX");
+                bound->addNode($3);
+                postNode->addNode(bound);
+
+                $$ = postNode;
+            }
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression BRACKETOPEN expression BRACKETCLOSE" << std::endl;
             }
@@ -3003,6 +3073,7 @@ identifier
                 tmpNode->storageSpec = ret.second->getStorageSpec();
                 tmpNode->typeQual = ret.second->getTypeQual();
                 tmpNode->typeSpec = ret.second->getTypeSpec();
+                tmpNode->size = tmpNode->determineOffset();
                 //tmpNode->offset = ret.second->getOffset();
             }
             $$ = tmpNode;
