@@ -319,6 +319,9 @@ void equalHandle(ASTnode * AST) {
                 tempString.append("\t");
                 constantNode * val = (constantNode *) AST->child[1];
                 tempString.append(std::to_string(val->intConst));
+                tempString.append("\t");
+                tempReg = "O(iT_"+std::to_string(intTempCount-1)+")";
+                tempString.append(tempReg);
             }
             
         }
