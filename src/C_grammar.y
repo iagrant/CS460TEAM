@@ -4,6 +4,7 @@
     #include <cstring>
 	#include <stdlib.h>
 	#include <iostream>
+    #include "3ac.cpp"
 
 	extern int lineNum;
 	extern int tabNum;
@@ -19,117 +20,163 @@
 	extern std::string outSrcFile;
     extern SymbolTable globalSymbolTable;
     extern ASTnode *globalASTnode = new ASTnode("");
-    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
+    enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEqOp,greatEqOp, orOp, andOp, notOp};
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
-    extern std::map<std::string,Node>::reverse_iterator funcPair;
-    extern Node * funcNode;
 
-int assignmentCoercion (int lhs, int rhs) {
-    if (lhs == rhs)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    if (lhs == floatS && rhs == doubleS)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    else if (lhs == intS && rhs == doubleS)
+ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
+    //std::cout << lhs->typeSpec << std::endl;
+    //std::cout << rhs->typeSpec << std::endl;
+    if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type double -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", doubleS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == intS && rhs == floatS)
+    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type float -> int" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", floatS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == intS && rhs == charS)
+    else if (lhs->typeSpec == intS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == charS && rhs == doubleS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
-    else if (lhs == charS && rhs == floatS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
     }
-    else if (lhs == charS && rhs == intS)
+    else if (lhs->typeSpec == charS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> char" << std::endl;
-        return charS;
+        castNode* tmp = new castNode("CAST", intS, charS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == doubleS && rhs == intS)
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == doubleS && rhs == charS)
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", charS, doubleS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == floatS && rhs == intS)
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == intS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing int -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(rhs);
+        return tmp;
     }
-    else if (lhs == floatS && rhs == charS)
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing char -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", charS, floatS);
+        tmp->addNode(rhs);
+        return tmp;
     }
     else
     {
-        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        std::cout << lhs->typeSpec << " " << rhs->typeSpec << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified [Assignment Coercion Failed]" << std::endl;
+        globalSymbolTable.printError();
     }
 }
 
-int mathCoercion (int lhs, int rhs) {
-    if (lhs == rhs)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    if (lhs == floatS && rhs == doubleS)
-    {
-        std::cout << "Types are the same" << std::endl;
-        return lhs;
-    }
-    else if ((lhs == intS && rhs == doubleS) || (lhs == doubleS && rhs == intS))
+mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
+
+    if (lhs->typeSpec == intS && rhs->typeSpec == doubleS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
-        return doubleS;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
     }
-    else if ((lhs == intS && rhs == floatS) || (lhs == floatS && rhs == intS))
+    else if (lhs->typeSpec == doubleS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> double" << std::endl;
+        castNode* tmp = new castNode("CAST", intS, doubleS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
+    }
+    else if (lhs->typeSpec == intS && rhs->typeSpec == floatS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
-        return floatS;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
     }
-    else if ((lhs == intS && rhs == charS) || (lhs == charS && rhs == intS))
+    else if (lhs->typeSpec == floatS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type int -> float" << std::endl;
+        castNode* tmp = new castNode("CAST", intS, floatS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
+    }
+    else if (lhs->typeSpec == intS && rhs->typeSpec == charS)
     {
         std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
-        return intS;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(rhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(lhs);
+        center->addNode(tmp);
+        return center;
     }
-    else if ((lhs == charS && rhs == doubleS) || (lhs == doubleS && rhs == charS))
+    else if (lhs->typeSpec == charS && rhs->typeSpec == intS)
+    {
+        std::cout << "\e[33;1m WARNING: \e[0m Coercing type char -> int" << std::endl;
+        castNode* tmp = new castNode("CAST", charS, intS);
+        tmp->addNode(lhs);
+        center->typeSpec = tmp->newType;
+        center->addNode(tmp);
+        center->addNode(rhs);
+        return center;
+    }
+    else if ((lhs->typeSpec == charS && rhs->typeSpec == doubleS) || (lhs->typeSpec == doubleS && rhs->typeSpec == charS))
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and double" << std::endl;
         exit(1);
     }
-    else if ((lhs == charS && rhs == floatS) || (lhs == floatS && rhs == charS))
+    else if ((lhs->typeSpec == charS && rhs->typeSpec == floatS) || (lhs->typeSpec == floatS && rhs->typeSpec == charS))
     {
         std::cout << "\e[31;1m Error: \e[0m: Type conversion error char and float" << std::endl;
         exit(1);
     }
     else
     {
-        std::cout << "\e[31;1m Error: \e[0m: Types not specified" << std::endl;
+        std::cout << "\e[31;1m Error: \e[0m: Types not specified [Arithmetic Coercion Failed]" << std::endl;
+        exit(1);
     }
 }
 
@@ -241,11 +288,12 @@ external_declaration
 function_definition
 	: declarator compound_statement
 		{
+            //posisble spot to pop scope in this whole block
             functionNode *tmpNode = new functionNode("FUNCTION");
+            //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
             }
@@ -256,6 +304,7 @@ function_definition
 	| declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            //tmpNode -> d = funcN;
             tmpNode -> lineNum = lineNum;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
@@ -271,8 +320,11 @@ function_definition
 	| declaration_specifiers declarator compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
+            tmpNode->activationFrameSize += $2->size;
+            tmpNode->activationFrameSize += $3->size;
             $$ = tmpNode;
 
             if (printProductions) {
@@ -285,6 +337,7 @@ function_definition
 	| declaration_specifiers declarator declaration_list compound_statement
 		{
             functionNode *tmpNode = new functionNode("FUNCTION");
+            //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
@@ -301,7 +354,7 @@ function_definition
 declaration
 	: declaration_specifiers SEMI
 		{
-            globalSymbolTable.mode = lookup;
+            $$ = $1;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers SEMI" << std::endl;
             }
@@ -313,18 +366,28 @@ declaration
 		{
             //remove scope of prototype
             if (buildingFunction){
-                if (funcPair != globalSymbolTable.getCurrentEnd()){
-                    if(funcPair->second.getLine() == lineNum) {
-                        funcPair->second.setProto();
-                    }
+                if (globalSymbolTable.lastFunc.second == lineNum) { //this check technically shouldn't matter but it's for sanity's sake
+                    std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                    lastFuncPair.second->setProto();
+                    globalSymbolTable.removeScope();
                 }
-                globalSymbolTable.removeScope();
             }
-            globalSymbolTable.mode = lookup;
-            ASTnode *tmpNode = new ASTnode("DECLARATION");
+            declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
+            tmpNode->typeSpec = $2->typeSpec;
+
+            if (tmpNode->child[0]->child[0]->production.compare("EQUALS") == 0) {
+                tmpNode->size = tmpNode->child[0]->child[0]->size;
+            }
+            else if (tmpNode->child[0]->child.size() != 0) {
+                for (int i = 0; i < tmpNode->child[0]->child.size(); i++) {
+                    tmpNode->size += tmpNode->child[0]->child[i]->size;
+                }
+                tmpNode->size += -1;
+            }
+
+
             $$ = tmpNode;
-            globalSymbolTable.mode = lookup;
             if (printProductions) {
                 std::cout << "declaration -> declaration_specifiers init_declarator_list SEMI" << std::endl;
             }
@@ -337,8 +400,17 @@ declaration
 declaration_list
 	: declaration
 		{
-            $$ = $1;
-            globalSymbolTable.mode = lookup;
+            declNode *tmpNode = new declNode("DECL_LIST");
+            tmpNode->addNode($1);
+            if (tmpNode->child.size() != 0) {
+                for (int i = 0; i < tmpNode->child.size(); i++) {
+                    tmpNode->size += tmpNode->child[i]->size;
+                }
+                tmpNode->size += -1;
+            }
+            $$ = tmpNode;
+            //FIXME by killing me
+            globalSymbolTable.setMode(lookup);
             if (printProductions) {
                 std::cout << "declaration_list -> declaration" << std::endl;
             }
@@ -348,11 +420,9 @@ declaration_list
         }
 	| declaration_list declaration
 		{
-            globalSymbolTable.mode = lookup;
-            ASTnode *tmpNode = new ASTnode("DECL_LIST");
-            tmpNode->addNode($1);
-            tmpNode->addNode($2);
-            $$ = tmpNode;
+            $$->size += $2->size;
+            $$ -> addNode($2);
+            globalSymbolTable.setMode(lookup);
             if (printProductions) {
                 std::cout << "declaration_list -> declaration_list declaration" << std::endl;
             }
@@ -424,8 +494,8 @@ declaration_specifiers
 storage_class_specifier
 	: AUTO
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(autoS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(autoS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> AUTO" << std::endl;
             }
@@ -435,8 +505,8 @@ storage_class_specifier
         }
 	| REGISTER
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(registerS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(registerS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> REGISTER" << std::endl;
             }
@@ -446,8 +516,8 @@ storage_class_specifier
         }
 	| STATIC
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(staticS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(staticS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> STATIC" << std::endl;
             }
@@ -457,8 +527,8 @@ storage_class_specifier
         }
 	| EXTERN
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(externS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(externS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> EXTERN" << std::endl;
             }
@@ -468,8 +538,8 @@ storage_class_specifier
         }
 	| TYPEDEF
 		{
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){globalTempNode.setStorageSpec(typedefS);}
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){globalTempNode.setStorageSpec(typedefS);}
             if (printProductions) {
                 std::cout << "storage_class_specifier -> TYPEDEF" << std::endl;
             }
@@ -483,8 +553,8 @@ type_specifier
 	: VOID
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(voidS);
                 globalTempNode.setLine(lineNum);
             }
@@ -498,8 +568,8 @@ type_specifier
 	| CHAR
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(charS);
                 globalTempNode.setLine(lineNum);
             }
@@ -513,8 +583,8 @@ type_specifier
 	| SHORT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(shortS);
                 globalTempNode.setLine(lineNum);
             }
@@ -528,8 +598,8 @@ type_specifier
 	| INT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(intS);
                 globalTempNode.setLine(lineNum);
             }
@@ -543,8 +613,8 @@ type_specifier
 	| LONG
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(longS);
                 globalTempNode.setLine(lineNum);
             }
@@ -558,8 +628,8 @@ type_specifier
 	| FLOAT
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(floatS);
                 globalTempNode.setLine(lineNum);
             }
@@ -573,8 +643,8 @@ type_specifier
 	| DOUBLE
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeSpec(doubleS);
                 globalTempNode.setLine(lineNum);
             }
@@ -588,8 +658,8 @@ type_specifier
 	| SIGNED
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setSigned(signedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -603,8 +673,8 @@ type_specifier
 	| UNSIGNED
 		{
             //std::strcpy($$, yytext);
-            globalSymbolTable.mode = insert;
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setSigned(unsignedE);
                 globalTempNode.setLine(lineNum);
             }
@@ -647,7 +717,8 @@ type_specifier
 type_qualifier
 	: CONST
 		{
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeQual(constQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -660,7 +731,8 @@ type_qualifier
         }
 	| VOLATILE
 		{
-            if(globalSymbolTable.mode == insert){
+            globalSymbolTable.setMode(insert);
+            if(globalSymbolTable.getMode() == insert){
                 globalTempNode.setTypeQual(volatileQ);
                 globalTempNode.setLine(lineNum);
             }
@@ -749,6 +821,9 @@ init_declarator_list
 	: init_declarator
 		{
             ASTnode *tmpNode = new ASTnode("INIT_DECL_LIST");
+
+            // Call function to get offset from all children
+
             tmpNode->addNode($1);
             $$ = tmpNode;
             if (printProductions) {
@@ -784,9 +859,19 @@ init_declarator
 	| declarator EQUALS initializer
 		{
             ASTnode *tmpNode = new ASTnode("EQUALS");
-            tmpNode->addNode($1);
-            tmpNode->addNode($3);
-            assignmentCoercion($1->typeSpec, $3->typeSpec);
+
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode(assignmentCoercion($1, $3));
+            }
+            tmpNode->size = tmpNode->child[0]->size;
+
             $$ = tmpNode;
 
             if (printProductions) {
@@ -1002,7 +1087,12 @@ declarator
 direct_declarator
 	: identifier
         {
-            $$ = $1;
+            if ($1) {
+            //    ASTnode * tmpNode = new ASTnode("ARRAY");
+            //    tmpNode->addNode($1);
+            //    $$ = tmpNode;
+                $$ = $1;
+            }
             if (printProductions) {
                 std::cout << "direct_declarator -> identifier" << std::endl;
             }
@@ -1036,12 +1126,29 @@ direct_declarator
         {
             if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
-                ASTnode *tmpNode = new ASTnode("ARRAY_DECL");
-                ASTnode *sizeNode = new ASTnode("ARR_BOUND");
-                sizeNode->addNode($3);
-                tmpNode->addNode($1);
-                tmpNode->addNode(sizeNode);
-                $$ = tmpNode;
+                if($1->nodeType == arrayN) {
+                    constantNode * tmpNode = (constantNode *)$3;
+                    arrayNode * arNode = (arrayNode *) $1;
+                    std::cout << tmpNode->intConst;
+                    arNode->bound *= tmpNode->intConst;
+                    $$ = arNode;
+                }
+                else {
+                    arrayNode *sizeNode = new arrayNode("ARRAY_NODE");
+                    constantNode * tmpNode = (constantNode *)$3;
+                    sizeNode->bound *= tmpNode->intConst;
+                    if ($1->nodeType == idN) {
+                        idNode * tmpNode = (idNode *)$1;
+                        sizeNode->id = tmpNode->name;
+                        sizeNode->typeSpec = tmpNode->typeSpec;
+                        std::cout << "TYPE" << tmpNode->typeSpec << std::endl;
+                    }
+                    sizeNode->size *= tmpNode->intConst * sizeNode->determineOffset();
+                    $$ = sizeNode;
+                }
+
+                //sizeNode->addNode($3);
+                //$$->addNode(sizeNode);
             }
             else
             {
@@ -1059,7 +1166,6 @@ direct_declarator
         {
             //func def no params
             $$ = $1;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN CLOSE" << std::endl;
             }
@@ -1070,14 +1176,17 @@ direct_declarator
 	| direct_declarator OPEN parameter_type_list CLOSE
         {
             //func def
-            if (funcPair != globalSymbolTable.getCurrentEnd())
-                funcPair->second.setImplementation();
+            std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+            lastFuncPair.second->setImplementation();
             ASTnode *tmpNode = new ASTnode("DIRECT_DECL");
             tmpNode->addNode($1);
             if ($3 != NULL)
+            {
                 tmpNode->addNode($3);
+                $3->sumNode();
+            }
+            tmpNode->sumNode();
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "direct_declarator -> direct_declarator OPEN parameter_type_list CLOSE" << std::endl;
             }
@@ -1213,19 +1322,14 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
         {
+            declNode *tmpNode = new declNode("PARAMETER");
+            tmpNode->addNode($2);
             if ($1 != NULL)
-            {
-                ASTnode *tmpNode = new ASTnode("PARAMS");
                 tmpNode->addNode($1);
-                tmpNode->addNode($2);
-                $$ = tmpNode;
-            }
-            else 
-            {
-                ASTnode *tmpNode = new ASTnode("PARAMS");
-                tmpNode->addNode($2);
-                $$ = tmpNode;
-            }
+            tmpNode->typeSpec = $2->typeSpec;
+            tmpNode->determineOffset();
+            $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "parameter_declaration -> declaration_specifiers declarator" << std::endl;
             }
@@ -1317,6 +1421,7 @@ initializer_list
         {
             ASTnode *tmpNode = new ASTnode("INITIALIZER_LIST");
             tmpNode->addNode($1);
+            tmpNode->typeSpec = $1->typeSpec;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "initializer_list -> initializer" << std::endl;
@@ -1517,7 +1622,6 @@ statement
 	| iteration_statement
         {
             $$ = $1;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "statement -> iteration_statement" << std::endl;
             }
@@ -1625,6 +1729,7 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
+            tmpNode->sumNode();
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -1665,6 +1770,7 @@ selection_statement
 	: IF OPEN expression CLOSE statement
         {
             ifNode *parentNode = new ifNode("IF_STATEMENT");
+            parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             $$ = parentNode;
@@ -1704,17 +1810,11 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            if ($5 != NULL) {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
+            whileNode *tmpNode = new whileNode("WHILE");
+            tmpNode -> addNode($3);
+            if ($5 != NULL)
                 tmpNode -> addNode($5);
-                $$ = tmpNode;
-            }
-            else {
-                ASTnode* tmpNode = new ASTnode("WHILE");
-                tmpNode -> addNode($3);
-                $$ = tmpNode;
-            }
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "iteration_statement -> WHILE OPEN expression CLOSE statement" << std::endl;
             }
@@ -1725,7 +1825,8 @@ iteration_statement
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
             whileNode *iterNode = new whileNode("DO WHILE");
-            iterNode->addNode($2);
+            if ($2 != NULL)
+                iterNode->addNode($2);
             iterNode->addNode($5);
             $$ = iterNode;
             if (printProductions) {
@@ -1738,9 +1839,9 @@ iteration_statement
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($6);
+            if ($6 != NULL)
+                tmpNode->addNode($6);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI CLOSE statement" << std::endl;
             }
@@ -1752,9 +1853,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($5);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI SEMI expression CLOSE statement" << std::endl;
             }
@@ -1765,10 +1866,11 @@ iteration_statement
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $4 -> lineNum;
             tmpNode->addNode($4);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI CLOSE statement" << std::endl;
             }
@@ -1779,11 +1881,12 @@ iteration_statement
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $4 -> lineNum;
             tmpNode->addNode($4);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
@@ -1795,9 +1898,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
-            tmpNode->addNode($7);
+            if ($7 != NULL)
+                tmpNode->addNode($7);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI CLOSE statement" << std::endl;
             }
@@ -1810,9 +1913,9 @@ iteration_statement
             forNode *tmpNode = new forNode("FOR");
             tmpNode->addNode($3);
             tmpNode->addNode($6);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
-            //globalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI SEMI expression CLOSE statement" << std::endl;
             }
@@ -1823,11 +1926,12 @@ iteration_statement
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $5 -> lineNum;
             tmpNode->addNode($3);
             tmpNode->addNode($5);
-            tmpNode->addNode($8);
+            if ($8 != NULL)
+                tmpNode->addNode($8);
             $$ = tmpNode;
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI CLOSE statement" << std::endl;
             }
@@ -1838,12 +1942,13 @@ iteration_statement
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $5 -> lineNum;
             tmpNode->addNode($3);
             tmpNode->addNode($5);
             tmpNode->addNode($7);
-            tmpNode->addNode($9);
+            if ($9 != NULL)
+                tmpNode->addNode($9);
             $$ = tmpNode;
-            //obalSymbolTable.addNewScope();
             if (printProductions) {
                 std::cout << "iteration_statement -> FOR OPEN expression SEMI expression SEMI expression CLOSE statement" << std::endl;
             }
@@ -1942,11 +2047,19 @@ assignment_expression
         {
             ASTnode *assignmentNode = new ASTnode("ASSIGNMENT_EXPRESSION");
 
-            $2->addNode($1);
-            $2->addNode($3);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                $2->addNode($1);
+                $2->addNode($3);
+            } else
+            {
+                $2->addNode($1);
+                $2->addNode(assignmentCoercion($1, $3));
+            }
+
             assignmentNode->addNode($2);
-            assignmentNode->typeSpec = assignmentCoercion($1->typeSpec, $3->typeSpec);
             $$ = assignmentNode;
+
             if (printProductions) {
                 std::cout << "assignment_expression -> unary_expression assignment_operator assignment_expression" << std::endl;
             }
@@ -2127,6 +2240,11 @@ logical_or_expression
         }
 	| logical_or_expression OR_OP logical_and_expression
         {
+            exprNode* tmpNode = new exprNode("OR_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            tmpNode -> exprType = orOp;
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_or_expression -> logical_or_expression OR_OP logical_and_expression" << std::endl;
             }
@@ -2149,6 +2267,11 @@ logical_and_expression
         }
 	| logical_and_expression AND_OP inclusive_or_expression
         {
+            exprNode* tmpNode = new exprNode("AND_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            tmpNode -> exprType = andOp;
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "logical_and_expression -> logical_and_expression AND_OP inclusive_or_expression" << std::endl;
             }
@@ -2237,6 +2360,11 @@ equality_expression
         }
 	| equality_expression EQ_OP relational_expression
         {
+            exprNode* tmpNode = new exprNode("EQ_OP");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            tmpNode -> exprType = eqOp;
+            $$ = tmpNode;
             if (printProductions) {
                 std::cout << "equality_expression -> equality_expression EQ_OP relational_expression" << std::endl;
             }
@@ -2246,6 +2374,11 @@ equality_expression
         }
 	| equality_expression NE_OP relational_expression
 		{
+            exprNode* tmpNode = new exprNode("NE");
+            tmpNode -> addNode($1);
+            tmpNode -> addNode($3);
+            tmpNode -> exprType = notEqOp;
+            $$ = tmpNode;
 			if (printProductions) {
 				std::cout << "equality_expression -> equality_expression NE_OP relational_expression" << std::endl;
 			}
@@ -2268,9 +2401,11 @@ relational_expression
         }
 	| relational_expression LESS_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("LESS_OP");
+            exprNode * tmpNode = new exprNode("LT");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = lessOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LESS_OP shift_expression" << std::endl;
@@ -2281,9 +2416,11 @@ relational_expression
         }
 	| relational_expression GREAT_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("GREAT_OP");
+            exprNode* tmpNode = new exprNode("GT");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = greatOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GREAT_OP shift_expression" << std::endl;
@@ -2294,9 +2431,11 @@ relational_expression
         }
 	| relational_expression LE_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("LE_OP");
+            exprNode* tmpNode = new exprNode("LE");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = lessEqOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression LE_OP shift_expression" << std::endl;
@@ -2307,9 +2446,11 @@ relational_expression
         }
 	| relational_expression GE_OP shift_expression
         {
-            ASTnode* tmpNode = new ASTnode("GE_OP");
+            exprNode* tmpNode = new exprNode("GE");
+            tmpNode->lineNum = $1 -> lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
+            tmpNode -> exprType = greatEqOp;
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "relational_expression -> relational_expression GE_OP shift_expression" << std::endl;
@@ -2364,13 +2505,21 @@ additive_expression
         }
 	| additive_expression PLUS multiplicative_expression
         {
-            mathNode *tmpNode = new mathNode("+");
-            tmpNode->addNode($1);
+            mathNode *tmpNode = new mathNode("ADD");
+            //tmpNode -> d = mathN;
             tmpNode -> operation = addOp;
             tmpNode -> lineNum = lineNum;
-            tmpNode->addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression PLUS multiplicative_expression" << std::endl;
             }
@@ -2380,13 +2529,21 @@ additive_expression
         }
 	| additive_expression MINUS multiplicative_expression
         {
-            mathNode *tmpNode = new mathNode("-");
-            tmpNode->addNode($1);
+            mathNode *tmpNode = new mathNode("SUB");
+            //tmpNode -> d = mathN;
             tmpNode -> operation = subOp;
             tmpNode -> lineNum = lineNum;
-            tmpNode->addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
+
             if (printProductions) {
                 std::cout << "additive_expression -> additive_expression MINUS multiplicative_expression" << std::endl;
             }
@@ -2409,11 +2566,19 @@ multiplicative_expression
         }
 	| multiplicative_expression STAR cast_expression
         {
-            mathNode *tmpNode = new mathNode("*");
-            tmpNode -> addNode($1);
+            mathNode *tmpNode = new mathNode("MUL");
+            //tmpNode -> d = mathN;
             tmpNode -> operation = mulOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2425,11 +2590,19 @@ multiplicative_expression
         }
 	| multiplicative_expression FORSLASH cast_expression
         {
-            mathNode *tmpNode = new mathNode("/");
-            tmpNode -> addNode($1);
+            mathNode *tmpNode = new mathNode("DIV");
+            //tmpNode -> d = mathN;
             tmpNode -> operation = divOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
 
             if (printProductions) {
@@ -2441,11 +2614,19 @@ multiplicative_expression
         }
 	| multiplicative_expression PERCENT cast_expression
         {
-            mathNode *tmpNode = new mathNode("%");
-            tmpNode -> addNode($1);
+            mathNode *tmpNode = new mathNode("MOD");
+            //tmpNode -> d = mathN;
             tmpNode -> operation = modOp;
-            tmpNode -> addNode($3);
-            tmpNode->typeSpec = mathCoercion($1->typeSpec, $3->typeSpec);
+            tmpNode -> lineNum = lineNum;
+            if ($1->typeSpec == $3->typeSpec || $1->typeSpec == floatS && $3->typeSpec == doubleS)
+            {
+                tmpNode->addNode($1);
+                tmpNode->addNode($3);
+                tmpNode->typeSpec = $1->typeSpec;
+            } else
+            {
+                tmpNode = mathCoercion($1, $3, tmpNode);
+            }
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "multiplicative_expression -> multiplicative_expression PERCENT cast_expression" << std::endl;
@@ -2491,7 +2672,8 @@ unary_expression
         }
 	| INC_OP unary_expression
         {
-            mathNode *tmpNode = new mathNode("++");
+            mathNode *tmpNode = new mathNode("INC");
+            //tmpNode -> d = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = incOp;
             $$ = tmpNode;
@@ -2504,7 +2686,8 @@ unary_expression
         }
 	| DEC_OP unary_expression
         {
-            mathNode *tmpNode = new mathNode("--");
+            mathNode *tmpNode = new mathNode("DEC");
+            //tmpNode -> d = mathN;
             tmpNode -> addNode($2);
             tmpNode -> operation = decOp;
             $$ = tmpNode;
@@ -2614,13 +2797,30 @@ postfix_expression
         }
 	| postfix_expression BRACKETOPEN expression BRACKETCLOSE
         {
-            ASTnode *postNode = new ASTnode("POSTFIX_EXPRESSION");
-            postNode->addNode($1);
-            postNode->typeSpec = $1->typeSpec;
-            ASTnode *tmpNode = new ASTnode("ARR_BOUND");
-            tmpNode->addNode($3);
-            postNode->addNode(tmpNode);
-            $$ = postNode;
+
+    // If there is more than one dimension
+            if($1->nodeType == arrayN) {
+                arrayNode * arNode = (arrayNode *) $1;
+                ASTnode * bound = new ASTnode("ARRAY_INDEX");
+                bound->addNode($3);
+                arNode->addNode(bound);
+                $$ = arNode;
+            }
+    // For the first dimension of the array
+            else {
+                arrayNode *postNode = new arrayNode("ARRAY_NODE");
+                idNode * tmpNode = (idNode *)$1;
+                postNode->id = tmpNode->name;
+                postNode->lineNum = tmpNode->lineNum;
+                postNode->typeSpec = $1->typeSpec;
+
+                ASTnode * bound = new ASTnode("ARRAY_INDEX");
+                bound->addNode($3);
+                postNode->addNode(bound);
+
+                $$ = postNode;
+            }
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression BRACKETOPEN expression BRACKETCLOSE" << std::endl;
             }
@@ -2668,7 +2868,9 @@ postfix_expression
         }
 	| postfix_expression INC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = incOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("INC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);
@@ -2683,7 +2885,9 @@ postfix_expression
         }
 	| postfix_expression DEC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = decOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("DEC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);
@@ -2764,6 +2968,7 @@ constant
 	: INTEGER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("INTEGER_CONSTANT", intS);
+            //tmpNode -> d = constantN;
             tmpNode->intConst = std::stoi(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = intS;
@@ -2778,6 +2983,7 @@ constant
 	| CHARACTER_CONSTANT
         {
             constantNode *tmpNode = new constantNode("CHARACTER_CONSTANT", charS);
+            //tmpNode -> d = constantN;
             tmpNode->charConst = yytext[1];
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = charS;
@@ -2792,6 +2998,7 @@ constant
 	| FLOATING_CONSTANT
         {
             constantNode *tmpNode = new constantNode("FLOATING_CONSTANT", doubleS);
+            //tmpNode -> d = constantN;
             tmpNode->doubleConst = std::stof(yytext);
             tmpNode -> lineNum = lineNum;
             tmpNode -> typeSpec = doubleS;
@@ -2818,6 +3025,7 @@ string
 	: STRING_LITERAL
         {
             constantNode *tmpNode = new constantNode("STRING_LITERAL", stringS);
+            //tmpNode -> d = constantN;
             tmpNode -> lineNum = lineNum;
             $$ = tmpNode;
             if (printProductions) {
@@ -2835,15 +3043,15 @@ identifier
             //std::cout << "ID" << std::endl;
             //globalTempNode.printNode();
             globalTempNode.setName(yytext+'\0');
-            int scope = globalSymbolTable.currentScopeNum;
-            if(globalSymbolTable.mode==insert){
+            int scope = globalSymbolTable.getCurrentScope();
+            if(globalSymbolTable.getMode()==insert){
                 if (buildingFunction) {
-                   if (funcPair != globalSymbolTable.getCurrentEnd()) {
-                        globalTempNode.isParam=true;
-                        funcPair->second.addParam();
-                        funcPair->second.addParamValue(signedPT,globalTempNode.getSigned());
-                        funcPair->second.addParamValue(typeQualPT,globalTempNode.getTypeQual());
-                        funcPair->second.addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
+                   std::pair<bool,Node *> lastFuncPair = globalSymbolTable.searchTree(globalSymbolTable.lastFunc.first,true);
+                   if (globalSymbolTable.lastFunc.second == lineNum && !lastFuncPair.second->hasProto) { //this check technically shouldn't matter but it's for sanity's sake
+                        lastFuncPair.second->addParam();
+                        lastFuncPair.second->addParamValue(signedPT,globalTempNode.getSigned());
+                        lastFuncPair.second->addParamValue(typeQualPT,globalTempNode.getTypeQual());
+                        lastFuncPair.second->addParamValue(typeSpecPT,globalTempNode.getTypeSpec());
                    }
                 }
                 globalTempNode.setScope(scope);
@@ -2856,24 +3064,21 @@ identifier
             if (printFile) {
                 fileP << "identifier -> IDENTIFIER" << std::endl;
             }
-            idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.currentScopeNum);
+
+            idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
+            //tmpNode -> d = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
-            bool flip = false;
-            if (globalSymbolTable.mode==insert)
-                flip=true;
-            //FIXME dirty code to fix wackness
-            globalSymbolTable.mode=lookup;
-            std::pair<bool,Node*> ret = globalSymbolTable.searchTree(yytext);
-            //FIXME dirty code to fix wackness
-            //if (flip)
-            //    globalSymbolTable.mode=insert;
-
+            std::string searchName = yytext + '\0';
+            //2nd param is true cuz it is a search related to AST
+            std::pair<bool,Node*> ret = globalSymbolTable.searchTree(searchName,true);
             if (ret.first) {
                 tmpNode->signedB = ret.second->getSigned();
                 tmpNode->storageSpec = ret.second->getStorageSpec();
                 tmpNode->typeQual = ret.second->getTypeQual();
                 tmpNode->typeSpec = ret.second->getTypeSpec();
+                tmpNode->size = tmpNode->determineOffset();
+                //tmpNode->offset = ret.second->getOffset();
             }
             $$ = tmpNode;
         }
@@ -2963,12 +3168,19 @@ int main (int argc, char** argv)
   fileP.open(outSrcFile);
   yyparse();
   globalASTnode->printSubTree();
+
   //printSubTree(globalASTnode);
   astFileP << "}" << std::endl;
   fclose(inputStream);
-//  astFileP << "";
+
+  //  astFileP << "";
   astFileP.close();
   fileP.close();
+
+  //not needed anymore ... for now ...
+  //clear3ac("3ac.output");
+  walkTree(globalASTnode);
+  print3ac();
 
   return 0;
 }

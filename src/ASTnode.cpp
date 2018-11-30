@@ -10,13 +10,18 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN};
+
 class ASTnode {
 public:
     std::vector<ASTnode*> child;
     std::string production;
     std::string infoString = "";
+    int nodeType = genericN;
     int printLabel;
-    int lineNum;
+    int lineNum = -1;
+    int size = 1;
+    bool isArray = false;
 
     int signedB;
     int storageSpec;
@@ -43,38 +48,94 @@ public:
     }
 
     void printSubTreeHelper (ASTnode * parent) {
+        static int inc = 0;
+        parent->printLabel = inc;
+        astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
         if (printGraphviz)
-        {
-            static int inc = 0;
-            parent->printLabel = inc;
-            astFileP << parent->printLabel << " \[label=\"" << parent->printASTnode() << "\"\];" << std::endl;
             std::cout << parent->printLabel << " \[label=\"" << parent->infoString << "\"\];" << std::endl;
-            inc++;
+        inc++;
 
-            for (int i = 0; i < parent->child.size(); i++)
+        for (int i = 0; i < parent->child.size(); i++)
+        {
+            if (parent->child.size() != 0)
             {
-                if (parent->child.size() != 0)
-                {
-                    printSubTreeHelper(parent->child[i]);
-                    astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                printSubTreeHelper(parent->child[i]);
+                astFileP << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
+                if (printGraphviz)
                     std::cout << parent->printLabel << " -> " << parent->child[i]->printLabel << std::endl;
-                }
             }
+        }
+    }
+
+    void sumNode() {
+        for (int i = 0; i < child.size(); i++) {
+            size += child[i]->size;
+        }
+        size += -1;
+    }
+
+
+    int determineOffset() {
+        static int currentOffset = 0;
+        switch(typeSpec) {
+            case intS: case longS: case shortS: case floatS:
+                currentOffset += 4;
+                return 4;
+            case doubleS:
+                currentOffset += 8;
+                return 8;
+            case charS:
+                currentOffset += 1;
+                return 1;
         }
     }
 };
 
+class declNode : public ASTnode {
+    public:
+        int offset = 0;
+        declNode(std::string productionIn){production = productionIn;nodeType=declN;}
+
+        void determineOffset() {
+            static int currentOffset = 0;
+            offset = currentOffset;
+            switch(typeSpec) {
+                case intS: case longS: case shortS: case floatS:
+                    currentOffset += 4;
+                    size += 4;
+                    break;
+                case doubleS:
+                    currentOffset += 8;
+                    size += 8;
+                    break;
+                case charS:
+                    currentOffset += 1;
+                    size += 1;
+                    break;
+            }
+        }
+
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\nSIZE: ");
+            infoString.append(std::to_string(size));
+            return infoString;
+        }
+
+};
 
 class idNode : public ASTnode {
     public:
         std::string name;
         int type = -1;
         int scope = -1;
+        bool isArray = false;
 
         idNode(std::string productionIn, int scopeIn)
         {
             production = productionIn;
             scope = scopeIn;
+            nodeType = idN;
         }
 
         std::string printASTnode() {
@@ -177,6 +238,54 @@ class idNode : public ASTnode {
 
 };
 
+class castNode : public ASTnode {
+    public:
+        int oldType, newType;
+        castNode(std::string productionIn, int oldTypeIn, int newTypeIn){production = productionIn; newType = newTypeIn; oldType = oldTypeIn;nodeType = castN;}
+
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("TYPE CONVERSION: ");
+            infoString.append("\n");
+            infoString.append(printTypeSpec(oldType));
+            infoString.append(" -> ");
+            infoString.append(printTypeSpec(newType));
+            return infoString;
+        }
+
+        std::string printTypeSpec(int input) {
+            switch(input)
+            {
+                case voidS:
+                    return "void ";
+                    break;
+                case charS:
+                    return "char ";
+                    break;
+                case shortS:
+                    return "short ";
+                    break;
+                case intS:
+                    return "int ";
+                    break;
+                case longS:
+                    return "long ";
+                    break;
+                case floatS:
+                    return "float ";
+                    break;
+                case doubleS:
+                    return "double ";
+                    break;
+                case structS:
+                    return "struct ";
+                    break;
+            }
+            return "";
+        }
+};
+
 class constantNode : public ASTnode {
     public:
         std::string name;
@@ -185,7 +294,7 @@ class constantNode : public ASTnode {
         char charConst = NULL;
         double doubleConst = NULL;
         std::string stringConst = "";
-        constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn;}
+        constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn; nodeType = constantN;}
 
         std::string printASTnode() {
             if (type == intS) {
@@ -229,7 +338,7 @@ class constantNode : public ASTnode {
 
 class ifNode : public ASTnode {
     public:
-    ifNode(std::string productionIn){production = productionIn;}
+    ifNode(std::string productionIn){production = productionIn;nodeType=ifN;}
 
     std::string printASTnode() {
         infoString.append(production);
@@ -242,12 +351,15 @@ class ifNode : public ASTnode {
 
 class functionNode : public ASTnode {
     public:
-    functionNode(std::string productionIn){production = productionIn;}
+        int activationFrameSize;
+        functionNode(std::string productionIn){production = productionIn;nodeType = funcN;}
 
-    std::string printASTnode() {
-        infoString.append(production);
-        return infoString;
-    }
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\nFRAME SIZE: ");
+            infoString.append(std::to_string(activationFrameSize));
+            return infoString;
+        }
 };
 
 class forNode : public ASTnode {
@@ -257,19 +369,10 @@ class forNode : public ASTnode {
     forNode(std::string productionIn)
     {
         production = productionIn;
+        nodeType = forN;
     }
 
     // PRINT ASTNODE
-    std::string printASTnode() {
-        infoString.append(production);
-        infoString.append("\n");
-        return infoString;
-    }
-};
-
-class whileNode : public ASTnode {
-    public:
-    whileNode(std::string productionIn){production = productionIn;}
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
@@ -279,11 +382,22 @@ class whileNode : public ASTnode {
     }
 };
 
-class mathNode : public ASTnode {
+class whileNode : public ASTnode {
     public:
-        enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, andOp, orOp, xorOp, notOp};
-        int operation;
-        mathNode(std::string productionIn){production = productionIn;}
+    whileNode(std::string productionIn){production = productionIn;nodeType = whileN;}
+    std::string printASTnode() {
+        infoString.append(production);
+        infoString.append("\n");
+        infoString.append("LINE: ");
+        infoString.append(std::to_string(lineNum));
+        return infoString;
+    }
+};
+
+class exprNode : public ASTnode {
+    public:
+        int exprType;
+        exprNode(std::string productionIn){production = productionIn;nodeType=exprN;}
         std::string printASTnode() {
             infoString.append(production);
             infoString.append("\n");
@@ -291,35 +405,44 @@ class mathNode : public ASTnode {
             infoString.append(std::to_string(lineNum));
             return infoString;
     }
-        /* FOR USE WITH MATH OPERATIONS
-            switch (operation) {
-                case addOp:
-                    break;
-                case subOp:
-                    break;
-                case mulOp:
-                    break;
-                case divOp:
-                    break;
-                case incOp:
-                    break;
-                case decOp:
-                    break;
-                case modOp:
-                    break;
-                case shlOp:
-                    break;
-                case shrOp:
-                    break;
-                case andOp:
-                    break;
-                case orOp:
-                    break;
-                case xorOp:
-                    break;
-                case notOp:
-                    break;
+};
+
+class mathNode : public ASTnode {
+    public:
+        enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
+        int operation;
+        mathNode(std::string productionIn){production = productionIn;nodeType=mathN;}
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
+            return infoString;
+    }
+};
+
+class arrayNode : public ASTnode {
+    public:
+        int bound = 1;
+        int dimentions;
+        int type = -1;
+        std::string id;
+        arrayNode(std::string productionIn){production = productionIn;nodeType=arrayN;}
+
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("IDENTIFIER: ");
+            infoString.append(id);
+            infoString.append("\n");
+            if (bound != 1) {
+                infoString.append("BOUNDS: ");
+                infoString.append(std::to_string(bound));
+                infoString.append("\n");
+                infoString.append("SIZE: ");
+                infoString.append(std::to_string(size));
             }
-            */
+            return infoString;
+        }
 
 };

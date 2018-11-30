@@ -1,6 +1,6 @@
 //
 // Name:    node.cpp
-// Author:  Semantic Team (Franklin, Grant, Knutson)
+// Author:  Ian Grant
 // Purpose: The symbol table is implemented as a stack of Binary Search Trees.
 //
 //          When the scanning begins a BST will be pushed onto the stack for the
@@ -11,6 +11,11 @@
 //
 //          When a procedure is finished that level of the stack will be popped.
 //
+
+#define INT_SIZE_IN_BYTES 4
+#define CHAR_SIZE_IN_BYTES 1
+#define FLOAT_SIZE_IN_BYTES 4
+#define DOUBLE_SIZE_IN_BYTES 8
 
 #include <iostream>
 #include <list>
@@ -37,29 +42,29 @@ private:
     int scope;
     int paramNum;
     int currentParam;
+    int offset;
     std::list <int*> paramList;
     std::list <int*> :: iterator paramListIter;
 
 public:
     bool isFunction;
-    bool isArray;
-    bool isParam;
+    //bool isArray;
     bool hasProto;
     bool hasImplementation;
     Node(){
         setName("");
         setLine(-1);
-        setSigned(0);
+        setSigned(signedE);
         setTypeSpec(intS);
         setTypeQual(noneQ);
         setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
-        isArray=false;
-        isParam=false;
+        //isArray=false;
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
+        offset=0;
     }
 
     void writeNode(std::string filename) {
@@ -71,6 +76,8 @@ public:
         std::cout.rdbuf(coutbuf); //resets cout to stdout
         fileP.close();
     }
+    //following functions take in an int and compare it against
+    //the type enums and print out the corosponding types
     void printSigned(int input){
         switch(input)
         {
@@ -164,9 +171,8 @@ public:
     }
     void printFunction(){
         //prints out function types to file stream
-        std::cout << "IS AN ARRAY: " << std::boolalpha << isArray << std::endl;
+        //std::cout << "IS AN ARRAY: " << std::boolalpha << isArray << std::endl;
         std::cout << "IS A FUNCTION: " << std::boolalpha << isFunction << std::endl;
-        std::cout << "IS A PARAM: " << std::boolalpha << isParam << std::endl;
         if (isFunction){
             std::cout << "HAS A PROTOTYPE: " << std::boolalpha << hasProto << std::endl;
             std::cout << "HAS A IMPLEMENTATION: " << std::boolalpha << hasImplementation << std::endl;
@@ -213,35 +219,45 @@ public:
     void resetNode() {
         setName("");
         setLine(-1);
-        setSigned(0);
+        setSigned(signedE);
         setTypeSpec(intS);
-        setTypeQual(9);
-        setStorageSpec(9);
+        setTypeQual(noneQ);
+        setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
+        //isArray=false;
+        hasProto=false;
+        hasImplementation=false;
         paramNum=0;
+        offset=0;
     }
+    void setName(std::string nameIn) {name=nameIn;}
     std::string getName() {return name;}
+
+    void setLine(int lineIn) {line=lineIn;}
     int getLine() {return line;}
+
+    void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
     int getTypeSpec() {return typeSpec;}
+
+    void setTypeQual(int typeQualIn) {typeQual=typeQualIn;}
     int getTypeQual() {return typeQual;}
+
+    void setSigned(int signIn) {signedB=signIn;}
     int getSigned() {return signedB;}
-    int getStorageSpec() {return storageSpec;}
+
+    void setScope(int scopeIn) {scope=scopeIn;}
     int getScope() {return scope;}
 
-    void setName(std::string nameIn) {name=nameIn;}
-    void setTypeSpec(int typeSpecIn) {typeSpec=typeSpecIn;}
-    void setScope(int scopeIn) {scope=scopeIn;}
-    void setTypeQual(int typeQualIn) {typeQual=typeQualIn;}
-    void setLine(int lineIn) {line=lineIn;}
-    void setSigned(int signIn) {signedB=signIn;}
     void setStorageSpec(int storageSpecIn) {storageSpec=storageSpecIn;}
+    int getStorageSpec() {return storageSpec;}
+
     void setFunction() {isFunction=true;}
+    bool getFunction() {return isFunction;}
+
     void setProto() {hasProto=true;}
     void setImplementation() {hasImplementation=true;}
-    void setParam() {isFunction=true;}
-    bool getFunction() {return isFunction;}
-    bool ifParam() {return isParam;}
+
     void addParam(){
         paramNum++;
         int * paramType;

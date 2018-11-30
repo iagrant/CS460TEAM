@@ -10,8 +10,11 @@ int main() {
     int a = 5;
     char b = 'c';
     int c = a / b;
-    int array_int [a][3] ={4,4,4};
-    char array_char [3][3] = {'4','4','4'};
-    array_int[1][1] = '4';
+    int array_int [3] = {4,4,4};
+    char array_char [3] = {'4','4','4'};
+    array_int[1] = '4';
     a++;
+}
+int add(int a, int b) {
+    int c = a +b;
 }
