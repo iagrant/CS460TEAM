@@ -1128,7 +1128,7 @@ direct_declarator
             {
                 if($1->nodeType == arrayN) {
                     constantNode * tmpNode = (constantNode *)$3;
-                    arrayNode * arNode = (arrayNode *) $1; 
+                    arrayNode * arNode = (arrayNode *) $1;
                     std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
                     $$ = arNode;
@@ -1770,7 +1770,7 @@ selection_statement
 	: IF OPEN expression CLOSE statement
         {
             ifNode *parentNode = new ifNode("IF_STATEMENT");
-            parentNode->lineNum = $3->lineNum; 
+            parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             $$ = parentNode;
@@ -1810,7 +1810,7 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            ASTnode* tmpNode = new ASTnode("WHILE");
+            whileNode *tmpNode = new whileNode("WHILE");
             tmpNode -> addNode($3);
             if ($5 != NULL)
                 tmpNode -> addNode($5);
@@ -2800,13 +2800,13 @@ postfix_expression
 
     // If there is more than one dimension
             if($1->nodeType == arrayN) {
-                arrayNode * arNode = (arrayNode *) $1; 
+                arrayNode * arNode = (arrayNode *) $1;
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
                 bound->addNode($3);
                 arNode->addNode(bound);
                 $$ = arNode;
             }
-    // For the first dimension of the array 
+    // For the first dimension of the array
             else {
                 arrayNode *postNode = new arrayNode("ARRAY_NODE");
                 idNode * tmpNode = (idNode *)$1;
@@ -2868,7 +2868,9 @@ postfix_expression
         }
 	| postfix_expression INC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = incOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("INC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);
@@ -2883,7 +2885,9 @@ postfix_expression
         }
 	| postfix_expression DEC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = decOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("DEC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);
