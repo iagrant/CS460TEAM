@@ -202,7 +202,6 @@ void equalHandle(ASTnode * AST) {
                 std::string tempReg = "iT_"+std::to_string(intTempCount);
                 tempString.append(tempReg);
             } else {
-                std::cout << "Some thing else" << std::endl;
             }
         }
     }
