@@ -396,7 +396,6 @@ class whileNode : public ASTnode {
 
 class exprNode : public ASTnode {
     public:
-        enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEpOp,greatEqOp, orOp, andOp, notOp};
         int exprType;
         exprNode(std::string productionIn){production = productionIn;nodeType=exprN;}
         std::string printASTnode() {

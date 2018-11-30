@@ -5,4 +5,6 @@ int main(){
     int d = a + 5 - 3;
     int e = 10 % 5;
     int f = a + b - c * d / e;
+    a++;
+    //a--;
 }

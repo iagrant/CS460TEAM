@@ -15,6 +15,8 @@ void ifHandleTop(ifNode * ifnode);
 void ifHandleBot(ifNode * ifnode);
 void whileHandleTop(whileNode * wNode);
 void whileHandleBot(whileNode * wNode);
+void forHandleTop(forNode * fNode);
+void forHandleBot(forNode * fNode);
 void equalHandle(ASTnode * AST);
 void exprHandle(exprNode * expr);
 void constantHandle(constantNode * cons);
@@ -52,6 +54,8 @@ void walkTree (ASTnode * parent)
     build3ACBot(parent);
 }
 
+//FIXME
+//kill label handle and move func part into func handle
 void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
@@ -64,6 +68,7 @@ void labelHandle (ASTnode * AST) {
             tempString = "";
             break;
             }
+            /*
         case forN:
             {
             tempString = "";
@@ -74,6 +79,7 @@ void labelHandle (ASTnode * AST) {
             tempString = "";
             break;
             }
+            */
             /*
         case whileN:
             {
@@ -122,7 +128,9 @@ void build3ACBot (ASTnode * currentNode)
     }
     else if (currentNode->nodeType == forN)
     {
-
+        forNode * fNode = (forNode *) currentNode;
+        forHandleBot(fNode);
+        return;
     }
     else if (currentNode->nodeType == ifN)
     {
@@ -153,17 +161,18 @@ void build3ACTop (ASTnode * currentNode){
     */
     if (currentNode->nodeType == funcN)
     {
-        // need to know the frame size
         // ticket counter for the function
         // return type?
     }
     else if (currentNode->nodeType == idN)
     {
-        // should just return because will be handled by the operator node
+        // should just return because will be handled errythang else
     }
     else if (currentNode->nodeType == forN)
     {
-
+        forNode * fNode = (forNode *) currentNode;
+        forHandleTop(fNode);
+        return;
     }
     else if (currentNode->nodeType == ifN)
     {
@@ -218,6 +227,7 @@ void equalHandle(ASTnode * AST) {
 }
 
 void mathHandle(mathNode * math) {
+    enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == mathN)
     {
         tempString.append(math->production);
@@ -342,6 +352,40 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
+        intTempCount++;
+    }
+    if (math->operation == incOp) {
+        //inc by 1
+        tempString.append("ADD");
+        tempString.append("\t");
+        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(tempReg);
+        tempString.append("\t");
+        idNode * id2 = (idNode *) (math->child[0]);
+        idHandle(id2);
+        tempString.append("\t");
+        tempString.append("1");
+        intTempCount++;
+        triACStruct.push_back(tempString);
+        tempString = "";
+        //storing res
+        tempString.append("ASSIGN");
+        tempString.append("\t");
+        idHandle(id2);
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount));
+
+    }
+    if (math->operation == decOp) {
+        tempString.append("SUB");
+        tempString.append("\t");
+        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        tempString.append(tempReg);
+        tempString.append("\t");
+        idNode * id2 = (idNode *) (math->child[0]);
+        idHandle(id2);
+        tempString.append("\t");
+        tempString.append("1");
         intTempCount++;
     }
     triACStruct.push_back(tempString);
@@ -595,6 +639,57 @@ void whileHandleBot(whileNode * whilenode) {
     triACStruct.push_back(tempString);
     tempString = "";
     whileCount++;
+};
+
+
+void forHandleTop(forNode * fornode) {
+    tempString.append("BEGFOR_"+std::to_string(forCount)+":");
+    triACStruct.push_back(tempString);
+    tempString = "";
+    //BRANCHES in MIPS the label comes last
+    //BREQ SRC1 SRC2 LABEL
+    if (fornode->child[0]->nodeType ==constantN) {
+        tempString.append("BREQ");
+        tempString.append("\t");
+        constantNode * cons = (constantNode *) (fornode->child[0]);
+        constantHandle(cons);
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("ENDFOR_"+std::to_string(forCount));
+    }
+    else {
+        exprNode * expr = (exprNode *) fornode->child[1];
+        exprHandle(expr);
+        ASTnode * logicOp = fornode->child[0];
+        tempString.append("BREQ");
+        tempString.append("\t");
+        tempString.append("iT_"+std::to_string(intTempCount));
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("ENDFOR_"+std::to_string(forCount));
+    }
+    //uncomment for nested for fix
+    //tho breaks concurent fors
+    //forCount++;
+    triACStruct.push_back(tempString);
+    tempString = "";
+};
+
+void forHandleBot(forNode * fornode) {
+    //uncomment for nested for fix
+    //tho breaks concurent fors
+    //tempString.append("IF_"+std::to_string(forCount-1)+":");
+    tempString.append("BR");
+    tempString.append("\t");
+    tempString.append("BEGFOR_"+std::to_string(forCount));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempString.append("ENDFOR_"+std::to_string(forCount)+":");
+    triACStruct.push_back(tempString);
+    tempString = "";
+    forCount++;
 };
 //change this from printing to adding src code lines to triACStruct
 void printSrc () {

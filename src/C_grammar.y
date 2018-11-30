@@ -2868,7 +2868,9 @@ postfix_expression
         }
 	| postfix_expression INC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = incOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("INC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);
@@ -2883,7 +2885,9 @@ postfix_expression
         }
 	| postfix_expression DEC_OP
         {
-            ASTnode *parentNode = new ASTnode("POSTFIX_EXPRESSION");
+            mathNode *parentNode = new mathNode("POSTFIX_EXPRESSION");
+            parentNode-> operation = decOp;
+            parentNode -> lineNum = lineNum;
             ASTnode *incNode = new ASTnode("DEC_OP");
             parentNode->addNode($1);
             parentNode->addNode(incNode);

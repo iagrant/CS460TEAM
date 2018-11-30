@@ -186,7 +186,7 @@ sizeof          {
                     colNum += yyleng;
                     return INC_OP;
                 }
---              {
+\-\-            {
                     if(printToken) {printConsole("DEC_OP");}
                     if(printFile) {printToFile("DEC_OP");}
                     colNum += yyleng;
