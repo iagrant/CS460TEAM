@@ -290,9 +290,9 @@ class constantNode : public ASTnode {
     public:
         std::string name;
         int type;
-        int intConst = NULL;
-        char charConst = NULL;
-        double doubleConst = NULL;
+        int intConst;
+        char charConst;
+        double doubleConst;
         std::string stringConst = "";
         constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn; nodeType = constantN;}
 
