@@ -1842,6 +1842,9 @@ iteration_statement
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
             if ($6 != NULL)
                 tmpNode->addNode($6);
             $$ = tmpNode;
@@ -1855,7 +1858,9 @@ iteration_statement
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($5);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($5);
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1870,7 +1875,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->lineNum = $4 -> lineNum;
-            tmpNode->addNode($4);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($4);
+            tmpNode->exprs.push_back(NULL);
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1885,8 +1892,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->lineNum = $4 -> lineNum;
-            tmpNode->addNode($4);
-            tmpNode->addNode($6);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($4);
+            tmpNode->exprs.push_back($6);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1900,7 +1908,9 @@ iteration_statement
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($3);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1914,8 +1924,9 @@ iteration_statement
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($3);
-            tmpNode->addNode($6);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($6);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1930,8 +1941,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->lineNum = $5 -> lineNum;
-            tmpNode->addNode($3);
-            tmpNode->addNode($5);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back($5);
+            tmpNode->exprs.push_back(NULL);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1946,9 +1958,9 @@ iteration_statement
         {
             forNode *tmpNode = new forNode("FOR");
             tmpNode->lineNum = $5 -> lineNum;
-            tmpNode->addNode($3);
-            tmpNode->addNode($5);
-            tmpNode->addNode($7);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back($5);
+            tmpNode->exprs.push_back($7);
             if ($9 != NULL)
                 tmpNode->addNode($9);
             $$ = tmpNode;
@@ -3062,6 +3074,13 @@ identifier
                 }
                 globalTempNode.setScope(scope);
                 globalSymbolTable.insertSymbol(globalTempNode);
+            }
+            if(globalSymbolTable.getMode()==lookup){
+                std::pair<bool,Node *> checkPair = globalSymbolTable.searchTree(yytext,true);
+                if (!checkPair.first) {
+                    std::cout << "\e[31;1m ERROR: \e[0m No Decl of Variable: " << yytext << " on line " << lineNum << std::endl;
+                    exit(0);
+                }
             }
 
             if (printProductions) {

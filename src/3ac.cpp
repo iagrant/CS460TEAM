@@ -1013,25 +1013,17 @@ void whileHandleBot(whileNode * whilenode) {
 
 
 void forHandleTop(forNode * fornode) {
+    if (fornode->exprs[0]!= NULL){
+        equalHandle(fornode->exprs[0]->child[0]);
+    }
     tempString.append("BEGFOR_"+std::to_string(forCount)+":");
     triACStruct.push_back(tempString);
     tempString = "";
     //BRANCHES in MIPS the label comes last
     //BREQ SRC1 SRC2 LABEL
-    if (fornode->child[0]->nodeType ==constantN) {
-        tempString.append("BREQ");
-        tempString.append("\t");
-        constantNode * cons = (constantNode *) (fornode->child[0]);
-        constantHandle(cons);
-        tempString.append("\t");
-        tempString.append("0");
-        tempString.append("\t");
-        tempString.append("ENDFOR_"+std::to_string(forCount));
-    }
-    else {
-        exprNode * expr = (exprNode *) fornode->child[1];
+    if (fornode->exprs[1]!=NULL) {
+        exprNode * expr = (exprNode *) fornode->exprs[1];
         exprHandle(expr);
-        ASTnode * logicOp = fornode->child[0];
         tempString.append("BREQ");
         tempString.append("\t");
         tempString.append("iT_"+std::to_string(intTempCount));
@@ -1039,18 +1031,22 @@ void forHandleTop(forNode * fornode) {
         tempString.append("0");
         tempString.append("\t");
         tempString.append("ENDFOR_"+std::to_string(forCount));
+        triACStruct.push_back(tempString);
+        tempString = "";
     }
     //uncomment for nested for fix
     //tho breaks concurent fors
     //forCount++;
-    triACStruct.push_back(tempString);
-    tempString = "";
 };
 
 void forHandleBot(forNode * fornode) {
     //uncomment for nested for fix
     //tho breaks concurent fors
     //tempString.append("IF_"+std::to_string(forCount-1)+":");
+    if (fornode->exprs[2]!=NULL) {
+        mathNode * math = (mathNode *) fornode -> exprs[2];
+        mathHandle(math);
+    }
     tempString.append("BR");
     tempString.append("\t");
     tempString.append("BEGFOR_"+std::to_string(forCount));

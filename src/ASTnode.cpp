@@ -364,6 +364,7 @@ class functionNode : public ASTnode {
 
 class forNode : public ASTnode {
     public:
+    std::vector<ASTnode*> exprs;
 
     // CONSTRUCTOR
     forNode(std::string productionIn)
