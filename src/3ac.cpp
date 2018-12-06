@@ -411,12 +411,12 @@ void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             if (AST->child[1]->nodeType == constantN) {
+                constantNode * cons = (constantNode *) (AST->child[1]);
                 tempString.append("ASSIGN");
                 tempString.append("\t");
                 idNode * id = (idNode *) (AST->child[0]);
                 tempString.append(id->name);
                 tempString.append("\t");
-                constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
             } else if (AST->child[1]->nodeType == mathN){
                 tempString.append("ASSIGN");
@@ -515,7 +515,7 @@ void arrayGetHandle(arrayNode * arr) {
     tempString.append(tempReg);
     triACStruct.push_back(tempString);
     tempString = "";
-    
+
 }
 
 void mathHandle(mathNode * math) {
@@ -658,8 +658,8 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
-        
-    } else if (math->child[0]->nodeType == arrayN && 
+
+    } else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == constantN)
     {
         arrayNode * arr = (arrayNode *) math->child[0];
@@ -675,7 +675,7 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == arrayN && 
+    } else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == idN)
     {
         arrayNode * arr = (arrayNode *) math->child[0];
@@ -691,7 +691,7 @@ void mathHandle(mathNode * math) {
         idNode * id1 = (idNode *) (math->child[1]);
         idHandle(id1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == constantN && 
+    } else if (math->child[0]->nodeType == constantN &&
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
@@ -707,7 +707,7 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == idN && 
+    } else if (math->child[0]->nodeType == idN &&
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
@@ -936,17 +936,17 @@ void constantHandle(constantNode * cons) {
     //FIXME add cons or fcons infront of it
     //to desinate between int const and float const
     //prbly won't use this lol
-    if (cons->intConst != NULL) {
+    if (cons->typeSpec == intS) {
         tempString.append(std::to_string(cons->intConst));
     }
-    if (cons->doubleConst != NULL) {
+    else if (cons->typeSpec == floatS || cons->typeSpec == doubleS) {
         //show that the tempReg is a float
         tempString.append(std::to_string(cons->doubleConst));
     }
-    if (cons->charConst != NULL) {
+    else if (cons->typeSpec == charS) {
         tempString.append(std::to_string((int)cons->charConst));
     }
-    if (cons->production.compare("STRING_LITERAL") == 0) {
+    else if (cons->production.compare("STRING_LITERAL") == 0) {
         //break each letter up and load the int val of the letter into a temp
         //then push onto stack and set value of id on stack table to the addr of 1st
         //elem of the (int) char array on the stack
