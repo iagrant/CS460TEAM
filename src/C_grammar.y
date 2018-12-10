@@ -1856,6 +1856,7 @@ iteration_statement
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
+            tmpNode->lineNum = $6->lineNum;
             if ($6 != NULL)
                 tmpNode->addNode($6);
             $$ = tmpNode;
@@ -1869,9 +1870,11 @@ iteration_statement
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $5->lineNum;
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back($5);
+            tmpNode->lineNum = $5->lineNum;
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1919,6 +1922,7 @@ iteration_statement
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $3->lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
@@ -1935,6 +1939,7 @@ iteration_statement
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
             forNode *tmpNode = new forNode("FOR");
+            tmpNode->lineNum = $3->lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back($6);
@@ -3089,9 +3094,7 @@ identifier
                    }
                 }
                 globalTempNode.setScope(scope);
-                std::cout << currentOffset << std::endl;
                 globalTempNode.setOffset(&currentOffset,false,1);
-                std::cout << currentOffset << std::endl;
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
             if(globalSymbolTable.getMode()==lookup){
@@ -3223,7 +3226,7 @@ int main (int argc, char** argv)
   //not needed anymore ... for now ...
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
-  //print3ac();
+  print3ac();
 
   return 0;
 }
