@@ -64,7 +64,7 @@ public:
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
-        offset=0;
+        offset=-1;
     }
 
     void writeNode(std::string filename) {
@@ -159,6 +159,7 @@ public:
         std::cout << "TYPE: ";
         printType();
         std::cout << "LINE: " << line << std::endl;
+        std::cout << "OFFSET: " << offset << std::endl;
         printFunction();
         std::cout << std::endl;
     }
@@ -229,7 +230,7 @@ public:
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
-        offset=0;
+        offset=-1;
     }
     void setName(std::string nameIn) {name=nameIn;}
     std::string getName() {return name;}
@@ -276,5 +277,28 @@ public:
             paramList.pop_back();
             ptr[typeOfTypes]=type;
             paramList.push_back(ptr);
+    }
+    int getOffset(){return offset;}
+    //if not an array input arrayBounds as 1
+    void setOffset(int * currentOffset, bool isArray,int arrayBounds) {
+        if (!isArray)
+            arrayBounds = 1; //just in case;
+        //else
+            //*currentOffset -= offset;
+        offset = *currentOffset;
+        switch(typeSpec){
+            case floatS:
+                *currentOffset += 8*arrayBounds;
+                break;
+            case doubleS:
+                *currentOffset += 8*arrayBounds;
+                break;
+            case charS:
+                *currentOffset += 1*arrayBounds;
+                break;
+            default:
+                *currentOffset += 4*arrayBounds;
+                break;
+        }
     }
 };

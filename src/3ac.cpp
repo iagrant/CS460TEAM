@@ -232,6 +232,7 @@ void arrayHandleTop(ASTnode * equal) {
     tempReg = "iT_"+std::to_string(intTempCount-2);
     tempString.append(tempReg);
     tempString.append("\t");
+    //FIXME might of broke this talk later
     tempString.append(std::to_string(arr->determineOffset()));
     triACStruct.push_back(tempString);
     tempString = "";

@@ -23,6 +23,7 @@
     enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEqOp,greatEqOp, orOp, andOp, notOp};
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
+    int currentOffset = 0;
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
@@ -1132,6 +1133,11 @@ direct_declarator
                     arrayNode * arNode = (arrayNode *) $1;
                     std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
+                    std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
+                    if (ret.first) {
+                        ret.second->setOffset(&currentOffset,true,arNode->bound);
+                        arNode->offset = ret.second->getOffset();
+                    }
                     $$ = arNode;
                 }
                 else {
@@ -1142,6 +1148,11 @@ direct_declarator
                         idNode * tmpNode = (idNode *)$1;
                         sizeNode->id = tmpNode->name;
                         sizeNode->typeSpec = tmpNode->typeSpec;
+                        std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
+                        if (ret.first) {
+                            ret.second->setOffset(&currentOffset,true,sizeNode->bound);
+                            sizeNode->offset = ret.second->getOffset();
+                        }
                     }
                     sizeNode->size *= tmpNode->intConst * sizeNode->determineOffset();
                     $$ = sizeNode;
@@ -2832,6 +2843,11 @@ postfix_expression
                 postNode->lineNum = tmpNode->lineNum;
                 postNode->typeSpec = $1->typeSpec;
 
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
+                if (ret.first) {
+                    //ret.second->setOffset(&currentOffset,true,sizeNode->bound);
+                    postNode->offset = ret.second->getOffset();
+                }
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
                 bound->addNode($3);
                 postNode->addNode(bound);
@@ -3073,6 +3089,9 @@ identifier
                    }
                 }
                 globalTempNode.setScope(scope);
+                std::cout << currentOffset << std::endl;
+                globalTempNode.setOffset(&currentOffset,false,1);
+                std::cout << currentOffset << std::endl;
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
             if(globalSymbolTable.getMode()==lookup){
@@ -3091,7 +3110,6 @@ identifier
             }
 
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
-            //tmpNode -> d = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             std::string searchName = yytext + '\0';
@@ -3103,7 +3121,7 @@ identifier
                 tmpNode->typeQual = ret.second->getTypeQual();
                 tmpNode->typeSpec = ret.second->getTypeSpec();
                 tmpNode->size = tmpNode->determineOffset();
-                //tmpNode->offset = ret.second->getOffset();
+                tmpNode->offset = ret.second->getOffset();
             }
             $$ = tmpNode;
         }
@@ -3205,7 +3223,7 @@ int main (int argc, char** argv)
   //not needed anymore ... for now ...
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
-  print3ac();
+  //print3ac();
 
   return 0;
 }
