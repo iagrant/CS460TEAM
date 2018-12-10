@@ -76,16 +76,12 @@ public:
 
 
     int determineOffset() {
-        static int currentOffset = 0;
         switch(typeSpec) {
             case intS: case longS: case shortS: case floatS:
-                currentOffset += 4;
                 return 4;
             case doubleS:
-                currentOffset += 8;
                 return 8;
             case charS:
-                currentOffset += 1;
                 return 1;
         }
     }
@@ -93,23 +89,17 @@ public:
 
 class declNode : public ASTnode {
     public:
-        int offset = 0;
         declNode(std::string productionIn){production = productionIn;nodeType=declN;}
 
         void determineOffset() {
-            static int currentOffset = 0;
-            offset = currentOffset;
             switch(typeSpec) {
                 case intS: case longS: case shortS: case floatS:
-                    currentOffset += 4;
                     size += 4;
                     break;
                 case doubleS:
-                    currentOffset += 8;
                     size += 8;
                     break;
                 case charS:
-                    currentOffset += 1;
                     size += 1;
                     break;
             }
@@ -127,7 +117,7 @@ class declNode : public ASTnode {
 class idNode : public ASTnode {
     public:
         std::string name;
-        int type = -1;
+        int offset = -1;
         int scope = -1;
         bool isArray = false;
 
@@ -155,6 +145,9 @@ class idNode : public ASTnode {
             infoString.append("\n");
             infoString.append("SCOPE: ");
             infoString.append(std::to_string(scope));
+            infoString.append("\n");
+            infoString.append("OFFSET: ");
+            infoString.append(std::to_string(offset));
             return infoString;
         }
         std::string printSigned(int input){
@@ -290,9 +283,9 @@ class constantNode : public ASTnode {
     public:
         std::string name;
         int type;
-        int intConst = NULL;
-        char charConst = NULL;
-        double doubleConst = NULL;
+        int intConst;
+        char charConst;
+        double doubleConst;
         std::string stringConst = "";
         constantNode(std::string productionIn, int typeIn){production = productionIn; type = typeIn; nodeType = constantN;}
 
@@ -364,6 +357,7 @@ class functionNode : public ASTnode {
 
 class forNode : public ASTnode {
     public:
+    std::vector<ASTnode*> exprs;
 
     // CONSTRUCTOR
     forNode(std::string productionIn)
@@ -425,7 +419,7 @@ class arrayNode : public ASTnode {
     public:
         int bound = 1;
         int dimentions;
-        int type = -1;
+        int offset = -1;
         std::string id;
         arrayNode(std::string productionIn){production = productionIn;nodeType=arrayN;}
 
@@ -442,6 +436,9 @@ class arrayNode : public ASTnode {
                 infoString.append("SIZE: ");
                 infoString.append(std::to_string(size));
             }
+            infoString.append("\n");
+            infoString.append("OFFSET: ");
+            infoString.append(std::to_string(offset));
             return infoString;
         }
 

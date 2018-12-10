@@ -232,6 +232,7 @@ void arrayHandleTop(ASTnode * equal) {
     tempReg = "iT_"+std::to_string(intTempCount-2);
     tempString.append(tempReg);
     tempString.append("\t");
+    //FIXME might of broke this talk later
     tempString.append(std::to_string(arr->determineOffset()));
     triACStruct.push_back(tempString);
     tempString = "";
@@ -411,12 +412,12 @@ void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             if (AST->child[1]->nodeType == constantN) {
+                constantNode * cons = (constantNode *) (AST->child[1]);
                 tempString.append("ASSIGN");
                 tempString.append("\t");
                 idNode * id = (idNode *) (AST->child[0]);
                 tempString.append(id->name);
                 tempString.append("\t");
-                constantNode * cons = (constantNode *) (AST->child[1]);
                 constantHandle(cons);
             } else if (AST->child[1]->nodeType == mathN){
                 tempString.append("ASSIGN");
@@ -515,7 +516,7 @@ void arrayGetHandle(arrayNode * arr) {
     tempString.append(tempReg);
     triACStruct.push_back(tempString);
     tempString = "";
-    
+
 }
 
 void mathHandle(mathNode * math) {
@@ -658,8 +659,8 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
-        
-    } else if (math->child[0]->nodeType == arrayN && 
+
+    } else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == constantN)
     {
         arrayNode * arr = (arrayNode *) math->child[0];
@@ -675,7 +676,7 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == arrayN && 
+    } else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == idN)
     {
         arrayNode * arr = (arrayNode *) math->child[0];
@@ -691,7 +692,7 @@ void mathHandle(mathNode * math) {
         idNode * id1 = (idNode *) (math->child[1]);
         idHandle(id1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == constantN && 
+    } else if (math->child[0]->nodeType == constantN &&
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
@@ -707,7 +708,7 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         intTempCount++;
-    } else if (math->child[0]->nodeType == idN && 
+    } else if (math->child[0]->nodeType == idN &&
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
@@ -936,17 +937,17 @@ void constantHandle(constantNode * cons) {
     //FIXME add cons or fcons infront of it
     //to desinate between int const and float const
     //prbly won't use this lol
-    if (cons->intConst != NULL) {
+    if (cons->typeSpec == intS) {
         tempString.append(std::to_string(cons->intConst));
     }
-    if (cons->doubleConst != NULL) {
+    else if (cons->typeSpec == floatS || cons->typeSpec == doubleS) {
         //show that the tempReg is a float
         tempString.append(std::to_string(cons->doubleConst));
     }
-    if (cons->charConst != NULL) {
+    else if (cons->typeSpec == charS) {
         tempString.append(std::to_string((int)cons->charConst));
     }
-    if (cons->production.compare("STRING_LITERAL") == 0) {
+    else if (cons->production.compare("STRING_LITERAL") == 0) {
         //break each letter up and load the int val of the letter into a temp
         //then push onto stack and set value of id on stack table to the addr of 1st
         //elem of the (int) char array on the stack
@@ -1013,25 +1014,17 @@ void whileHandleBot(whileNode * whilenode) {
 
 
 void forHandleTop(forNode * fornode) {
+    if (fornode->exprs[0]!= NULL){
+        equalHandle(fornode->exprs[0]->child[0]);
+    }
     tempString.append("BEGFOR_"+std::to_string(forCount)+":");
     triACStruct.push_back(tempString);
     tempString = "";
     //BRANCHES in MIPS the label comes last
     //BREQ SRC1 SRC2 LABEL
-    if (fornode->child[0]->nodeType ==constantN) {
-        tempString.append("BREQ");
-        tempString.append("\t");
-        constantNode * cons = (constantNode *) (fornode->child[0]);
-        constantHandle(cons);
-        tempString.append("\t");
-        tempString.append("0");
-        tempString.append("\t");
-        tempString.append("ENDFOR_"+std::to_string(forCount));
-    }
-    else {
-        exprNode * expr = (exprNode *) fornode->child[1];
+    if (fornode->exprs[1]!=NULL) {
+        exprNode * expr = (exprNode *) fornode->exprs[1];
         exprHandle(expr);
-        ASTnode * logicOp = fornode->child[0];
         tempString.append("BREQ");
         tempString.append("\t");
         tempString.append("iT_"+std::to_string(intTempCount));
@@ -1039,18 +1032,22 @@ void forHandleTop(forNode * fornode) {
         tempString.append("0");
         tempString.append("\t");
         tempString.append("ENDFOR_"+std::to_string(forCount));
+        triACStruct.push_back(tempString);
+        tempString = "";
     }
     //uncomment for nested for fix
     //tho breaks concurent fors
     //forCount++;
-    triACStruct.push_back(tempString);
-    tempString = "";
 };
 
 void forHandleBot(forNode * fornode) {
     //uncomment for nested for fix
     //tho breaks concurent fors
     //tempString.append("IF_"+std::to_string(forCount-1)+":");
+    if (fornode->exprs[2]!=NULL) {
+        mathNode * math = (mathNode *) fornode -> exprs[2];
+        mathHandle(math);
+    }
     tempString.append("BR");
     tempString.append("\t");
     tempString.append("BEGFOR_"+std::to_string(forCount));
