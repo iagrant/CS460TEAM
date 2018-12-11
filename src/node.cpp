@@ -288,11 +288,9 @@ public:
         }
         else {
             *currentOffset -= offset;
-            std::cout << "CUNT: " << *currentOffset << std::endl;
         }
         if (fstTime)
             offset = *currentOffset;
-        std::cout << offset << std::endl;
         switch(typeSpec){
             case floatS:
                 *currentOffset += 8*arrayBounds;

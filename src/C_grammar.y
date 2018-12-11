@@ -24,6 +24,9 @@
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
     int currentOffset = 0;
+    int forCounter = 0;
+    int whileCounter = 0;
+    int ifCounter = 0;
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
@@ -1789,11 +1792,12 @@ statement_list
 selection_statement
 	: IF OPEN expression CLOSE statement
         {
-            ifNode *parentNode = new ifNode("IF_STATEMENT");
+            ifNode *parentNode = new ifNode("IF_STATEMENT",ifCounter);
             parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             $$ = parentNode;
+            ifCounter++;
 
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement" << std::endl;
@@ -1804,12 +1808,13 @@ selection_statement
         }
 	| IF OPEN expression CLOSE statement ELSE statement
         {
-            ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT");
+            ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT",ifCounter);
             parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             parentNode->addNode($7);
             $$ = parentNode;
+            ifCounter++;
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement ELSE statement" << std::endl;
             }
@@ -1831,7 +1836,8 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            whileNode *tmpNode = new whileNode("WHILE");
+            whileNode *tmpNode = new whileNode("WHILE",whileCounter);
+            whileCounter++;
             tmpNode->lineNum = $3->lineNum;
             tmpNode -> addNode($3);
             if ($5 != NULL)
@@ -1846,7 +1852,8 @@ iteration_statement
         }
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
-            whileNode *iterNode = new whileNode("DO WHILE");
+            whileNode *iterNode = new whileNode("DO WHILE",whileCounter);
+            whileCounter++;
             if ($2 != NULL)
                 iterNode->lineNum = $2->lineNum;
                 iterNode->addNode($2);
@@ -1861,7 +1868,8 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
@@ -1878,7 +1886,8 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $5->lineNum;
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back(NULL);
@@ -1896,7 +1905,8 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $4 -> lineNum;
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back($4);
@@ -1913,7 +1923,8 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $4 -> lineNum;
             tmpNode->exprs.push_back(NULL);
             tmpNode->exprs.push_back($4);
@@ -1930,7 +1941,8 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $3->lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back(NULL);
@@ -1947,7 +1959,8 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $3->lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back(NULL);
@@ -1964,7 +1977,8 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $5 -> lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back($5);
@@ -1981,7 +1995,8 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $5 -> lineNum;
             tmpNode->exprs.push_back($3);
             tmpNode->exprs.push_back($5);

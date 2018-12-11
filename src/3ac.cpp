@@ -35,9 +35,9 @@ int currentLineNum = 0;
 int intTempCount = 0;
 int last;
 int floatTempCount = 0;
-int ifCount = 0;
-int forCount = 0;
-int whileCount = 0;
+//int ifCount = 0;
+//int forCount = 0;
+//int whileCount = 0;
 bool debug = true;
 static int tempCounter = 1;
 extern std::string buffer;
@@ -777,7 +777,7 @@ void ifHandleTop(ifNode * ifnode) {
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
-        tempString.append("FI_"+std::to_string(ifCount));
+        tempString.append("FI_"+std::to_string(ifnode->counter));
     }
     else {
         exprNode * expr = (exprNode *) ifnode->child[0];
@@ -789,7 +789,7 @@ void ifHandleTop(ifNode * ifnode) {
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
-        tempString.append("FI_"+std::to_string(ifCount));
+        tempString.append("FI_"+std::to_string(ifnode->counter));
     }
     //uncomment for nested if fix
     //tho breaks concurent ifs
@@ -802,9 +802,9 @@ void ifHandleBot(ifNode * ifnode) {
     //uncomment for nested if fix
     //tho breaks concurent ifs
     //tempString.append("IF_"+std::to_string(ifCount-1)+":");
-    tempString.append("FI_"+std::to_string(ifCount)+":");
+    tempString.append("FI_"+std::to_string(ifnode->counter)+":");
     triACStruct.push_back(tempString);
-    ifCount++;
+    //ifCount++;
     tempString = "";
 };
 void idHandle(idNode * id) {
@@ -812,7 +812,7 @@ void idHandle(idNode * id) {
 }
 void offHandle(ASTnode * AST){
     idNode * id = (idNode *) AST;
-    tempString.append("ASSIGN");
+    tempString.append("ADDR");
     tempString.append("\t");
     tempString.append("iT_"+std::to_string(intTempCount));
     tempString.append("\t");
@@ -978,7 +978,7 @@ void constantHandle(constantNode * cons) {
 }
 
 void whileHandleTop(whileNode * whilenode) {
-    tempString.append("BEGWHILE_"+std::to_string(whileCount)+":");
+    tempString.append("BEGWHILE_"+std::to_string(whilenode->counter)+":");
     triACStruct.push_back(tempString);
     tempString = "";
     //BRANCHES in MIPS the label comes last
@@ -991,7 +991,7 @@ void whileHandleTop(whileNode * whilenode) {
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
-        tempString.append("ENDWHILE_"+std::to_string(whileCount));
+        tempString.append("ENDWHILE_"+std::to_string(whilenode->counter));
     }
     else {
         exprNode * expr = (exprNode *) whilenode->child[0];
@@ -1003,7 +1003,7 @@ void whileHandleTop(whileNode * whilenode) {
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
-        tempString.append("ENDWHILE_"+std::to_string(whileCount));
+        tempString.append("ENDWHILE_"+std::to_string(whilenode->counter));
     }
     //uncomment for nested while fix
     //tho breaks concurent whiles
@@ -1018,13 +1018,13 @@ void whileHandleBot(whileNode * whilenode) {
     //tempString.append("IF_"+std::to_string(whileCount-1)+":");
     tempString.append("BR");
     tempString.append("\t");
-    tempString.append("BEGWHILE_"+std::to_string(whileCount));
+    tempString.append("BEGWHILE_"+std::to_string(whilenode->counter));
     triACStruct.push_back(tempString);
     tempString = "";
-    tempString.append("ENDWHILE_"+std::to_string(whileCount)+":");
+    tempString.append("ENDWHILE_"+std::to_string(whilenode->counter)+":");
     triACStruct.push_back(tempString);
     tempString = "";
-    whileCount++;
+    //whileCount++;
 };
 
 
@@ -1032,7 +1032,7 @@ void forHandleTop(forNode * fornode) {
     if (fornode->exprs[0]!= NULL){
         equalHandle(fornode->exprs[0]->child[0]);
     }
-    tempString.append("BEGFOR_"+std::to_string(forCount)+":");
+    tempString.append("BEGFOR_"+std::to_string(fornode->counter)+":");
     triACStruct.push_back(tempString);
     tempString = "";
     //BRANCHES in MIPS the label comes last
@@ -1046,7 +1046,7 @@ void forHandleTop(forNode * fornode) {
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
-        tempString.append("ENDFOR_"+std::to_string(forCount));
+        tempString.append("ENDFOR_"+std::to_string(fornode->counter));
         triACStruct.push_back(tempString);
         tempString = "";
     }
@@ -1065,13 +1065,13 @@ void forHandleBot(forNode * fornode) {
     }
     tempString.append("BR");
     tempString.append("\t");
-    tempString.append("BEGFOR_"+std::to_string(forCount));
+    tempString.append("BEGFOR_"+std::to_string(fornode->counter));
     triACStruct.push_back(tempString);
     tempString = "";
-    tempString.append("ENDFOR_"+std::to_string(forCount)+":");
+    tempString.append("ENDFOR_"+std::to_string(fornode->counter)+":");
     triACStruct.push_back(tempString);
     tempString = "";
-    forCount++;
+    //forCount++;
 };
 //change this from printing to adding src code lines to triACStruct
 void printSrc () {
