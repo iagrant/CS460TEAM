@@ -1165,8 +1165,7 @@ direct_declarator
                             //sizeNode->boundVect = ret.second->boundVect;
                         }
                     }
-                    //sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
-                    std::cout << sizeNode->size << std::endl;
+                    sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     $$ = sizeNode;
                 }
 
