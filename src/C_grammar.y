@@ -1134,7 +1134,7 @@ direct_declarator
                     std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
                     arNode->boundVect.push_back(tmpNode->intConst);
-                    arNode->size = arNode->bound * arNode->determineOffset();
+                    //arNode->size = arNode->bound * arNode->determineOffset();
                     std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
                     if (ret.first) {
                         ret.second->setOffset(&currentOffset,true,arNode->bound,false);
@@ -1149,7 +1149,7 @@ direct_declarator
                     int tempBound = tmpNode -> intConst;
                     sizeNode->bound *= tmpNode->intConst;
                     sizeNode->boundVect.push_back(tmpNode->intConst);
-                    sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
+                    //sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     if ($1->nodeType == idN) {
                         idNode * tmpNode = (idNode *)$1;
                         sizeNode->id = tmpNode->name;
@@ -1162,8 +1162,7 @@ direct_declarator
                             //sizeNode->boundVect = ret.second->boundVect;
                         }
                     }
-                    //sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
-                    std::cout << sizeNode->size << std::endl;
+                    sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     $$ = sizeNode;
                 }
 
