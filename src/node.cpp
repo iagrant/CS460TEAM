@@ -42,11 +42,11 @@ private:
     int scope;
     int paramNum;
     int currentParam;
-    int offset;
     std::list <int*> paramList;
     std::list <int*> :: iterator paramListIter;
 
 public:
+    int offset;
     bool isFunction;
     //bool isArray;
     bool hasProto;
@@ -280,12 +280,17 @@ public:
     }
     int getOffset(){return offset;}
     //if not an array input arrayBounds as 1
-    void setOffset(int * currentOffset, bool isArray,int arrayBounds) {
-        if (!isArray)
+    void setOffset(int * currentOffset, bool isArray,int arrayBounds,bool fstTime) {
+        if (!isArray) {
             arrayBounds = 1; //just in case;
-        //else
-            //*currentOffset -= offset;
-        offset = *currentOffset;
+        }
+        else {
+            *currentOffset -= offset;
+            std::cout << "CUNT: " << *currentOffset << std::endl;
+        }
+        if (fstTime)
+            offset = *currentOffset;
+        std::cout << offset << std::endl;
         switch(typeSpec){
             case floatS:
                 *currentOffset += 8*arrayBounds;

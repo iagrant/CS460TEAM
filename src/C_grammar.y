@@ -1136,8 +1136,7 @@ direct_declarator
                     arNode->size = arNode->bound * arNode->determineOffset();
                     std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
                     if (ret.first) {
-                        ret.second->setOffset(&currentOffset,true,arNode->bound);
-                        arNode->offset = ret.second->getOffset();
+                        ret.second->setOffset(&currentOffset,true,arNode->bound,false);
                     }
                     $$ = arNode;
                 }
@@ -1152,7 +1151,7 @@ direct_declarator
                         sizeNode->typeSpec = tmpNode->typeSpec;
                         std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
                         if (ret.first) {
-                            ret.second->setOffset(&currentOffset,true,sizeNode->bound);
+                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
                             sizeNode->offset = ret.second->getOffset();
                         }
                     }
@@ -2853,7 +2852,7 @@ postfix_expression
 
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
                 if (ret.first) {
-                    //ret.second->setOffset(&currentOffset,true,sizeNode->bound);
+                    ret.second->setOffset(&currentOffset,true,postNode->bound,false);
                     postNode->offset = ret.second->getOffset();
                 }
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
@@ -3097,7 +3096,7 @@ identifier
                    }
                 }
                 globalTempNode.setScope(scope);
-                globalTempNode.setOffset(&currentOffset,false,1);
+                globalTempNode.setOffset(&currentOffset,false,1,true);
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
             if(globalSymbolTable.getMode()==lookup){
