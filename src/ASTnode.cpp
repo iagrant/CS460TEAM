@@ -331,7 +331,13 @@ class constantNode : public ASTnode {
 
 class ifNode : public ASTnode {
     public:
-    ifNode(std::string productionIn){production = productionIn;nodeType=ifN;}
+    int counter;
+    ifNode(std::string productionIn,int counterIn)
+    {
+        production = productionIn;
+        nodeType=ifN;
+        counter = counterIn;
+    }
 
     std::string printASTnode() {
         infoString.append(production);
@@ -358,12 +364,13 @@ class functionNode : public ASTnode {
 class forNode : public ASTnode {
     public:
     std::vector<ASTnode*> exprs;
-
+    int counter;
     // CONSTRUCTOR
-    forNode(std::string productionIn)
+    forNode(std::string productionIn,int counterIn)
     {
         production = productionIn;
         nodeType = forN;
+        counter=counterIn;
     }
 
     // PRINT ASTNODE
@@ -378,7 +385,13 @@ class forNode : public ASTnode {
 
 class whileNode : public ASTnode {
     public:
-    whileNode(std::string productionIn){production = productionIn;nodeType = whileN;}
+    int counter;
+    whileNode(std::string productionIn,int counterIn)
+    {
+        production = productionIn;
+        nodeType = whileN;
+        counter = counterIn;
+    }
     std::string printASTnode() {
         infoString.append(production);
         infoString.append("\n");
