@@ -418,6 +418,7 @@ class mathNode : public ASTnode {
 class arrayNode : public ASTnode {
     public:
         int bound = 1;
+        std::vector <int> boundVect;
         int dimentions;
         int offset = -1;
         std::string id;
@@ -430,11 +431,16 @@ class arrayNode : public ASTnode {
             infoString.append(id);
             infoString.append("\n");
             if (bound != 1) {
-                infoString.append("BOUNDS: ");
+                infoString.append("Total BOUNDS: ");
                 infoString.append(std::to_string(bound));
                 infoString.append("\n");
                 infoString.append("SIZE: ");
                 infoString.append(std::to_string(size));
+                infoString.append("\n");
+            }
+            infoString.append("BOUNDS: ");
+            for (int i=0; i < boundVect.size();i++) {
+                infoString.append("["+std::to_string(boundVect[i])+"]");
             }
             infoString.append("\n");
             infoString.append("OFFSET: ");

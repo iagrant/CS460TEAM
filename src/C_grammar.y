@@ -1133,17 +1133,22 @@ direct_declarator
                     arrayNode * arNode = (arrayNode *) $1;
                     std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
+                    arNode->boundVect.push_back(tmpNode->intConst);
                     arNode->size = arNode->bound * arNode->determineOffset();
                     std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
                     if (ret.first) {
                         ret.second->setOffset(&currentOffset,true,arNode->bound,false);
+                        ret.second->boundVect.push_back(tmpNode->intConst);
+                        //arNode->boundVect = ret.second->boundVect;
                     }
                     $$ = arNode;
                 }
                 else {
                     arrayNode *sizeNode = new arrayNode("ARRAY_NODE");
                     constantNode * tmpNode = (constantNode *)$3;
+                    int tempBound = tmpNode -> intConst;
                     sizeNode->bound *= tmpNode->intConst;
+                    sizeNode->boundVect.push_back(tmpNode->intConst);
                     sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     if ($1->nodeType == idN) {
                         idNode * tmpNode = (idNode *)$1;
@@ -1153,6 +1158,8 @@ direct_declarator
                         if (ret.first) {
                             ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
                             sizeNode->offset = ret.second->getOffset();
+                            ret.second->boundVect.push_back(tempBound);
+                            //sizeNode->boundVect = ret.second->boundVect;
                         }
                     }
                     //sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
@@ -2854,6 +2861,7 @@ postfix_expression
                 if (ret.first) {
                     ret.second->setOffset(&currentOffset,true,postNode->bound,false);
                     postNode->offset = ret.second->getOffset();
+                    postNode->boundVect = ret.second->boundVect;
                 }
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
                 bound->addNode($3);

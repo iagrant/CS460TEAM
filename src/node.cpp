@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <iterator>
 #include <fstream>
 #include <string>
@@ -48,9 +49,10 @@ private:
 public:
     int offset;
     bool isFunction;
-    //bool isArray;
+    bool isArray;
     bool hasProto;
     bool hasImplementation;
+    std::vector <int> boundVect;
     Node(){
         setName("");
         setLine(-1);
@@ -60,7 +62,7 @@ public:
         setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
-        //isArray=false;
+        isArray=false;
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
