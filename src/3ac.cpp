@@ -419,17 +419,26 @@ void equalHandle(ASTnode * AST) {
                 tempString.append("\t");
                 constantHandle(cons);
                 tempString.append("\t");
-                std::string tempReg = "O(iT_"+std::to_string(intTempCount-1)+")";
+                std::string tempReg = "iT_"+std::to_string(intTempCount-1);
+                tempString.append(tempReg);
+                triACStruct.push_back(tempString);
+                tempString = "";
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempReg = "iT_"+std::to_string(intTempCount-1);
+                tempString.append(tempReg);
+                tempString.append("\t");
+                tempReg = "0(iT_"+std::to_string(intTempCount-2)+")";
                 tempString.append(tempReg);
             } else if (AST->child[1]->nodeType == mathN){
                 offHandle(AST->child[0]);
-                tempString.append("ASSIGN");
+                tempString.append("STORE");
                 tempString.append("\t");
                 mathNode * math = (mathNode *) (AST->child[1]);
-                std::string tempReg = "iT_"+std::to_string(intTempCount-1);
+                std::string tempReg = "iT_"+std::to_string(intTempCount-3);
                 tempString.append(tempReg);
                 tempString.append("\t");
-                tempReg = "iT_"+std::to_string(intTempCount-2);
+                tempReg = "0(iT_"+std::to_string(intTempCount-2)+")";
                 tempString.append(tempReg);
             } else {
             }
@@ -542,10 +551,10 @@ void mathHandle(mathNode * math) {
     {
         tempString.append(math->production);
         tempString.append("\t");
-        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        std::string tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
-        tempReg = "O(iT_"+std::to_string(intTempCount)+")";
+        tempReg = "iT_"+std::to_string(intTempCount-1);
         tempString.append(tempReg);
         tempString.append("\t");
         constantNode * cons = (constantNode *) (math->child[1]);
@@ -571,10 +580,10 @@ void mathHandle(mathNode * math) {
         offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
-        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        std::string tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount);
+        tempReg = "iT_"+std::to_string(intTempCount-1);
         tempString.append(tempReg);
         intTempCount++;
     }
@@ -583,10 +592,10 @@ void mathHandle(mathNode * math) {
         offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
-        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        std::string tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount);
+        tempReg = "iT_"+std::to_string(intTempCount-1);
         tempString.append(tempReg);
         tempString.append("\t");
         tempReg = "iT_"+std::to_string(intTempCount-2);
@@ -612,7 +621,7 @@ void mathHandle(mathNode * math) {
         offHandle(math->child[1]);
         tempString.append(math->production);
         tempString.append("\t");
-        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        std::string tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
         idNode * id1 = (idNode *) (math->child[0]);
@@ -641,7 +650,7 @@ void mathHandle(mathNode * math) {
         offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
-        std::string tempReg = "iT_"+std::to_string(intTempCount+1);
+        std::string tempReg = "iT_"+std::to_string(intTempCount);
         tempString.append(tempReg);
         tempString.append("\t");
         tempReg = "iT_"+std::to_string(intTempCount-1);
@@ -817,6 +826,14 @@ void offHandle(ASTnode * AST){
     tempString.append("iT_"+std::to_string(intTempCount));
     tempString.append("\t");
     tempString.append("A_"+std::to_string(id->offset));
+    intTempCount++;
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempString.append("LOAD");
+    tempString.append("\t");
+    tempString.append("iT_"+std::to_string(intTempCount));
+    tempString.append("\t");
+    tempString.append("0(iT_"+std::to_string(intTempCount-1)+")");
     intTempCount++;
     triACStruct.push_back(tempString);
     tempString = "";
