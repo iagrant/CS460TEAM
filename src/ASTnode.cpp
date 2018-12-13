@@ -20,7 +20,7 @@ public:
     int nodeType = genericN;
     int printLabel;
     int lineNum = -1;
-    int size = 1;
+    int size = 0;
     bool isArray = false;
 
     int signedB;

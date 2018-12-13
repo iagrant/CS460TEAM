@@ -387,7 +387,7 @@ declaration
                 for (int i = 0; i < tmpNode->child[0]->child.size(); i++) {
                     tmpNode->size += tmpNode->child[0]->child[i]->size;
                 }
-                tmpNode->size += -1;
+                //tmpNode->size += -1;
             }
 
 
@@ -410,7 +410,7 @@ declaration_list
                 for (int i = 0; i < tmpNode->child.size(); i++) {
                     tmpNode->size += tmpNode->child[i]->size;
                 }
-                tmpNode->size += -1;
+                //tmpNode->size += -1;
             }
             $$ = tmpNode;
             //FIXME by killing me
