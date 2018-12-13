@@ -479,8 +479,7 @@ void equalHandle(ASTnode * AST) {
                 tempString.append("\t");
                 tempRHS();
                 tempString.append("\t");
-                tempReg = "A_"+std::to_string(id->offset);
-                tempString.append(tempReg);
+                idHandle(id);
             } else if (AST->child[1]->nodeType == mathN){
                 idNode * id = (idNode *) AST->child[0];
                 tempString.append("STORE");
@@ -1060,6 +1059,7 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         constantHandle(cons);
+        tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
         constantNode * cons = (constantNode *) expr->child[0];
@@ -1072,6 +1072,7 @@ void exprHandle(exprNode * expr){
         constantHandle(cons);
         tempString.append("\t");
         tempRHS();
+        tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
         constantNode * cons = (constantNode *) expr->child[0];
@@ -1084,7 +1085,8 @@ void exprHandle(exprNode * expr){
         tempString.append("\t");
         constantHandle(cons);
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount));
+        tempRHS();
+        tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == constantN){
         exprNode * expr1 = (exprNode *) expr->child[0];
@@ -1098,8 +1100,11 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         constantHandle(cons);
+        tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
+        //FIXME if expr order matter
+        //it shouldn't tho...
         exprNode * expr1 = (exprNode *) expr->child[0];
         exprHandle(expr1);
         exprNode * expr2 = (exprNode *) expr->child[1];
@@ -1112,60 +1117,66 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
+        tempInc();
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == exprN){
         exprNode * expr1 = (exprNode *) expr->child[1];
+        idNode * id = (idNode *) expr->child[0];
+
         exprHandle(expr1);
         tempString.append(expr->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
-        idNode * id = (idNode *) expr->child[0];
+        tempDST();
         tempString.append("\t");
-        tempString.append(id->name);
+        tempRHS();
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount+1));
+        tempRHS();
+
+        tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == idN){
         exprNode * expr1 = (exprNode *) expr->child[0];
+        idNode * id = (idNode *) expr->child[1];
         exprHandle(expr1);
+
         tempString.append(expr->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
+        tempDST();
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount+1));
-        idNode * id = (idNode *) expr->child[1];
+        tempRHS();
         tempString.append("\t");
-        tempString.append(id->name);
+        tempRHS();
+
+        tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN){
+        constantNode * cons = (constantNode *) expr->child[0];
+
         tempString.append(expr->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
-        constantNode * cons = (constantNode *) expr->child[0];
+        tempDST();
         tempString.append("\t");
         constantHandle(cons);
         cons = (constantNode *) expr->child[1];
         tempString.append("\t");
         constantHandle(cons);
+        tempInc();
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == idN) {
+        idNode * id = (idNode *) expr->child[0];
+        id = (idNode *) expr->child[1];
+
         tempString.append(expr->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
-        idNode * id = (idNode *) expr->child[0];
+        tempDST();
         tempString.append("\t");
-        tempString.append(id->name);
-        id = (idNode *) expr->child[1];
+        tempRHS();
         tempString.append("\t");
-        tempString.append(id->name);
+        tempRHS();
+        tempInc();
     }
     triACStruct.push_back(tempString);
     tempString="";
-    tempInc();
 };
 //}}}
 void constantHandle(constantNode * cons) {
