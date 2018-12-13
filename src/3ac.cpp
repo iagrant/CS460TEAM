@@ -322,6 +322,11 @@ void arrayHandleBottom(ASTnode * equal ) {
         idNode * tmp = (idNode *) arr->child[0]->child[0];
         tempString.append(tmp->name);
     }
+    else if (arr->child[0]->child[0]->nodeType == mathN) {
+        tempReg = "0(iT_"+std::to_string(intTempCount-2)+")";
+        intTempCount++;
+        tempString.append(tempReg);
+    }
     triACStruct.push_back(tempString);
     tempString = "";
     // MULT INDEX TYPESPEC
