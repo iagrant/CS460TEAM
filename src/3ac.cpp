@@ -146,6 +146,14 @@ void tempInc(){
     intTempCount++;
 }
 
+void idInsideArrBrrk(idNode * id) {
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        idHandle(id);
+}
+
 // This function just does what it needs and then returns
 void build3ACBot (ASTnode * currentNode)
 {
@@ -250,19 +258,19 @@ void arrayHandleTop(ASTnode * equal) {
     tempString = "";
     tempInc();
     // ASSIGN INDEX
+        // Array Index Cases
+    if (arr->child[0]->child[0]->nodeType == constantN) {
     tempString.append("ASSIGN");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
-        // Array Index Cases
-    if (arr->child[0]->child[0]->nodeType == constantN) {
         constantNode * tmp = (constantNode *) arr->child[0]->child[0];
         tempString.append(std::to_string(tmp->intConst));
     }
     //FIXME append val of id
     else if (arr->child[0]->child[0]->nodeType == idN) {
-        idNode * tmp = (idNode *) arr->child[0]->child[0];
-        tempString.append(tmp->name);
+            idNode * tmp = (idNode *) arr->child[0]->child[0];
+            idInsideArrBrrk(tmp);
     }
     triACStruct.push_back(tempString);
     tempString = "";
@@ -294,41 +302,29 @@ void arrayHandleTop(ASTnode * equal) {
 void arrayHandleBottom(ASTnode * equal ) {
     arrayNode * arr = (arrayNode *) equal->child[0];
     // ADDR OF ID
+    // ASSIGN INDEX
+    // Array Index Cases
+    //this one fine
+    if (arr->child[0]->child[0]->nodeType == constantN) {
     tempString.append("ADDR");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
-    //tempString.append(arr->id);
     tempString.append("A_"+std::to_string(arr->offset));
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ASSIGN INDEX
+
     tempString.append("ASSIGN");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
-    // Array Index Cases
-    //this one fine
-    if (arr->child[0]->child[0]->nodeType == constantN) {
         constantNode * tmp = (constantNode *) arr->child[0]->child[0];
         tempString.append(std::to_string(tmp->intConst));
-    }
-    //FIXME
-    else if (arr->child[0]->child[0]->nodeType == idN) {
-        idNode * tmp = (idNode *) arr->child[0]->child[0];
-        tempString.append(tmp->name);
-    }
-    //FIXME
-    else if (arr->child[0]->child[0]->nodeType == mathN) {
-        tempUsage = tempStack.front();
-        tempStack.pop_front();
-        tempReg = "0(iT_"+std::to_string(tempUsage)+")";
-        tempString.append(tempReg);
-    }
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
+
     // MULT INDEX TYPESPEC
     tempString.append("MULT");
     tempString.append("\t");
@@ -351,6 +347,89 @@ void arrayHandleBottom(ASTnode * equal ) {
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
+
+    }
+    //FIXME done i think
+    else if (arr->child[0]->child[0]->nodeType == idN) {
+    tempString.append("ADDR");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempString.append("A_"+std::to_string(arr->offset));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        idNode * tmp = (idNode *) arr->child[0]->child[0];
+        idHandle(tmp);
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+
+    // MULT INDEX TYPESPEC
+    tempString.append("MULT");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHS();
+    tempString.append("\t");
+    tempString.append(std::to_string(arr->determineOffset()));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+    // ADD ADDR LASTMULT
+    tempString.append("ADD");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHS();
+    tempString.append("\t");
+    tempRHS();
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+
+    }
+    //FIXME done i belive
+    else if (arr->child[0]->child[0]->nodeType == mathN) {
+
+    // MULT INDEX TYPESPEC
+    tempString.append("MULT");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHS();
+    tempString.append("\t");
+    tempString.append(std::to_string(arr->determineOffset()));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+
+        tempString.append("ADDR");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempReg = "A_"+std::to_string(arr->offset);
+        tempString.append(tempReg);
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+    // ADD ADDR LASTMULT
+    tempString.append("ADD");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHS();
+    tempString.append("\t");
+    tempRHS();
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+    }
+
     handleRHSArray(equal);
 }
 
@@ -398,19 +477,23 @@ void handleRHSArray(ASTnode * equal)
         tempString = "";
         tempInc();
         // ASSIGN INDEX
+        // Array Index Cases
+        // aka the stuff inside the brackets
+        if (arr->child[0]->child[0]->nodeType == constantN) {
         tempString.append("ASSIGN");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        // Array Index Cases
-        // aka the stuff inside the brackets
-        if (arr->child[0]->child[0]->nodeType == constantN) {
             constantNode * tmp = (constantNode *) arr->child[0]->child[0];
             tempString.append(std::to_string(tmp->intConst));
         }
         else if (arr->child[0]->child[0]->nodeType == idN) {
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
             idNode * tmp = (idNode *) arr->child[0]->child[0];
-            tempString.append(tmp->name);
+            idHandle(tmp);
         }
         triACStruct.push_back(tempString);
         tempString = "";
@@ -528,62 +611,61 @@ void array2DHandleBottom(ASTnode * equal)
     // ADDR OF ID
     tempString.append("ADDR");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempInc();
-    tempString.append(tempReg);
+    tempDST();
     tempString.append("\t");
     //tempString.append(arr->id);
     tempString.append("A_"+std::to_string(arr->offset));
     triACStruct.push_back(tempString);
     tempString = "";
-    // ASSIGN FIRST INDEX
-    tempString.append("ASSIGN");
-    tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
     tempInc();
-    tempString.append(tempReg);
-    tempString.append("\t");
+    // ASSIGN FIRST INDEX
         // Array Index Cases
     if (arr->child[0]->child[0]->nodeType == constantN) {
+    tempString.append("ASSIGN");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
         constantNode * tmp = (constantNode *) arr->child[0]->child[0];
         tempString.append(std::to_string(tmp->intConst));
     }
     else if (arr->child[0]->child[0]->nodeType == idN) {
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
         idNode * tmp = (idNode *) arr->child[0]->child[0];
-        tempString.append(tmp->name);
+        idHandle(tmp);
     }
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // MULT INDEX TYPESPEC
     tempString.append("MULT");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
+    tempDST();
     tempString.append(tempReg);
-    tempInc();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-2);
-    tempString.append(tempReg);
+    tempRHS();
     tempString.append("\t");
     tempString.append(std::to_string(arr->determineOffset()));
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // MULT BY FIRST MAX BOUND
     tempString.append("MULT");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempString.append(tempReg);
-    tempInc();
+    tempDST();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-2);
-    tempString.append(tempReg);
+    tempRHS();
     tempString.append("\t");
     tempString.append(std::to_string(arr->boundVect[0]));
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // ASSIGN SECOND INDEX
     tempString.append("ASSIGN");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
+    tempDST();
     tempInc();
     tempString.append(tempReg);
     tempString.append("\t");
@@ -593,54 +675,49 @@ void array2DHandleBottom(ASTnode * equal)
         tempString.append(std::to_string(tmp->intConst));
     }
     else if (arr->child[0]->child[0]->nodeType == idN) {
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
         idNode * tmp = (idNode *) arr->child[0]->child[0];
-        tempString.append(tmp->name);
+        idHandle(tmp);
     }
     triACStruct.push_back(tempString);
     tempString = "";
     // MULT INDEX TYPESPEC
     tempString.append("MULT");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempString.append(tempReg);
-    tempInc();
+    tempDST();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-2);
-    tempString.append(tempReg);
+    tempRHS();
     tempString.append("\t");
     tempString.append(std::to_string(arr->determineOffset()));
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // ADD ADDR LASTMULT
     tempString.append("ADD");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempString.append(tempReg);
-    tempInc();
+    tempDST();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-4);
-    tempString.append(tempReg);
+    tempRHS();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-2);
-    tempString.append(tempReg);
+    tempRHS();
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // ADD ADDR LASTMULT
     tempString.append("ADD");
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempString.append(tempReg);
-    tempInc();
+    tempDST();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-8);
-    tempString.append(tempReg);
+    tempRHS();
     tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount-2);
-    tempString.append(tempReg);
+    tempRHS();
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     handleRHSArray(equal);
-
 }
 
 void arrayGetHandle(arrayNode * arr) {
@@ -654,25 +731,24 @@ void arrayGetHandle(arrayNode * arr) {
     tempString = "";
     tempInc();
     // ASSIGN INDEX
-    tempString.append("ASSIGN");
-    tempString.append("\t");
-    tempReg = "iT_"+std::to_string(intTempCount);
-    tempInc();
-    tempString.append(tempReg);
-    tempString.append("\t");
         // Array Index Cases
     //FIXME
     if (arr->child[0]->child[0]->nodeType == constantN) {
+    tempString.append("ASSIGN");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
         constantNode * tmp = (constantNode *) arr->child[0]->child[0];
         tempString.append(std::to_string(tmp->intConst));
     }
     //FIXME
     else if (arr->child[0]->child[0]->nodeType == idN) {
         idNode * tmp = (idNode *) arr->child[0]->child[0];
-        tempString.append(tmp->name);
+        idInsideArrBrrk(tmp);
     }
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
     // MULT INDEX TYPESPEC
     tempString.append("MULT");
     tempString.append("\t");
@@ -872,10 +948,13 @@ void mathHandle(mathNode * math) {
 
         tempInc();
 
-    } else if (math->child[0]->nodeType == arrayN &&
+    }
+    else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == constantN)
     {
         arrayNode * arr = (arrayNode *) math->child[0];
+        constantNode * cons1 = (constantNode *) (math->child[1]);
+
         arrayGetHandle(arr);
         tempString.append(math->production);
         tempString.append("\t");
@@ -883,7 +962,6 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         tempRHS();
         tempString.append("\t");
-        constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
         tempInc();
     } else if (math->child[0]->nodeType == arrayN &&
@@ -907,30 +985,44 @@ void mathHandle(mathNode * math) {
         arrayGetHandle(arr);
         tempString.append(math->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
+        tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount);
-        tempString.append(tempReg);
+        tempRHS();
         tempString.append("\t");
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantHandle(cons1);
         tempInc();
-    } else if (math->child[0]->nodeType == idN &&
+    }
+    else if (math->child[0]->nodeType == idN &&
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
         arrayGetHandle(arr);
+        offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
+        tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount);
-        tempString.append(tempReg);
+        tempRHS();
         tempString.append("\t");
-        idNode * id1 = (idNode *) (math->child[0]);
-        idHandle(id1);
+        tempRHS();
+        tempInc();
+    }
+    else if (math->child[0]->nodeType == arrayN &&
+               math->child[1]->nodeType == arrayN)
+    {
+        arrayNode * arr = (arrayNode *) math->child[0];
+        arrayNode * arr1 = (arrayNode *) math->child[1];
+        arrayGetHandle(arr1);
+        arrayGetHandle(arr);
+
+        tempString.append(math->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
         tempInc();
     }
     else if (math->operation == incOp) {
@@ -1346,12 +1438,3 @@ void print3ac() {
         }
     }
 }
-        /*
-        std::ofstream fileP(filename,std::ios::app);
-        std::streambuf *coutbuf = std::cout.rdbuf();
-        std::cout.rdbuf(fileP.rdbuf()); //changes cout to print to file stream
-        printNode();
-        printer(std::endl;
-        std::cout.rdbuf(coutbuf); //resets cout to stdout
-        fileP.close();
-        */
