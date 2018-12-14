@@ -71,9 +71,7 @@ public:
         for (int i = 0; i < child.size(); i++) {
             size += child[i]->size;
         }
-        size += -1;
     }
-
 
     int determineOffset() {
         switch(typeSpec) {
