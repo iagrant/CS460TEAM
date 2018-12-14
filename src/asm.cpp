@@ -3,9 +3,11 @@
 #include <vector>
 #include <sstream>      // std::istringstream
 
+#include "scanner.lex"
 
 
 extern std::vector<std::string> triACStruct;
+extern std::string outSrcFile;
 void parseStruct ();
 std::vector<std::string> parseLine (std::string triACLine);
 void operatorHandle(std::vector<std::string> parsedLine);
@@ -18,7 +20,7 @@ void mulOpHandle(std::vector<std::string> parsedLine);
 void divOpHandle(std::vector<std::string> parsedLine);
 void modOpHandle(std::vector<std::string> parsedLine);
 void commentOpHandle(std::vector<std::string> parsedLine);
-
+void printLine(std::string line);
 
 // Grab line from the 3Ac struct
 void parseStruct ()
@@ -99,7 +101,7 @@ void operatorHandle(std::vector<std::string> parsedLine)
     {
         commentOpHandle(parsedLine);
     }
-    else 
+    else
     {
         //labels
         //std::cout << parsedLine[0] << " OP NOT INCLUDED YET" << std::endl;
@@ -148,4 +150,11 @@ void commentOpHandle(std::vector<std::string> parsedLine)
 
 }
 
+void printLine(std::string line)
+{
+    std::ofstream fout;
+    fout.open(outSrcFile, ios:app);
+    fout << line << std::endl;
+    fout.close();
+}
 
