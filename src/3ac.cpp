@@ -879,11 +879,9 @@ void mathHandle(mathNode * math) {
         arrayGetHandle(arr);
         tempString.append(math->production);
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount+1);
-        tempString.append(tempReg);
+        tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(intTempCount);
-        tempString.append(tempReg);
+        tempRHS();
         tempString.append("\t");
         constantNode * cons1 = (constantNode *) (math->child[1]);
         constantHandle(cons1);
