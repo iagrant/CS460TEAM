@@ -249,6 +249,10 @@ void build3ACTop (ASTnode * currentNode){
 void arrayHandleTop(ASTnode * equal) {
     arrayNode * arr = (arrayNode *) equal->child[0];
     // ADDR OF ID
+    // ASSIGN INDEX
+        // Array Index Cases
+    if (arr->child[0]->child[0]->nodeType == constantN) {
+
     tempString.append("ADDR");
     tempString.append("\t");
     tempDST();
@@ -257,24 +261,39 @@ void arrayHandleTop(ASTnode * equal) {
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ASSIGN INDEX
-        // Array Index Cases
-    if (arr->child[0]->child[0]->nodeType == constantN) {
+
     tempString.append("ASSIGN");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
         constantNode * tmp = (constantNode *) arr->child[0]->child[0];
         tempString.append(std::to_string(tmp->intConst));
-    }
-    //FIXME append val of id
-    else if (arr->child[0]->child[0]->nodeType == idN) {
-            idNode * tmp = (idNode *) arr->child[0]->child[0];
-            idInsideArrBrrk(tmp);
-    }
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
+    }
+    //FIXME append val of id
+    else if (arr->child[0]->child[0]->nodeType == idN) {
+    tempString.append("ADDR");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempString.append("A_"+std::to_string(arr->offset));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+
+            idNode * tmp = (idNode *) arr->child[0]->child[0];
+            idInsideArrBrrk(tmp);
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+    }
+    /*
+    else if (arr->child[0]->child[0]->nodeType == mathN) {
+
+    }
+    */
     // MULT INDEX TYPESPEC
     tempString.append("MULT");
     tempString.append("\t");
@@ -468,6 +487,10 @@ void handleRHSArray(ASTnode * equal)
         // ADDR OF ID
         //offHandleA(equal->child[1]);
 
+        // ASSIGN INDEX
+        // Array Index Cases
+        // aka the stuff inside the brackets
+        if (arr->child[0]->child[0]->nodeType == constantN) {
         tempString.append("ADDR");
         tempString.append("\t");
         tempDST();
@@ -476,30 +499,16 @@ void handleRHSArray(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-        // ASSIGN INDEX
-        // Array Index Cases
-        // aka the stuff inside the brackets
-        if (arr->child[0]->child[0]->nodeType == constantN) {
         tempString.append("ASSIGN");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
             constantNode * tmp = (constantNode *) arr->child[0]->child[0];
             tempString.append(std::to_string(tmp->intConst));
-        }
-        else if (arr->child[0]->child[0]->nodeType == idN) {
-        tempString.append("LOAD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-            idNode * tmp = (idNode *) arr->child[0]->child[0];
-            idHandle(tmp);
-        }
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-        //
-        // MULIPLE BY BYTESIZE OF TYPE
+
         tempString.append("MULT");
         tempString.append("\t");
         tempDST();
@@ -521,6 +530,89 @@ void handleRHSArray(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
+        }
+        else if (arr->child[0]->child[0]->nodeType == idN) {
+        tempString.append("ADDR");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempString.append("A_"+std::to_string(arr->offset));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+            idNode * tmp = (idNode *) arr->child[0]->child[0];
+            idHandle(tmp);
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+
+
+        tempString.append("MULT");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempString.append(std::to_string(arr->determineOffset()));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+        // ADD ADDR LASTMULT
+        tempString.append("ADD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+
+        }
+        else if (arr->child[0]->child[0]->nodeType == mathN) {
+
+        tempUsage1 = tempStack.front();
+        tempStack.pop_front();
+
+        tempString.append("MULT");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempString.append(std::to_string(arr->determineOffset()));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempStack.push_front(tempUsage1);
+        tempInc();
+
+        tempString.append("ADDR");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempString.append("A_"+std::to_string(arr->offset));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+        // ADD ADDR LASTMULT
+        tempString.append("ADD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+        }
+        //
+        // MULIPLE BY BYTESIZE OF TYPE
 
         tempString.append("LOAD");
         tempString.append("\t");
