@@ -649,7 +649,7 @@ void equalHandle(ASTnode * AST) {
 
                 tempString.append("ASSIGN");
                 tempString.append("\t");
-                tempLHS();
+                tempDST();
                 tempString.append("\t");
                 constantHandle(cons);
                 triACStruct.push_back(tempString);
@@ -1188,7 +1188,7 @@ void ifHandleTop(ifNode * ifnode) {
         ASTnode * logicOp = ifnode->child[0];
         tempString.append("BREQ");
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount));
+        tempRHS();
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
@@ -1420,7 +1420,7 @@ void whileHandleTop(whileNode * whilenode) {
         ASTnode * logicOp = whilenode->child[0];
         tempString.append("BREQ");
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount));
+        tempRHS();
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
@@ -1463,7 +1463,7 @@ void forHandleTop(forNode * fornode) {
         exprHandle(expr);
         tempString.append("BREQ");
         tempString.append("\t");
-        tempString.append("iT_"+std::to_string(intTempCount));
+        tempRHS();
         tempString.append("\t");
         tempString.append("0");
         tempString.append("\t");
