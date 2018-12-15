@@ -3181,6 +3181,7 @@ int main (int argc, char** argv)
     if((tokenFlag.compare(argv[i])) == 0)
     {
       printToken = true;
+      printFile = true;
     }
     if((symbolFlag.compare(argv[i])) == 0)
     {
@@ -3199,6 +3200,7 @@ int main (int argc, char** argv)
       printLine();
       printProductions = true;
       printSource = true;
+      printFile = true;
     }
     if ((inputFlag.compare(argv[i]))==0)
     {
