@@ -1134,7 +1134,6 @@ direct_declarator
                 if($1->nodeType == arrayN) {
                     constantNode * tmpNode = (constantNode *)$3;
                     arrayNode * arNode = (arrayNode *) $1;
-                    std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
                     arNode->boundVect.push_back(tmpNode->intConst);
                     arNode->size = arNode->bound * arNode->determineOffset();
@@ -2873,7 +2872,7 @@ postfix_expression
 
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
                 if (ret.first) {
-                    ret.second->setOffset(&currentOffset,true,postNode->bound,false);
+                    //ret.second->setOffset(&currentOffset,true,postNode->bound,false);
                     postNode->offset = ret.second->getOffset();
                     postNode->boundVect = ret.second->boundVect;
                 }
