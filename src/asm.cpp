@@ -3,7 +3,9 @@
 #include <vector>
 #include <sstream>      // std::istringstream
 
-#include "scanner.lex"
+//why?
+//#include "scanner.lex"
+#include "RegAlloc.cpp"
 
 
 std::vector<std::string> asmCode;
@@ -21,15 +23,24 @@ void mulOpHandle(std::vector<std::string> parsedLine);
 void divOpHandle(std::vector<std::string> parsedLine);
 void modOpHandle(std::vector<std::string> parsedLine);
 void commentOpHandle(std::vector<std::string> parsedLine);
+void prologHandle(std::vector<std::string> parsedLine);
+void epilogHandle(std::vector<std::string> parsedLine);
 void printLine(std::string line);
 
 // Grab line from the 3Ac struct
+std::list<std::vector<std::string>> lineStack;
+
 void parseStruct ()
 {
     std::vector<std::string> parsedLine;
     std::string triACLine;
-    int i = 0;
 
+    triACLine = triACStruct[0];
+    parsedLine = parseLine(triACLine);
+    prologHandle(parsedLine);
+    lineStack.push_front(parsedLine);
+    //starts at 1 so i can steal main label
+    int i = 1;
     // Slice the struct
     // Call parse line
     while (i < triACStruct.size())
@@ -41,7 +52,9 @@ void parseStruct ()
         operatorHandle(parsedLine);
         i++;
     }
-
+    parsedLine = lineStack.front();
+    lineStack.pop_front();
+    prologHandle(parsedLine);
 }
 
 

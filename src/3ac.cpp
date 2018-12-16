@@ -634,7 +634,7 @@ void handleRHSArray(ASTnode * equal)
 void functionHandle(ASTnode * AST) {
     //might kill this moved entire thing into labelHandle
     functionNode * func = (functionNode *) AST;
-    tempString.append(" ");
+    tempString.append("\t");
     tempString.append(std::to_string(func->activationFrameSize));
 }
 
@@ -748,6 +748,7 @@ void array2DHandleBottom(ASTnode * equal)
 
     }
     // IDNODE IN THE FIRST INDEX
+    //FIXME 1st child should be 0 i think could be wrong
     else if (arr->child[0]->child[0]->nodeType == idN) {
         offHandle(arr->child[1]->child[0]);
     }
@@ -858,7 +859,7 @@ void array2DHandleBottom(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-        
+
         tempUsage1 = tempStack.front();
         // ADD ADDR LASTMULT
         tempString.append("ADD");
@@ -887,7 +888,7 @@ void array2DHandleBottom(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-        
+
         tempStack.push_front(tempUsage1);
         // ADD ADDR LASTMULT
         tempString.append("ADD");
@@ -1032,7 +1033,7 @@ void mathHandle(mathNode * math) {
     }
     else if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == idN)
     {
-        offHandle(math->child[0]);
+        offHandle(math->child[1]);
 
         tempUsage = tempStack.front();
         tempStack.pop_front();
