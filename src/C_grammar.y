@@ -329,6 +329,9 @@ function_definition
             tmpNode->addNode($3);
             tmpNode->activationFrameSize += $2->size;
             tmpNode->activationFrameSize += $3->size;
+            int tempSize = tmpNode->activationFrameSize;
+            tempSize += 8 - tempSize % 8;
+            tmpNode->activationFrameSize = tempSize;
             $$ = tmpNode;
 
             if (printProductions) {
@@ -1159,7 +1162,7 @@ direct_declarator
                         sizeNode->typeSpec = tmpNode->typeSpec;
                         std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
                         if (ret.first) {
-                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
+                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,false);
                             sizeNode->offset = ret.second->getOffset();
                             ret.second->boundVect.push_back(tempBound);
                             //sizeNode->boundVect = ret.second->boundVect;

@@ -6,6 +6,7 @@
 #include "scanner.lex"
 
 
+std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
 void parseStruct ();
@@ -119,7 +120,7 @@ void storeOpHandle(std::vector<std::string> parsedLine)
 }
 void addrOpHandle(std::vector<std::string> parsedLine)
 {
-
+    std::cout << "la\t" << "dst\toffset($fp)" << std::endl;
 }
 void addOpHandle(std::vector<std::string> parsedLine)
 {
