@@ -116,7 +116,6 @@ void labelHandle (ASTnode * AST) {
 void tempRHSArr() {
     tempUsage = tempStack.front();
     tempStack.pop_front();
-    std::cout << "POP " << tempUsage << std::endl;
     tempReg = "O(iT_"+std::to_string(tempUsage)+")";
     tempString.append(tempReg);
 }
@@ -124,7 +123,6 @@ void tempRHSArr() {
 void tempRHS() {
     tempUsage = tempStack.front();
     tempStack.pop_front();
-    std::cout << "POP " << tempUsage << std::endl;
     tempReg = "iT_"+std::to_string(tempUsage);
     tempString.append(tempReg);
 }
@@ -133,7 +131,6 @@ void tempLHS() {
     tempReg = "iT_"+std::to_string(intTempCount);
     tempString.append(tempReg);
 
-    std::cout << "PUSH " << intTempCount << std::endl;
     tempStack.push_front(intTempCount);
     intTempCount++;
 }
@@ -145,7 +142,6 @@ void tempDST() {
 
 void tempInc(){
     tempStack.push_front(intTempCount);
-    std::cout << "PUSH " << intTempCount << std::endl;
     intTempCount++;
 }
 
@@ -771,7 +767,6 @@ void array2DHandleBottom(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempStack.push_front(tempUsage1);
-        std::cout << tempUsage << std::endl;
         tempInc();
 
     }
@@ -865,7 +860,6 @@ void array2DHandleBottom(ASTnode * equal)
         tempInc();
         
         tempUsage1 = tempStack.front();
-        std::cout << tempUsage1 << std::endl;
         // ADD ADDR LASTMULT
         tempString.append("ADD");
         tempString.append("\t");
