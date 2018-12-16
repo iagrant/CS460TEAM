@@ -208,7 +208,6 @@ void build3ACTop (ASTnode * currentNode){
     if (currentNode->lineNum != currentLineNum && currentNode->lineNum != -1){
         currentLineNum=currentNode->lineNum;
         printSrc();
-        print3ac();
     }
     labelHandle(currentNode);
     if (currentNode->nodeType == funcN)
@@ -662,7 +661,29 @@ void equalHandle(ASTnode * AST) {
                 tempRHS();
                 tempString.append("\t");
                 idHandle(id);
-            } else if (AST->child[1]->nodeType == mathN){
+            }
+            if (AST->child[1]->nodeType == idN) {
+                idNode * id = (idNode *) AST->child[0];
+                idNode * id1 = (idNode *) AST->child[1];
+                offHandle(id1);
+
+                /*
+                tempString.append("LOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHS();
+                tempString = "";
+                tempInc();
+                */
+
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempRHS();
+                tempString.append("\t");
+                idHandle(id);
+            }
+            else if (AST->child[1]->nodeType == mathN){
                 idNode * id = (idNode *) AST->child[0];
                 tempString.append("STORE");
                 tempString.append("\t");
@@ -978,23 +999,16 @@ void mathHandle(mathNode * math) {
     else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == idN)
     {
         idNode * id1 = (idNode *) (math->child[0]);
-        offHandle(math->child[0]);
         offHandle(math->child[1]);
-
-        tempUsage = tempStack.front();
-        tempStack.pop_front();
-        tempUsage1 = tempStack.front();
-        tempStack.pop_front();
+        offHandle(math->child[0]);
 
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage1);
-        tempString.append(tempReg);
+        tempRHS();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage);
-        tempString.append(tempReg);
+        tempRHS();
 
         tempInc();
     }
@@ -1265,7 +1279,6 @@ void exprHandle(exprNode * expr){
     //LOGIC_OP DST SRC1 SRC2
     //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
     //1 if SRC 1 < SRC2 else 0
-    tempString.append("CUNT\n");
     if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == constantN) {
         idNode * id = (idNode *) expr->child[0];
         constantNode * cons = (constantNode *) expr->child[1];
@@ -1408,8 +1421,8 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
-    triACStruct.push_back(tempString);
-    tempString="";
+        triACStruct.push_back(tempString);
+        tempString="";
         tempInc();
     }
 };
