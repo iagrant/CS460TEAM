@@ -291,8 +291,7 @@ public:
         }
         if (fstTime)
             offset = *currentOffset;
-        //std::cout << name << ": " << offset << std::endl;
-        //std::cout << "Current Offset: " << *currentOffset << std::endl;
+        std::cout << name << ": " << offset << std::endl;
         if (!isArray) {
             switch(typeSpec){
                 case floatS:
@@ -325,5 +324,6 @@ public:
                     break;
             }
         }
+        std::cout << "Current Offset: " << *currentOffset << std::endl;
     }
 };

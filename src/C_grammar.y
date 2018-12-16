@@ -1158,7 +1158,7 @@ direct_declarator
                         sizeNode->typeSpec = tmpNode->typeSpec;
                         std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
                         if (ret.first) {
-                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
+                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,false);
                             sizeNode->offset = ret.second->getOffset();
                             ret.second->boundVect.push_back(tempBound);
                             //sizeNode->boundVect = ret.second->boundVect;
