@@ -40,7 +40,6 @@ void parseStruct ()
     prologHandle(parsedLine);
     lineStack.push_front(parsedLine);
     //starts at 1 so i can steal main label
-    /*
     int i = 1;
     // Slice the struct
     // Call parse line
@@ -53,10 +52,9 @@ void parseStruct ()
         operatorHandle(parsedLine);
         i++;
     }
-    parsedLine = lineStack.front();
-    lineStack.pop_front();
-    epilogHandle(parsedLine);
-    */
+    //parsedLine = lineStack.front();
+    //lineStack.pop_front();
+    //epilogHandle(parsedLine);
 }
 
 
@@ -182,6 +180,18 @@ void prologHandle(std::vector<std::string> parsedLine) {
     tempString = "";
 
     tempString.append("\tsubu\t$sp,"+parsedLine[1]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append("\tsw\t$31,"+std::to_string(std::stoi(parsedLine[1])-4)); //sub 4 cuz ret addr is 4 large
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+    //FIXME maybe come back later after investigating .mask thing
+
+    //store any currently used save regs here
+
 }
 
 /* who wrote this broken code?
