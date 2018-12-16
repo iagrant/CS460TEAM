@@ -1162,7 +1162,26 @@ void mathHandle(mathNode * math) {
         arrayNode * arr = (arrayNode *) math->child[0];
         constantNode * cons1 = (constantNode *) (math->child[1]);
 
-        arrayGetHandle(arr);
+        // Case that works for 2D Arith
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
+
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
