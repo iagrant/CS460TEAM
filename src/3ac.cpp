@@ -735,11 +735,10 @@ void array2DHandleBottom(ASTnode * equal)
     tempString.append("MULT");
     tempString.append("\t");
     tempDST();
-    tempString.append(tempReg);
     tempString.append("\t");
     tempRHS();
     tempString.append("\t");
-    tempString.append(std::to_string(arr->determineOffset()));
+    tempString.append(std::to_string(arr->boundVect[0]));
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
@@ -750,7 +749,7 @@ void array2DHandleBottom(ASTnode * equal)
     tempString.append("\t");
     tempRHS();
     tempString.append("\t");
-    tempString.append(std::to_string(arr->boundVect[0]));
+    tempString.append(std::to_string(arr->boundVect[1]));
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
@@ -759,7 +758,6 @@ void array2DHandleBottom(ASTnode * equal)
     tempString.append("\t");
     tempDST();
     tempInc();
-    tempString.append(tempReg);
     tempString.append("\t");
         // Array Index Cases
     if (arr->child[1]->child[0]->nodeType == constantN) {
@@ -787,6 +785,9 @@ void array2DHandleBottom(ASTnode * equal)
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
+    
+    tempUsage1 = tempStack.front();
+    tempStack.pop_front();
     // ADD ADDR LASTMULT
     tempString.append("ADD");
     tempString.append("\t");
@@ -798,6 +799,8 @@ void array2DHandleBottom(ASTnode * equal)
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
+    tempStack.push_front(tempUsage1);
+
     // ADD ADDR LASTMULT
     tempString.append("ADD");
     tempString.append("\t");
