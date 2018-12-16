@@ -1147,6 +1147,7 @@ direct_declarator
                 }
                 else {
                     arrayNode *sizeNode = new arrayNode("ARRAY_NODE");
+                    sizeNode->lineNum = lineNum;
                     constantNode * tmpNode = (constantNode *)$3;
                     int tempBound = tmpNode -> intConst;
                     sizeNode->bound *= tmpNode->intConst;
