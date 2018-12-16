@@ -5,6 +5,7 @@
 	#include <stdlib.h>
 	#include <iostream>
     #include "3ac.cpp"
+    #include "asm.cpp"
 
 	extern int lineNum;
 	extern int tabNum;
@@ -3256,6 +3257,6 @@ int main (int argc, char** argv)
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
   print3ac();
-
+  parseStruct();
   return 0;
 }

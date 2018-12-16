@@ -3,8 +3,9 @@
 #include <vector>
 #include <sstream>      // std::istringstream
 
-#include "scanner.lex"
-
+//why?
+//#include "scanner.lex"
+#include "RegAlloc.cpp"
 
 std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
@@ -21,15 +22,25 @@ void mulOpHandle(std::vector<std::string> parsedLine);
 void divOpHandle(std::vector<std::string> parsedLine);
 void modOpHandle(std::vector<std::string> parsedLine);
 void commentOpHandle(std::vector<std::string> parsedLine);
+void prologHandle(std::vector<std::string> parsedLine);
+void epilogHandle(std::vector<std::string> parsedLine);
 void printLine(std::string line);
 
 // Grab line from the 3Ac struct
+std::list<std::vector<std::string>> lineStack;
+
 void parseStruct ()
 {
+    std::cout << "\n##ASM CODE BELOW\n" << std::endl;
     std::vector<std::string> parsedLine;
     std::string triACLine;
-    int i = 0;
 
+    triACLine = triACStruct[0];
+    parsedLine = parseLine(triACLine);
+    prologHandle(parsedLine);
+    lineStack.push_front(parsedLine);
+    //starts at 1 so i can steal main label
+    int i = 1;
     // Slice the struct
     // Call parse line
     while (i < triACStruct.size())
@@ -41,7 +52,9 @@ void parseStruct ()
         operatorHandle(parsedLine);
         i++;
     }
-
+    //parsedLine = lineStack.front();
+    //lineStack.pop_front();
+    //epilogHandle(parsedLine);
 }
 
 
@@ -150,7 +163,38 @@ void commentOpHandle(std::vector<std::string> parsedLine)
 {
 
 }
+void prologHandle(std::vector<std::string> parsedLine) {
+    tempString.append("\t.globl\t"+parsedLine[0]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
 
+    tempString.append("\t.ent\t"+parsedLine[0]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append(parsedLine[0]+":");
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append("\tsubu\t$sp,"+parsedLine[1]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append("\tsw\t$31,"+std::to_string(std::stoi(parsedLine[1])-4)); //sub 4 cuz ret addr is 4 large
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+    //FIXME maybe come back later after investigating .mask thing
+
+    //store any currently used save regs here
+
+}
+
+/* who wrote this broken code?
 void printLine(std::string line)
 {
     std::ofstream fout;
@@ -158,4 +202,4 @@ void printLine(std::string line)
     fout << line << std::endl;
     fout.close();
 }
-
+*/
