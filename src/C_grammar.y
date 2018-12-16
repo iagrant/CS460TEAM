@@ -329,6 +329,9 @@ function_definition
             tmpNode->addNode($3);
             tmpNode->activationFrameSize += $2->size;
             tmpNode->activationFrameSize += $3->size;
+            int tempSize = tmpNode->activationFrameSize;
+            tempSize += 8 - tempSize % 8;
+            tmpNode->activationFrameSize = tempSize;
             $$ = tmpNode;
 
             if (printProductions) {
