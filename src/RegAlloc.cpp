@@ -21,13 +21,13 @@ std::vector <std::pair<bool,int>> regTable;
 
 void initTable() {
     for (int i = 0;i<32;i++) {
-        std::pair <bool,int> tmp = std::pair(true,i);
+        std::pair <bool,int> tmp = std::pair<bool,int>(true,i);
         regTable.push_back(tmp);
     }
 }
 
 void freeReg(int reg) {
-    std::pair <bool,int> tmp = std::pair(true,reg);
+    std::pair <bool,int> tmp = std::pair<bool,int>(true,reg);
     regTable[reg] = tmp;
 }
 

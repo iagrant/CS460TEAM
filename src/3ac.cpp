@@ -80,7 +80,7 @@ void labelHandle (ASTnode * AST) {
             {
             idNode * id = (idNode *) (AST->child[0]);
             tempString = "";
-            tempString.append(id->name.append(":"));
+            tempString.append(id->name);
             functionHandle(AST);
             triACStruct.push_back(tempString);
             tempString = "";

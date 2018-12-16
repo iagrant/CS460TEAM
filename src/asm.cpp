@@ -7,7 +7,6 @@
 //#include "scanner.lex"
 #include "RegAlloc.cpp"
 
-
 std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
@@ -32,6 +31,7 @@ std::list<std::vector<std::string>> lineStack;
 
 void parseStruct ()
 {
+    std::cout << "\n##ASM CODE BELOW\n" << std::endl;
     std::vector<std::string> parsedLine;
     std::string triACLine;
 
@@ -40,6 +40,7 @@ void parseStruct ()
     prologHandle(parsedLine);
     lineStack.push_front(parsedLine);
     //starts at 1 so i can steal main label
+    /*
     int i = 1;
     // Slice the struct
     // Call parse line
@@ -54,7 +55,8 @@ void parseStruct ()
     }
     parsedLine = lineStack.front();
     lineStack.pop_front();
-    prologHandle(parsedLine);
+    epilogHandle(parsedLine);
+    */
 }
 
 
@@ -163,7 +165,26 @@ void commentOpHandle(std::vector<std::string> parsedLine)
 {
 
 }
+void prologHandle(std::vector<std::string> parsedLine) {
+    tempString.append("\t.globl\t"+parsedLine[0]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
 
+    tempString.append("\t.ent\t"+parsedLine[0]);
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append(parsedLine[0]+":");
+    std::cout << tempString << std::endl;
+    asmCode.push_back(tempString);
+    tempString = "";
+
+    tempString.append("\tsubu\t$sp,"+parsedLine[1]);
+}
+
+/* who wrote this broken code?
 void printLine(std::string line)
 {
     std::ofstream fout;
@@ -171,4 +192,4 @@ void printLine(std::string line)
     fout << line << std::endl;
     fout.close();
 }
-
+*/
