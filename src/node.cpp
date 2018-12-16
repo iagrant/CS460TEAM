@@ -291,18 +291,20 @@ public:
         }
         if (fstTime)
             offset = *currentOffset;
+        std::cout << name << ": " << offset << std::endl;
+        std::cout << "Current Offset: " << *currentOffset << std::endl;
         switch(typeSpec){
             case floatS:
-                *currentOffset += 8*arrayBounds;
+                *currentOffset = 8*arrayBounds;
                 break;
             case doubleS:
-                *currentOffset += 8*arrayBounds;
+                *currentOffset = 8*arrayBounds;
                 break;
             case charS:
-                *currentOffset += 1*arrayBounds;
+                *currentOffset = 1*arrayBounds;
                 break;
             default:
-                *currentOffset += 4*arrayBounds;
+                *currentOffset = 4*arrayBounds;
                 break;
         }
     }
