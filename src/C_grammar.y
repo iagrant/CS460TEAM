@@ -1134,7 +1134,6 @@ direct_declarator
                 if($1->nodeType == arrayN) {
                     constantNode * tmpNode = (constantNode *)$3;
                     arrayNode * arNode = (arrayNode *) $1;
-                    std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
                     arNode->boundVect.push_back(tmpNode->intConst);
                     arNode->size = arNode->bound * arNode->determineOffset();
@@ -1751,7 +1750,7 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
-            tmpNode->sumNode();
+            tmpNode->size = $2->size;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -2873,7 +2872,7 @@ postfix_expression
 
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
                 if (ret.first) {
-                    ret.second->setOffset(&currentOffset,true,postNode->bound,false);
+                    //ret.second->setOffset(&currentOffset,true,postNode->bound,false);
                     postNode->offset = ret.second->getOffset();
                     postNode->boundVect = ret.second->boundVect;
                 }
@@ -3181,6 +3180,7 @@ int main (int argc, char** argv)
     if((tokenFlag.compare(argv[i])) == 0)
     {
       printToken = true;
+      printFile = true;
     }
     if((symbolFlag.compare(argv[i])) == 0)
     {
@@ -3199,6 +3199,7 @@ int main (int argc, char** argv)
       printLine();
       printProductions = true;
       printSource = true;
+      printFile = true;
     }
     if ((inputFlag.compare(argv[i]))==0)
     {

@@ -661,7 +661,29 @@ void equalHandle(ASTnode * AST) {
                 tempRHS();
                 tempString.append("\t");
                 idHandle(id);
-            } else if (AST->child[1]->nodeType == mathN){
+            }
+            if (AST->child[1]->nodeType == idN) {
+                idNode * id = (idNode *) AST->child[0];
+                idNode * id1 = (idNode *) AST->child[1];
+                offHandle(id1);
+
+                /*
+                tempString.append("LOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHS();
+                tempString = "";
+                tempInc();
+                */
+
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempRHS();
+                tempString.append("\t");
+                idHandle(id);
+            }
+            else if (AST->child[1]->nodeType == mathN){
                 idNode * id = (idNode *) AST->child[0];
                 tempString.append("STORE");
                 tempString.append("\t");
@@ -980,23 +1002,16 @@ void mathHandle(mathNode * math) {
     else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == idN)
     {
         idNode * id1 = (idNode *) (math->child[0]);
-        offHandle(math->child[0]);
         offHandle(math->child[1]);
-
-        tempUsage = tempStack.front();
-        tempStack.pop_front();
-        tempUsage1 = tempStack.front();
-        tempStack.pop_front();
+        offHandle(math->child[0]);
 
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage1);
-        tempString.append(tempReg);
+        tempRHS();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage);
-        tempString.append(tempReg);
+        tempRHS();
 
         tempInc();
     }
@@ -1184,8 +1199,34 @@ void ifHandleTop(ifNode * ifnode) {
         tempString.append("0");
         tempString.append("\t");
         tempString.append("FI_"+std::to_string(ifnode->counter));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
     }
-    else {
+    else if (ifnode->child[0]->nodeType == idN) {
+        idNode * id = (idNode *) (ifnode->child[0]);
+        tempString.append("LOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        idHandle(id);
+
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+
+        tempString.append("BREQ");
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempString.append("0");
+        tempString.append("\t");
+        tempString.append("FI_"+std::to_string(ifnode->counter));
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+    }
+    else { //it's an expr node
         exprNode * expr = (exprNode *) ifnode->child[0];
         exprHandle(expr);
         ASTnode * logicOp = ifnode->child[0];
@@ -1196,9 +1237,10 @@ void ifHandleTop(ifNode * ifnode) {
         tempString.append("0");
         tempString.append("\t");
         tempString.append("FI_"+std::to_string(ifnode->counter));
-    }
     triACStruct.push_back(tempString);
     tempString = "";
+    tempInc();
+    }
 };
 
 void ifHandleBot(ifNode * ifnode) {
@@ -1252,6 +1294,8 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         constantHandle(cons);
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
@@ -1265,6 +1309,8 @@ void exprHandle(exprNode * expr){
         constantHandle(cons);
         tempString.append("\t");
         tempRHS();
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
@@ -1279,6 +1325,8 @@ void exprHandle(exprNode * expr){
         constantHandle(cons);
         tempString.append("\t");
         tempRHS();
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == constantN){
@@ -1293,15 +1341,15 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         constantHandle(cons);
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
-        //FIXME if expr order matter
-        //it shouldn't tho...
-        exprNode * expr1 = (exprNode *) expr->child[0];
-        exprHandle(expr1);
         exprNode * expr2 = (exprNode *) expr->child[1];
         exprHandle(expr2);
+        exprNode * expr1 = (exprNode *) expr->child[0];
+        exprHandle(expr1);
 
         tempString.append(expr->production);
         tempString.append("\t");
@@ -1310,6 +1358,8 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == exprN){
@@ -1317,6 +1367,7 @@ void exprHandle(exprNode * expr){
         idNode * id = (idNode *) expr->child[0];
 
         exprHandle(expr1);
+        offHandle(expr->child[0]);
         tempString.append(expr->production);
         tempString.append("\t");
         tempDST();
@@ -1324,12 +1375,14 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
-
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == idN){
         exprNode * expr1 = (exprNode *) expr->child[0];
         idNode * id = (idNode *) expr->child[1];
+        offHandle(expr->child[1]);
         exprHandle(expr1);
 
         tempString.append(expr->production);
@@ -1339,25 +1392,30 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
-
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN){
-        constantNode * cons = (constantNode *) expr->child[0];
 
         tempString.append(expr->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
+        constantNode * cons = (constantNode *) expr->child[0];
         constantHandle(cons);
         cons = (constantNode *) expr->child[1];
         tempString.append("\t");
         constantHandle(cons);
+    triACStruct.push_back(tempString);
+    tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == idN) {
         idNode * id = (idNode *) expr->child[0];
         id = (idNode *) expr->child[1];
+        offHandle(expr->child[1]);
+        offHandle(expr->child[0]);
 
         tempString.append(expr->production);
         tempString.append("\t");
@@ -1366,10 +1424,10 @@ void exprHandle(exprNode * expr){
         tempRHS();
         tempString.append("\t");
         tempRHS();
+        triACStruct.push_back(tempString);
+        tempString="";
         tempInc();
     }
-    triACStruct.push_back(tempString);
-    tempString="";
 };
 //}}}
 void constantHandle(constantNode * cons) {

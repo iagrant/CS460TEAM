@@ -32,7 +32,7 @@ bool printToken = false;
 bool printSymbol = false;
 bool printSymbolNums = false;
 bool printProductions = false;
-bool printFile = true;
+bool printFile = false;
 bool printSource = false;
 bool buildingFunction = false;
 bool firstPrint = true;
@@ -59,7 +59,7 @@ void printLine ();
 %option noyywrap
 alpha   [A-Za-z]
 dig     [0-9]
-name    ({alpha}|{dig}|\$)({alpha}|{dig}|[_.\-/$])*
+name    ({alpha}|{dig})({alpha}|{dig}|[_])*
 num1    [-+]?{dig}+\.?([eE][-+]?{dig}+)?
 num2    [-+]?{dig}*\.{dig}+([eE][-+]?{dig}+)?
 escaped \\[anrtbfv0]
