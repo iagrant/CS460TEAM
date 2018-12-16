@@ -348,7 +348,7 @@ class ifNode : public ASTnode {
 
 class functionNode : public ASTnode {
     public:
-        int activationFrameSize;
+        int activationFrameSize = 0;
         functionNode(std::string productionIn){production = productionIn;nodeType = funcN;}
 
         std::string printASTnode() {

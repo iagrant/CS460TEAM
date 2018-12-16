@@ -1750,7 +1750,7 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
-            tmpNode->sumNode();
+            tmpNode->size = $2->size;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
