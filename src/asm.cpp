@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <sstream>      // std::istringstream
-
+#include <fstream>
 //why?
-//#include "scanner.lex"
+//#include "scanner.lex" // For outSrcFile; still broken not sure why
 #include "RegAlloc.cpp"
 
 std::vector<std::string> asmCode;
@@ -151,13 +151,13 @@ void mulOpHandle(std::vector<std::string> parsedLine)
 void divOpHandle(std::vector<std::string> parsedLine)
 {
     std::cout << "div\t" << "dest\top1\top2" << std::endl;
-    std::cout << "mfhi\t" << "dest" << std::endl;
     std::cout << "mflo\t" << "dest" << std::endl;
 
 }
 void modOpHandle(std::vector<std::string> parsedLine)
 {
-
+    std::cout << "div\t" << "dest\top1\top2" << std::endl;
+    std::cout << "mfhi\t" << "dest" << std::endl;
 }
 void commentOpHandle(std::vector<std::string> parsedLine)
 {
@@ -194,12 +194,10 @@ void prologHandle(std::vector<std::string> parsedLine) {
 
 }
 
-/* who wrote this broken code?
 void printLine(std::string line)
 {
     std::ofstream fout;
-    fout.open(outSrcFile, ios:app);
+    fout.open(outSrcFile, std::ios::app);
     fout << line << std::endl;
     fout.close();
 }
-*/
