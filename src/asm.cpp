@@ -10,6 +10,10 @@ extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
 void parseStruct ();
 std::vector<std::string> parseLine (std::string triACLine);
+void notHandle(std::vector<std::string> parsedLine);
+void ltOpHandle(std::vector<std::string> parsedLine);
+void gtOpHandle(std::vector<std::string> parsedLine);
+void mathRHS(std::vector<std::string> parsedLine);
 void beqOpHandle(std::vector<std::string> parsedLine);
 void bneOpHandle(std::vector<std::string> parsedLine);
 void operatorHandle(std::vector<std::string> parsedLine);
@@ -181,8 +185,7 @@ void operatorHandle(std::vector<std::string> parsedLine)
         labelOpHandle(parsedLine);
         lastOp = normie;
     }
-    //LT GT GE LE EQ NE AND OR
-    else if (parsedLine[0].compare("LT") == 0 ||
+    /*
              parsedLine[0].compare("GT") == 0 ||
              parsedLine[0].compare("GE") == 0 ||
              parsedLine[0].compare("LE") == 0 ||
@@ -191,9 +194,14 @@ void operatorHandle(std::vector<std::string> parsedLine)
              parsedLine[0].compare("AND") == 0 ||
              parsedLine[0].compare("OR") == 0 ||
              parsedLine[0].compare("XOR") == 0
-            )
-    {
-        exprOpHandle(parsedLine);
+             */
+    //LT GT GE LE EQ NE AND OR
+    else if (parsedLine[0].compare("LT") == 0) {
+        ltOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("GT") == 0) {
+        gtOpHandle(parsedLine);
         lastOp = normie;
     }
     else
@@ -201,6 +209,34 @@ void operatorHandle(std::vector<std::string> parsedLine)
         std::cout << parsedLine[0] << "THAT'S A NONO!" << std::endl;
         lastOp = normie;
     }
+}
+void gtOpHandle(std::vector<std::string> parsedLine)
+{
+    ltOpHandle(parsedLine);
+    notHandle(parsedLine);
+}
+void notHandle(std::vector<std::string> parsedLine){
+    int dst = getTmpReg(-1);
+    int src1 = tempRegGetter(parsedLine[1]);
+    tmpStr.append("not\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void ltOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("slt\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 
 void exprOpHandle(std::vector<std::string> parsedLine)
