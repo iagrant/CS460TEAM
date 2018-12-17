@@ -1239,6 +1239,7 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         tempRHS();
         tempInc();
+        // CONSTANT - ARRAY
     } else if (math->child[0]->nodeType == constantN &&
                math->child[1]->nodeType == arrayN)
     {
@@ -1502,6 +1503,7 @@ void exprHandle(exprNode * expr){
     //LOGIC_OP DST SRC1 SRC2
     //ie LT DST SRC1 SRC2   store res of SRC1 < SRC2 inside DST
     //1 if SRC 1 < SRC2 else 0
+    // ID - CONSTANT
     if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == constantN) {
         idNode * id = (idNode *) expr->child[0];
         constantNode * cons = (constantNode *) expr->child[1];
@@ -1519,6 +1521,7 @@ void exprHandle(exprNode * expr){
         tempString="";
         tempInc();
     }
+    // CONSTANT - ID
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
         constantNode * cons = (constantNode *) expr->child[0];
         offHandle(expr->child[1]);
@@ -1535,6 +1538,7 @@ void exprHandle(exprNode * expr){
         tempString="";
         tempInc();
     }
+    // CONSTANT - EXPR
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
         constantNode * cons = (constantNode *) expr->child[0];
         exprNode * expr1 = (exprNode *) expr->child[1];
@@ -1552,6 +1556,7 @@ void exprHandle(exprNode * expr){
     tempString="";
         tempInc();
     }
+    // EXPR - CONSTANT
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == constantN){
         exprNode * expr1 = (exprNode *) expr->child[0];
         constantNode * cons = (constantNode *) expr->child[1];
@@ -1569,6 +1574,7 @@ void exprHandle(exprNode * expr){
         tempString="";
         tempInc();
     }
+    // EXPR - EXPR
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
         exprNode * expr2 = (exprNode *) expr->child[1];
         exprHandle(expr2);
@@ -1586,6 +1592,7 @@ void exprHandle(exprNode * expr){
     tempString="";
         tempInc();
     }
+    // ID - EXPR
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == exprN){
         exprNode * expr1 = (exprNode *) expr->child[1];
         idNode * id = (idNode *) expr->child[0];
@@ -1603,6 +1610,7 @@ void exprHandle(exprNode * expr){
     tempString="";
         tempInc();
     }
+    // EXPR - ID
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == idN){
         exprNode * expr1 = (exprNode *) expr->child[0];
         idNode * id = (idNode *) expr->child[1];
@@ -1637,6 +1645,7 @@ void exprHandle(exprNode * expr){
     tempString="";
         tempInc();
     }
+    // ID - ID
     else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == idN) {
         idNode * id = (idNode *) expr->child[0];
         id = (idNode *) expr->child[1];
@@ -1654,7 +1663,278 @@ void exprHandle(exprNode * expr){
         tempString="";
         tempInc();
     }
-};
+
+    // ID - ARRAY X
+    else if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == arrayN) {
+        arrayNode * arr = (arrayNode *) expr->child[1];
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+        offHandle(expr->child[0]);
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
+        triACStruct.push_back(tempString);
+        tempString = "";
+
+    }
+
+    // CONSTANT - ARRAY X
+    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == arrayN) {
+        arrayNode * arr = (arrayNode *) expr->child[1];
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        constantNode * cons1 = (constantNode *) (expr->child[0]);
+        constantHandle(cons1);
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
+        triACStruct.push_back(tempString);
+        tempString = "";
+
+    }
+
+    // ARRAY - ID X
+    else if (expr->child[0]->nodeType == arrayN && expr->child[1]->nodeType == idN) {
+        arrayNode * arr = (arrayNode *) expr->child[0];
+        offHandle(expr->child[1]);
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
+        triACStruct.push_back(tempString);
+        tempString = "";
+
+    }
+
+    // ARRAY - CONSTANT X
+    else if (expr->child[0]->nodeType == arrayN && expr->child[1]->nodeType == constantN) {
+        arrayNode * arr = (arrayNode *) expr->child[0];
+        constantNode * cons1 = (constantNode *) (expr->child[1]);
+
+        // Case that works for 2D Arith
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        constantHandle(cons1);
+        tempInc();
+        triACStruct.push_back(tempString);
+        tempString = "";
+
+    }
+    // ARRAY - ARRAY X
+    else if (expr->child[0]->nodeType == arrayN && expr->child[1]->nodeType == arrayN) {
+        arrayNode * arr = (arrayNode *) expr->child[0];
+        arrayNode * arr1 = (arrayNode *) expr->child[1];
+        if (arr1->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr1);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr1);
+        }
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
+        triACStruct.push_back(tempString);
+        tempString = "";
+    }
+
+    // ARRAY - EXPR
+    else if (expr->child[0]->nodeType == arrayN && expr->child[1]->nodeType == exprN){
+        arrayNode * arr = (arrayNode *) expr->child[0];
+        exprNode * expr1 = (exprNode *) expr->child[1];
+        //arrayhandle
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+        exprHandle(expr1);
+
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString="";
+        tempInc();
+    }
+
+    // EXPR - ARRAY
+    else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == arrayN){
+        exprNode * expr1 = (exprNode *) expr->child[0];
+        arrayNode * arr = (arrayNode *) expr->child[1];
+        //arrayhandle
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
+        }
+
+        else
+        {
+            arrayGetHandle(arr);
+        }
+        exprHandle(expr1);
+
+        tempString.append(expr->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+    triACStruct.push_back(tempString);
+    tempString="";
+        tempInc();
+    }
+}
 //}}}
 void constantHandleElec(constantNode * cons){
 
