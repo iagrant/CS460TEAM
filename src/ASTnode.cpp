@@ -10,7 +10,7 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
-enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN,returnN};
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN,returnN,funcCallN};
 
 class ASTnode {
 public:
@@ -83,6 +83,39 @@ public:
                 return 1;
         }
     }
+
+
+    std::string printTypeSpec(int input) {
+        switch(input)
+        {
+            case voidS:
+                return "void ";
+                break;
+            case charS:
+                return "char ";
+                break;
+            case shortS:
+                return "short ";
+                break;
+            case intS:
+                return "int ";
+                break;
+            case longS:
+                return "long ";
+                break;
+            case floatS:
+                return "float ";
+                break;
+            case doubleS:
+                return "double ";
+                break;
+            case structS:
+                return "struct ";
+                break;
+        }
+        return "";
+    }
+
 };
 
 class declNode : public ASTnode {
@@ -464,5 +497,31 @@ class arrayNode : public ASTnode {
 class returnNode : public ASTnode {
     public:
         returnNode(std::string productionIn){production = productionIn;nodeType=returnN;}
+
+};
+
+
+class funcCallNode : public ASTnode {
+
+    public:
+        std::string name;
+
+        funcCallNode(std::string productionIn)
+        {
+            production = productionIn;nodeType=funcCallN;
+        }
+        std::string printASTnode() {
+            infoString.append(production);
+            infoString.append("\n");
+            infoString.append("TYPE: ");
+            infoString.append(printTypeSpec(typeSpec));
+            infoString.append("\n");
+            infoString.append("NAME: ");
+            infoString.append(name);
+            infoString.append("\n");
+            infoString.append("LINE: ");
+            infoString.append(std::to_string(lineNum));
+            return infoString;
+        }
 
 };
