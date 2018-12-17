@@ -23,6 +23,7 @@ void modOpHandle(std::vector<std::string> parsedLine);
 void commentOpHandle(std::vector<std::string> parsedLine);
 void prologHandle(std::vector<std::string> parsedLine);
 void epilogHandle(std::vector<std::string> parsedLine);
+void printSrc(std::vector<std::string> parsedLine);
 void printLine(std::string line);
 void printASM();
 int actSize;
@@ -39,6 +40,7 @@ void parseStruct ()
 
     triACLine = triACStruct[0];
     parsedLine = parseLine(triACLine);
+    printSrc(parsedLine);
     prologHandle(parsedLine);
     lineStack.push_front(parsedLine);
     tmpStr = "";
@@ -52,6 +54,7 @@ void parseStruct ()
         parsedLine = parseLine(triACLine);
 
         // Get the enum for the operator
+        printSrc(parsedLine);
         operatorHandle(parsedLine);
         i++;
     }
@@ -82,6 +85,16 @@ int tempRegGetter(std::string input) {
     test.erase(0,3);
     int reg = getTmpReg(std::stoi(test));
     return reg;
+}
+
+void printSrc(std::vector<std::string> parsedLine) {
+    tmpStr = "##";
+    for (int i=0;i<parsedLine.size();i++) {
+        tmpStr.append(parsedLine[i]);
+        tmpStr.append("\t");
+    }
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 
 void operatorHandle(std::vector<std::string> parsedLine)
@@ -129,7 +142,7 @@ void operatorHandle(std::vector<std::string> parsedLine)
     else
     {
         //labels
-        //std::cout << parsedLine[0] << " OP NOT INCLUDED YET" << std::endl;
+        std::cout << parsedLine[0] << "THAT'S A NONO!" << std::endl;
     }
 }
 
