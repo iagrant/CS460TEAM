@@ -1,4 +1,13 @@
+#prints a char and then a new line
 printInt:
-	li $v0,1 #System Code to print an int
-	li $a0, 13 #loading a0 with value to print.
-	syscall #print the int
+
+    #call print-int syscall
+    addi $v0 $zero 1
+    syscall
+
+    #print space 
+    addi $v0 $zero 11
+    addi $a0 $zero 32
+    syscall
+
+    jr $ra
