@@ -26,7 +26,7 @@ void forHandleBot(forNode * fNode);
 void equalHandle(ASTnode * AST);
 void arrayHandleTop(ASTnode * equal);
 void arrayHandleBottom(ASTnode * equal );
-void array2DHandleBottom(ASTnode * equal);
+void array2DHandleBottom(arrayNode * equal);
 void arrayGetHandle(arrayNode * arr);
 void handleRHSArray(ASTnode * equal);
 void exprHandle(exprNode * expr);
@@ -448,7 +448,6 @@ void arrayHandleBottom(ASTnode * equal ) {
     tempInc();
     }
 
-    handleRHSArray(equal);
 }
 
 
@@ -472,8 +471,8 @@ void handleRHSArray(ASTnode * equal)
         tempString.append("\t");
         tempRHSArr();
     }
+    // RHS IS ID NODE
     if (equal->child[1]->nodeType == idN) {
-        idNode * val = (idNode *) equal->child[1];
         offHandle(equal->child[1]);
         tempString.append("STORE");
         tempString.append("\t");
@@ -481,6 +480,7 @@ void handleRHSArray(ASTnode * equal)
         tempString.append("\t");
         tempRHSArr();
     }
+    // RHS IS ARRAY NODE
     else if (equal->child[1]->nodeType == arrayN) {
         arrayNode * arr = (arrayNode *) equal->child[1];
         // ADDR OF ID
@@ -489,145 +489,167 @@ void handleRHSArray(ASTnode * equal)
         // ASSIGN INDEX
         // Array Index Cases
         // aka the stuff inside the brackets
-        if (arr->child[0]->child[0]->nodeType == constantN) {
-        tempString.append("ADDR");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempString.append("A_"+std::to_string(arr->offset));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        tempString.append("ASSIGN");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
-            tempString.append(std::to_string(tmp->intConst));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
 
-        tempString.append("MULT");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        // ADD ADDR LASTMULT
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            tempString.append("STORE");
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHSArr();
         }
-        else if (arr->child[0]->child[0]->nodeType == idN) {
-        tempString.append("ADDR");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempString.append("A_"+std::to_string(arr->offset));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        tempString.append("LOAD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-            idNode * tmp = (idNode *) arr->child[0]->child[0];
-            idHandle(tmp);
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+        else 
+        {
+            if (arr->child[0]->child[0]->nodeType == constantN) {
+            tempString.append("ADDR");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempString.append("A_"+std::to_string(arr->offset));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+                constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+                tempString.append(std::to_string(tmp->intConst));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            tempString.append("MULT");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            // ADD ADDR LASTMULT
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            }
+            else if (arr->child[0]->child[0]->nodeType == idN) {
+            tempString.append("ADDR");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempString.append("A_"+std::to_string(arr->offset));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+                idNode * tmp = (idNode *) arr->child[0]->child[0];
+                idHandle(tmp);
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
 
 
-        tempString.append("MULT");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        // ADD ADDR LASTMULT
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+            tempString.append("MULT");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            // ADD ADDR LASTMULT
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
 
+            }
+            else if (arr->child[0]->child[0]->nodeType == mathN) {
+
+            tempUsage1 = tempStack.front();
+            tempStack.pop_front();
+
+            tempString.append("MULT");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempStack.push_front(tempUsage1);
+            tempInc();
+
+            tempString.append("ADDR");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempString.append("A_"+std::to_string(arr->offset));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            // ADD ADDR LASTMULT
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            }
+            //
+            // MULIPLE BY BYTESIZE OF TYPE
+
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            tempString.append("STORE");
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHSArr();
         }
-        else if (arr->child[0]->child[0]->nodeType == mathN) {
-
-        tempUsage1 = tempStack.front();
-        tempStack.pop_front();
-
-        tempString.append("MULT");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempStack.push_front(tempUsage1);
-        tempInc();
-
-        tempString.append("ADDR");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempString.append("A_"+std::to_string(arr->offset));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        // ADD ADDR LASTMULT
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-        }
-        //
-        // MULIPLE BY BYTESIZE OF TYPE
-
-        tempString.append("LOAD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHSArr();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-
-        tempString.append("STORE");
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHSArr();
-
     }
 }
 
@@ -694,15 +716,24 @@ void equalHandle(ASTnode * AST) {
         // ARRAY ASIGNMENT
         else if (AST->child[0]->production.compare("ARRAY_NODE") == 0 && AST->child[1]->nodeType != mathN) {
             arrayNode * arr = (arrayNode *) AST->child[0];
+            // LHS 1D ARRAY
             if (arr->boundVect.size() == 1)
+            {
                 arrayHandleBottom(AST);
+            }
+            // LHS 2D ARRAY
             else if (arr->boundVect.size() == 2)
-                array2DHandleBottom(AST);
+            {
+                arrayNode * arr = (arrayNode *) AST->child[0];
+                array2DHandleBottom(arr);
+            }
+                
             else
             {
                 std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
                 exit(1);
             }
+            handleRHSArray(AST);
         }
         else if (AST->child[1]->nodeType == mathN) {
             idNode * id = (idNode *) AST->child[0];
@@ -718,9 +749,8 @@ void equalHandle(ASTnode * AST) {
     tempString = "";
 }
 
-void array2DHandleBottom(ASTnode * equal)
+void array2DHandleBottom(arrayNode * arr)
 {
-    arrayNode * arr = (arrayNode *) equal->child[0];
     // ADDR OF ID
     tempString.append("ADDR");
     tempString.append("\t");
@@ -902,7 +932,6 @@ void array2DHandleBottom(ASTnode * equal)
         tempString = "";
         tempInc();
     }
-    handleRHSArray(equal);
 }
 
 void arrayGetHandle(arrayNode * arr) {
@@ -1133,7 +1162,26 @@ void mathHandle(mathNode * math) {
         arrayNode * arr = (arrayNode *) math->child[0];
         constantNode * cons1 = (constantNode *) (math->child[1]);
 
-        arrayGetHandle(arr);
+        // Case that works for 2D Arith
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
+
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1147,7 +1195,25 @@ void mathHandle(mathNode * math) {
     {
         arrayNode * arr = (arrayNode *) math->child[0];
         offHandle(math->child[1]);
-        arrayGetHandle(arr);
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1160,7 +1226,24 @@ void mathHandle(mathNode * math) {
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
-        arrayGetHandle(arr);
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1175,7 +1258,24 @@ void mathHandle(mathNode * math) {
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
-        arrayGetHandle(arr);
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
@@ -1191,8 +1291,43 @@ void mathHandle(mathNode * math) {
     {
         arrayNode * arr = (arrayNode *) math->child[0];
         arrayNode * arr1 = (arrayNode *) math->child[1];
-        arrayGetHandle(arr1);
-        arrayGetHandle(arr);
+        if (arr1->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr1);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr1);
+        }
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
 
         tempString.append(math->production);
         tempString.append("\t");

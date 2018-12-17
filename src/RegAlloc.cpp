@@ -26,6 +26,12 @@ void initTable() {
         regTable.push_back(tmp);
     }
 }
+void printTable() {
+    for (int i = 0;i<32;i++) {
+        std::pair <int,int> tmp = regTable[i];
+        std::cout << tmp.first << " " << tmp.second << std::endl;
+    }
+}
 
 void freeReg(int reg) {
     std::pair <int,int> tmp = std::pair<int,int>(reg,-1);

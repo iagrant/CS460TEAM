@@ -3258,5 +3258,7 @@ int main (int argc, char** argv)
   walkTree(globalASTnode);
   print3ac();
   parseStruct();
+  printASM();
+  //printTable();
   return 0;
 }
