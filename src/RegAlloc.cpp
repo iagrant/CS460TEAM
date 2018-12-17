@@ -44,6 +44,7 @@ int getRetReg(int temp){ //v0-v1 return vals
     while (i !=4) {
         if(regTable[i].second == temp ){
             regTable[i].second = temp;
+            freeReg(i);
             return i;
             i=4;
         }
@@ -66,6 +67,7 @@ int getArgReg(int temp){ //a0-a3 1st four params of func call
     while (i !=8) {
         if(regTable[i].second == temp){
             regTable[i].second = temp;
+            freeReg(i);
             return i;
             i=8;
         }
@@ -88,6 +90,7 @@ int getTmpReg(int temp){ //t0-t9 temp reg no preserved
     while (i !=26) {
         if(regTable[i].second == temp ){
             regTable[i].second = temp;
+            freeReg(i);
             return i;
             i=26;
         }
@@ -116,6 +119,7 @@ int getSaveReg(int temp){ //s0-s7 save regs vals preserved between func calls
     while (i !=24) {
         if(regTable[i].second == temp ){
             regTable[i].second = temp;
+            freeReg(i);
             return i;
             i=24;
         }

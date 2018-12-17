@@ -1941,7 +1941,7 @@ void exprHandle(exprNode * expr){
 void constantHandleElec(constantNode * cons){
 
     tempString = "";
-    tempString.append("LOAD");
+    tempString.append("ASSIGN");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");

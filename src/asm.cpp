@@ -90,7 +90,6 @@ int tempRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
-    printASM();
     int reg = getTmpReg(std::stoi(test));
     return reg;
 }
@@ -107,6 +106,7 @@ void printSrc(std::vector<std::string> parsedLine) {
 
 void operatorHandle(std::vector<std::string> parsedLine)
 {
+    printASM();
     if (parsedLine[0].compare("LOAD") == 0)
     {
         loadOpHandle(parsedLine);
@@ -202,15 +202,27 @@ void addrOpHandle(std::vector<std::string> parsedLine)
 }
 void addOpHandle(std::vector<std::string> parsedLine)
 {
-    int dst = tempRegGetter(parsedLine[1]);
-    int src1 = tempRegGetter(parsedLine[2]);
-    int src2 = tempRegGetter(parsedLine[3]);
-    tmpStr.append("add\t$");
-    tmpStr.append(std::to_string(dst));
-    tmpStr.append("\t$");
-    tmpStr.append(std::to_string(src1));
-    tmpStr.append("\t$");
-    tmpStr.append(std::to_string(src2));
+    if (parsedLine[3].front() == 'i') {
+        int dst = tempRegGetter(parsedLine[1]);
+        int src1 = tempRegGetter(parsedLine[2]);
+        int src2 = tempRegGetter(parsedLine[3]);
+        tmpStr.append("add\t$");
+        tmpStr.append(std::to_string(dst));
+        tmpStr.append("\t$");
+        tmpStr.append(std::to_string(src1));
+        tmpStr.append("\t$");
+        tmpStr.append(std::to_string(src2));
+    }
+    else {
+        int dst = tempRegGetter(parsedLine[1]);
+        int src1 = tempRegGetter(parsedLine[2]);
+        tmpStr.append("add\t$");
+        tmpStr.append(std::to_string(dst));
+        tmpStr.append("\t$");
+        tmpStr.append(std::to_string(src1));
+        tmpStr.append("\t");
+        tmpStr.append(parsedLine[3]);
+    }
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
