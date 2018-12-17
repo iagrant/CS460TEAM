@@ -1505,6 +1505,7 @@ void exprHandle(exprNode * expr){
     if (expr->child[0]->nodeType == idN && expr->child[1]->nodeType == constantN) {
         idNode * id = (idNode *) expr->child[0];
         constantNode * cons = (constantNode *) expr->child[1];
+        constantHandleElec(cons);
         offHandle(expr->child[0]);
 
         tempString.append(expr->production);
@@ -1513,24 +1514,25 @@ void exprHandle(exprNode * expr){
         tempString.append("\t");
         tempRHS();
         tempString.append("\t");
-        constantHandle(cons);
-    triACStruct.push_back(tempString);
-    tempString="";
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == idN){
         constantNode * cons = (constantNode *) expr->child[0];
         offHandle(expr->child[1]);
+        constantHandleElec(cons);
 
         tempString.append(expr->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantHandle(cons);
+        tempRHS();
         tempString.append("\t");
         tempRHS();
-    triACStruct.push_back(tempString);
-    tempString="";
+        triACStruct.push_back(tempString);
+        tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == exprN){
@@ -1538,11 +1540,12 @@ void exprHandle(exprNode * expr){
         exprNode * expr1 = (exprNode *) expr->child[1];
 
         exprHandle(expr1);
+        constantHandleElec(cons);
         tempString.append(expr->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantHandle(cons);
+        tempRHS();
         tempString.append("\t");
         tempRHS();
     triACStruct.push_back(tempString);
@@ -1553,6 +1556,7 @@ void exprHandle(exprNode * expr){
         exprNode * expr1 = (exprNode *) expr->child[0];
         constantNode * cons = (constantNode *) expr->child[1];
 
+        constantHandle(cons);
         exprHandle(expr1);
         tempString.append(expr->production);
         tempString.append("\t");
@@ -1560,9 +1564,9 @@ void exprHandle(exprNode * expr){
         tempString.append("\t");
         tempRHS();
         tempString.append("\t");
-        constantHandle(cons);
-    triACStruct.push_back(tempString);
-    tempString="";
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString="";
         tempInc();
     }
     else if (expr->child[0]->nodeType == exprN && expr->child[1]->nodeType == exprN){
@@ -1616,17 +1620,19 @@ void exprHandle(exprNode * expr){
     tempString="";
         tempInc();
     }
-    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN){
-
+    else if (expr->child[0]->nodeType == constantN && expr->child[1]->nodeType == constantN)
+    {
+        constantNode * cons = (constantNode *) expr->child[0];
+        constantNode * cons1 = (constantNode *) expr->child[1];
+        constantHandle(cons1);
+        constantHandle(cons);
         tempString.append(expr->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantNode * cons = (constantNode *) expr->child[0];
-        constantHandle(cons);
-        cons = (constantNode *) expr->child[1];
+        tempRHS();
         tempString.append("\t");
-        constantHandle(cons);
+        tempRHS();
     triACStruct.push_back(tempString);
     tempString="";
         tempInc();

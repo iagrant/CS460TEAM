@@ -24,6 +24,7 @@ void commentOpHandle(std::vector<std::string> parsedLine);
 void prologHandle(std::vector<std::string> parsedLine);
 void epilogHandle(std::vector<std::string> parsedLine);
 void printSrc(std::vector<std::string> parsedLine);
+int getOffSet(std::vector<std::string> parsedLine);
 void printLine(std::string line);
 void printASM();
 int actSize;
@@ -40,7 +41,6 @@ void parseStruct ()
 
     triACLine = triACStruct[0];
     parsedLine = parseLine(triACLine);
-    printSrc(parsedLine);
     prologHandle(parsedLine);
     lineStack.push_front(parsedLine);
     tmpStr = "";
@@ -78,6 +78,9 @@ std::vector<std::string> parseLine (std::string triACLine)
     return parsedLine;
 }
 
+int getOffSet(std::vector<std::string> parsedLine) {
+    return actSize-std::stoi(parsedLine[2])-4;
+}
 
 int tempRegGetter(std::string input) {
     std::string test = "";
@@ -152,7 +155,7 @@ void loadOpHandle(std::vector<std::string> parsedLine)
     tmpStr = "";
     int reg = tempRegGetter(parsedLine[1]);
     parsedLine[2].erase(0,2);
-    tmpStr = "lw\t$" + std::to_string(reg) + "\t" + std::to_string(actSize-std::stoi(parsedLine[2])-4) + "($sp)";
+    tmpStr = "lw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
     asmCode.push_back(tmpStr);
     tmpStr = "";
 
@@ -161,7 +164,7 @@ void storeOpHandle(std::vector<std::string> parsedLine)
 {
     int reg = tempRegGetter(parsedLine[1]);
     parsedLine[2].erase(0,2);
-    tmpStr = "sw\t$" + std::to_string(reg) + "\t" + std::to_string(actSize-std::stoi(parsedLine[2])-4) + "($sp)";
+    tmpStr = "sw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
@@ -170,13 +173,16 @@ void assignHandle(std::vector<std::string> parsedLine)
     int reg = tempRegGetter(parsedLine[1]);
     tmpStr = "li\t$" + std::to_string(reg);
     tmpStr.append("\t");
-    tmpStr.append(parsedLine[2]);
+    tmpStr.append(parsedLine[2]); //FIXME idk if okay load int onto far right side
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
 void addrOpHandle(std::vector<std::string> parsedLine)
 {
-    std::cout << "la\t" << "dst\toffset($sp)" << std::endl;
+    int reg = tempRegGetter(parsedLine[1]);
+    tmpStr = "la\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void addOpHandle(std::vector<std::string> parsedLine)
 {
@@ -194,7 +200,17 @@ void addOpHandle(std::vector<std::string> parsedLine)
 }
 void subOpHandle(std::vector<std::string> parsedLine)
 {
-    std::cout << "subu\t" << "dest\top1\top2" << std::endl;
+    int reg = tempRegGetter(parsedLine[1]);
+    int reg1 = tempRegGetter(parsedLine[2]);
+    int reg2 = tempRegGetter(parsedLine[3]);
+    tmpStr.append("sub\t$");
+    tmpStr.append(std::to_string(reg));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(reg1));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(reg2));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void mulOpHandle(std::vector<std::string> parsedLine)
 {
@@ -214,7 +230,7 @@ void modOpHandle(std::vector<std::string> parsedLine)
 }
 void commentOpHandle(std::vector<std::string> parsedLine)
 {
-
+    //important function don't delete
 }
 void prologHandle(std::vector<std::string> parsedLine) {
     tmpStr.append("##\t.globl\t"+parsedLine[0]);
