@@ -2047,6 +2047,8 @@ jump_statement
         }
 	| RETURN SEMI
         {
+            returnNode * ret = new returnNode("RETURN");
+            $$ = ret;
             if (printProductions) {
                 std::cout << "jump_statement -> RETURN SEMI" << std::endl;
             }
@@ -2056,6 +2058,10 @@ jump_statement
         }
 	| RETURN expression SEMI
         {
+            returnNode * ret = new returnNode("RETURN");
+            ret->addNode($2);
+            ret->lineNum = lineNum;
+            $$ = ret;
             if (printProductions) {
                 std::cout << "jump_statement -> RETURN expression SEMI" << std::endl;
             }

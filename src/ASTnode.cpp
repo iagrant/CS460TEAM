@@ -10,7 +10,7 @@ std::ofstream astFileP("ASTnode.dot");
 
 bool printGraphviz = false;
 
-enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN};
+enum nodeTypes {genericN,mathN,idN,constantN,castN,ifN,funcN,forN,whileN,declN,exprN,arrayN,returnN};
 
 class ASTnode {
 public:
@@ -458,5 +458,11 @@ class arrayNode : public ASTnode {
             infoString.append(std::to_string(offset));
             return infoString;
         }
+
+};
+
+class returnNode : public ASTnode {
+    public:
+        returnNode(std::string productionIn){production = productionIn;nodeType=returnN;}
 
 };
