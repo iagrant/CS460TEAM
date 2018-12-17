@@ -1195,7 +1195,25 @@ void mathHandle(mathNode * math) {
     {
         arrayNode * arr = (arrayNode *) math->child[0];
         offHandle(math->child[1]);
-        arrayGetHandle(arr);
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1208,7 +1226,24 @@ void mathHandle(mathNode * math) {
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
-        arrayGetHandle(arr);
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1223,7 +1258,24 @@ void mathHandle(mathNode * math) {
                math->child[1]->nodeType == arrayN)
     {
         arrayNode * arr = (arrayNode *) math->child[1];
-        arrayGetHandle(arr);
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
         offHandle(math->child[0]);
         tempString.append(math->production);
         tempString.append("\t");
@@ -1239,8 +1291,43 @@ void mathHandle(mathNode * math) {
     {
         arrayNode * arr = (arrayNode *) math->child[0];
         arrayNode * arr1 = (arrayNode *) math->child[1];
-        arrayGetHandle(arr1);
-        arrayGetHandle(arr);
+        if (arr1->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr1);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr1);
+        }
+
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            tempInc();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            
+        }
+        
+        else
+        {
+            arrayGetHandle(arr);
+        }
 
         tempString.append(math->production);
         tempString.append("\t");
