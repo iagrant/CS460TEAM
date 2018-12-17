@@ -31,6 +31,7 @@ void arrayGetHandle(arrayNode * arr);
 void handleRHSArray(ASTnode * equal);
 void exprHandle(exprNode * expr);
 void constantHandle(constantNode * cons);
+void constantHandleElec(constantNode * cons);
 void print3ac();
 void offHandle(ASTnode * AST);
 void offHandleA(ASTnode * AST);
@@ -509,7 +510,7 @@ void handleRHSArray(ASTnode * equal)
             tempString.append("\t");
             tempRHSArr();
         }
-        else 
+        else
         {
             if (arr->child[0]->child[0]->nodeType == constantN) {
             tempString.append("ADDR");
@@ -727,7 +728,7 @@ void equalHandle(ASTnode * AST) {
                 arrayNode * arr = (arrayNode *) AST->child[0];
                 array2DHandleBottom(arr);
             }
-                
+
             else
             {
                 std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
@@ -1001,26 +1002,33 @@ void mathHandle(mathNode * math) {
     if (math->child[0]->nodeType == constantN && math->child[1]->nodeType == mathN)
     {
         constantNode * cons = (constantNode *) (math->child[0]);
+        constantHandleElec(cons);
 
         tempString.append(math->production);
         tempString.append("\t");
         tempLHS();
         tempString.append("\t");
-        constantHandle(cons);
+        tempRHS();
         tempString.append("\t");
         tempRHS();
     }
     if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == constantN)
     {
         constantNode * cons = (constantNode *) (math->child[1]);
+        constantHandleElec(cons);
+
+        tempUsage = tempStack.front();
+        tempStack.pop_front();
+        tempUsage1 = tempStack.front();
+        tempStack.pop_front();
 
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        tempRHS();
+        tempReg = "iT_"+std::to_string(tempUsage1);
         tempString.append("\t");
-        constantHandle(cons);
+        tempReg = "iT_"+std::to_string(tempUsage);
 
         tempInc();
     }
@@ -1086,13 +1094,16 @@ void mathHandle(mathNode * math) {
         constantNode * cons1 = (constantNode *) (math->child[0]);
         constantNode * cons2 = (constantNode *) (math->child[1]);
 
+        constantHandleElec(cons2);
+        constantHandleElec(cons1);
+
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantHandle(cons1);
+        tempRHS();
         tempString.append("\t");
-        constantHandle(cons2);
+        tempRHS();
 
         tempInc();
     }
@@ -1116,12 +1127,13 @@ void mathHandle(mathNode * math) {
     {
         constantNode * cons1 = (constantNode *) (math->child[0]);
         offHandle(math->child[1]);
+        constantHandleElec(cons1);
 
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantHandle(cons1);
+        tempRHS();
         tempString.append("\t");
         tempRHS();
 
@@ -1130,6 +1142,7 @@ void mathHandle(mathNode * math) {
     else if (math->child[0]->nodeType == idN && math->child[1]->nodeType == constantN)
     {
         constantNode * cons1 = (constantNode *) (math->child[1]);
+        constantHandleElec(cons1);
         offHandle(math->child[0]);
 
         tempString.append(math->production);
@@ -1138,20 +1151,24 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         tempRHS();
         tempString.append("\t");
-        constantHandle(cons1);
+        tempRHS();
 
         tempInc();
     } else if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == constantN)
     {
         constantNode * cons1 = (constantNode *) (math->child[1]);
+        constantHandle(cons1);
+        tempUsage1 = tempStack.front();
+        tempStack.pop_front();
 
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
         tempRHS();
+        tempStack.push_front(tempUsage1);
         tempString.append("\t");
-        constantHandle(cons1);
+        tempRHS();
 
         tempInc();
 
@@ -1174,9 +1191,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr);
@@ -1207,9 +1224,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr);
@@ -1238,9 +1255,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr);
@@ -1270,9 +1287,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr);
@@ -1303,9 +1320,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr1);
@@ -1322,9 +1339,9 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
-            
+
         }
-        
+
         else
         {
             arrayGetHandle(arr);
@@ -1787,6 +1804,29 @@ void exprHandle(exprNode * expr){
     }
 };
 //}}}
+void constantHandleElec(constantNode * cons){
+
+    tempString = "";
+    tempString.append("LOAD");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+
+    if (cons->typeSpec == intS) {
+        tempString.append(std::to_string(cons->intConst));
+    }
+    else if (cons->typeSpec == floatS || cons->typeSpec == doubleS) {
+        //show that the tempReg is a float
+        tempString.append(std::to_string(cons->doubleConst));
+    }
+    else if (cons->typeSpec == charS) {
+        tempString.append(std::to_string((int)cons->charConst));
+    }
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
+}
+
 void constantHandle(constantNode * cons) {
     //FIXME add cons or fcons infront of it
     //to desinate between int const and float const
@@ -1916,7 +1956,7 @@ void forHandleBot(forNode * fornode) {
 void printSrc () {
     std::ifstream srcFileP(srcFile);
     std::string buffer="";
-    std::string out="##";
+    std::string out="##\t";
     for (int i = 0; i < currentLineNum; i++)
     {
         std::getline(srcFileP,buffer);
