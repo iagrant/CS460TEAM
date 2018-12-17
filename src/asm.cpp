@@ -403,6 +403,8 @@ void beqOpHandle(std::vector<std::string> parsedLine){
         tmpStr.append(std::to_string(reg));
         tmpStr.append("\t");
         tmpStr.append(parsedLine[2]);
+        tmpStr.append("\t");
+        tmpStr.append(parsedLine[3]);
         asmCode.push_back(tmpStr);
         tmpStr = "";
 }
@@ -411,8 +413,9 @@ void bneOpHandle(std::vector<std::string> parsedLine){
         tmpStr = "";
         tmpStr.append("bne\t");
         tmpStr.append(std::to_string(reg));
-        tmpStr.append("\t");
         tmpStr.append(parsedLine[2]);
+        tmpStr.append("\t");
+        tmpStr.append(parsedLine[3]);
         asmCode.push_back(tmpStr);
         tmpStr = "";
 }
