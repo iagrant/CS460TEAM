@@ -2308,7 +2308,7 @@ logical_or_expression
         }
 	| logical_or_expression OR_OP logical_and_expression
         {
-            exprNode* tmpNode = new exprNode("OR_OP");
+            exprNode* tmpNode = new exprNode("OR");
             tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
@@ -2336,7 +2336,7 @@ logical_and_expression
         }
 	| logical_and_expression AND_OP inclusive_or_expression
         {
-            exprNode* tmpNode = new exprNode("AND_OP");
+            exprNode* tmpNode = new exprNode("AND");
             tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
@@ -2430,7 +2430,7 @@ equality_expression
         }
 	| equality_expression EQ_OP relational_expression
         {
-            exprNode* tmpNode = new exprNode("EQ_OP");
+            exprNode* tmpNode = new exprNode("EQ");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = eqOp;
@@ -3266,8 +3266,8 @@ int main (int argc, char** argv)
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
   print3ac();
-  //parseStruct();
-  //printASM();
+  parseStruct();
+  printASM();
   //printTable();
   return 0;
 }
