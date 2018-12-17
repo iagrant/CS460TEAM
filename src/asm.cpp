@@ -10,7 +10,10 @@ extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
 void parseStruct ();
 std::vector<std::string> parseLine (std::string triACLine);
+void beqOpHandle(std::vector<std::string> parsedLine);
+void bneOpHandle(std::vector<std::string> parsedLine);
 void operatorHandle(std::vector<std::string> parsedLine);
+void labelOpHandle(std::vector<std::string> parsedLine);
 void loadOpHandle(std::vector<std::string> parsedLine);
 void storeOpHandle(std::vector<std::string> parsedLine);
 void assignHandle(std::vector<std::string> parsedLine);
@@ -108,7 +111,6 @@ void printSrc(std::vector<std::string> parsedLine) {
 
 void operatorHandle(std::vector<std::string> parsedLine)
 {
-    printASM();
     if (parsedLine[0].compare("LOAD") == 0)
     {
         loadOpHandle(parsedLine);
@@ -157,6 +159,21 @@ void operatorHandle(std::vector<std::string> parsedLine)
     else if (parsedLine[0].compare("##") == 0)
     {
         commentOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("BR") == 0)
+    {
+        brOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("BREQ") == 0)
+    {
+        beqOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("BNE") == 0)
+    {
+        bneOpHandle(parsedLine);
         lastOp = normie;
     }
     else if (parsedLine[0].back() == ':')
@@ -337,10 +354,29 @@ void commentOpHandle(std::vector<std::string> parsedLine)
 }
 void brOpHandle(std::vector<std::string> parsedLine){
         tmpStr = "";
-        for (int i = 0; i < parsedLine.size(); i++){
-            tmpStr.append(parsedLine[i]);
-            tmpStr.append("\t");
-        }
+        tmpStr.append("br\t");
+        tmpStr.append(parsedLine[1]);
+        tmpStr.append("\t");
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+}
+void beqOpHandle(std::vector<std::string> parsedLine){
+        int reg = tempRegGetter(parsedLine[1]);
+        tmpStr = "";
+        tmpStr.append("beq\t$");
+        tmpStr.append(std::to_string(reg));
+        tmpStr.append("\t");
+        tmpStr.append(parsedLine[2]);
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+}
+void bneOpHandle(std::vector<std::string> parsedLine){
+        int reg = tempRegGetter(parsedLine[1]);
+        tmpStr = "";
+        tmpStr.append("bne\t");
+        tmpStr.append(std::to_string(reg));
+        tmpStr.append("\t");
+        tmpStr.append(parsedLine[2]);
         asmCode.push_back(tmpStr);
         tmpStr = "";
 }
