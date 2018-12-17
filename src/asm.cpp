@@ -27,8 +27,11 @@ void printSrc(std::vector<std::string> parsedLine);
 int getOffSet(std::vector<std::string> parsedLine);
 void printLine(std::string line);
 void printASM();
-int actSize;
+std::list<int> actFrameStack;
+int actSize = 0;
 std::string tmpStr = "";
+enum lastOpE {normie,mulie,divie,modie};
+int lastOp = normie;
 
 // Grab line from the 3Ac struct
 std::list<std::vector<std::string>> lineStack;
@@ -79,6 +82,7 @@ std::vector<std::string> parseLine (std::string triACLine)
 }
 
 int getOffSet(std::vector<std::string> parsedLine) {
+    actSize = actFrameStack.front();
     return actSize-std::stoi(parsedLine[2])-4;
 }
 
@@ -86,6 +90,7 @@ int tempRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
+    printASM();
     int reg = getTmpReg(std::stoi(test));
     return reg;
 }
@@ -105,47 +110,58 @@ void operatorHandle(std::vector<std::string> parsedLine)
     if (parsedLine[0].compare("LOAD") == 0)
     {
         loadOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("STORE") == 0)
     {
         storeOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("ASSIGN") == 0)
     {
         assignHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("ADDR") == 0)
     {
         addrOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("ADD") == 0)
     {
         addOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("SUB") == 0)
     {
         subOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("MUL") == 0)
     {
         mulOpHandle(parsedLine);
+        lastOp = normie;
     }
     else if (parsedLine[0].compare("DIV") == 0)
     {
         divOpHandle(parsedLine);
+        lastOp = divie;
     }
     else if (parsedLine[0].compare("MOD") == 0)
     {
         modOpHandle(parsedLine);
+        lastOp = modie;
     }
     else if (parsedLine[0].compare("##") == 0)
     {
         commentOpHandle(parsedLine);
+        lastOp = normie;
     }
     else
     {
         //labels
         std::cout << parsedLine[0] << "THAT'S A NONO!" << std::endl;
+        lastOp = normie;
     }
 }
 
@@ -186,47 +202,83 @@ void addrOpHandle(std::vector<std::string> parsedLine)
 }
 void addOpHandle(std::vector<std::string> parsedLine)
 {
-    int reg = tempRegGetter(parsedLine[1]);
-    int reg1 = tempRegGetter(parsedLine[2]);
-    int reg2 = tempRegGetter(parsedLine[3]);
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    int src2 = tempRegGetter(parsedLine[3]);
     tmpStr.append("add\t$");
-    tmpStr.append(std::to_string(reg));
+    tmpStr.append(std::to_string(dst));
     tmpStr.append("\t$");
-    tmpStr.append(std::to_string(reg1));
+    tmpStr.append(std::to_string(src1));
     tmpStr.append("\t$");
-    tmpStr.append(std::to_string(reg2));
+    tmpStr.append(std::to_string(src2));
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
 void subOpHandle(std::vector<std::string> parsedLine)
 {
-    int reg = tempRegGetter(parsedLine[1]);
-    int reg1 = tempRegGetter(parsedLine[2]);
-    int reg2 = tempRegGetter(parsedLine[3]);
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    int src2 = tempRegGetter(parsedLine[3]);
     tmpStr.append("sub\t$");
-    tmpStr.append(std::to_string(reg));
+    tmpStr.append(std::to_string(dst));
     tmpStr.append("\t$");
-    tmpStr.append(std::to_string(reg1));
+    tmpStr.append(std::to_string(src1));
     tmpStr.append("\t$");
-    tmpStr.append(std::to_string(reg2));
+    tmpStr.append(std::to_string(src2));
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
 void mulOpHandle(std::vector<std::string> parsedLine)
 {
-    std::cout << "mult\t" << "op1\top2" << std::endl;
-    std::cout << "mflo\t" << "dest" << std::endl;
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    int src2 = tempRegGetter(parsedLine[3]);
+    tmpStr.append("mul\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src2));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void divOpHandle(std::vector<std::string> parsedLine)
 {
-    std::cout << "div\t" << "dest\top1\top2" << std::endl;
-    std::cout << "mflo\t" << "dest" << std::endl;
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    int src2 = tempRegGetter(parsedLine[3]);
 
+    tmpStr.append("div\t$");
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src2));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+
+    tmpStr.append("mflo\t$");
+    tmpStr.append(std::to_string(dst));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void modOpHandle(std::vector<std::string> parsedLine)
 {
-    std::cout << "div\t" << "dest\top1\top2" << std::endl;
-    std::cout << "mfhi\t" << "dest" << std::endl;
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    int src2 = tempRegGetter(parsedLine[3]);
+
+    tmpStr.append("div\t$");
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src2));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+
+    tmpStr.append("mfhi\t$");
+    tmpStr.append(std::to_string(dst));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void commentOpHandle(std::vector<std::string> parsedLine)
 {
@@ -255,6 +307,7 @@ void prologHandle(std::vector<std::string> parsedLine) {
     tmpStr = "";
 
     actSize=std::stoi(parsedLine[1]);
+    actFrameStack.push_front(actSize);
     tmpStr.append("sw\t$31,"+std::to_string(actSize-4)+"($sp)"); //sub 4 cuz ret addr is 4 large
     //std::cout << tmpStr << std::endl;
     asmCode.push_back(tmpStr);
@@ -266,6 +319,12 @@ void prologHandle(std::vector<std::string> parsedLine) {
     asmCode.push_back(tmpStr);
     tmpStr = "";
     //std::cout << std::endl;
+}
+void epilogHandle(std::vector<std::string> parsedLine) {
+
+    //after done with func call
+    actFrameStack.pop_front();
+    actSize = actFrameStack.front();
 }
 
 void printASM() {

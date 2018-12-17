@@ -1006,17 +1006,17 @@ void mathHandle(mathNode * math) {
 
         tempString.append(math->production);
         tempString.append("\t");
-        tempLHS();
+        tempDST();
         tempString.append("\t");
         tempRHS();
         tempString.append("\t");
         tempRHS();
+        tempInc();
     }
     if (math->child[0]->nodeType == mathN && math->child[1]->nodeType == constantN)
     {
         constantNode * cons = (constantNode *) (math->child[1]);
         constantHandleElec(cons);
-
         tempUsage = tempStack.front();
         tempStack.pop_front();
         tempUsage1 = tempStack.front();
@@ -1026,9 +1026,9 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage1);
+        tempString.append("iT_"+std::to_string(tempUsage1));
         tempString.append("\t");
-        tempReg = "iT_"+std::to_string(tempUsage);
+        tempString.append("iT_"+std::to_string(tempUsage));
 
         tempInc();
     }
@@ -1040,6 +1040,8 @@ void mathHandle(mathNode * math) {
         tempStack.pop_front();
 
         tempString.append(math->production);
+        tempString.append("\t");
+        tempDST();
         tempString.append("\t");
         tempReg = "iT_"+std::to_string(tempUsage1);
         tempString.append(tempReg);

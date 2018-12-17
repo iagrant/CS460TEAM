@@ -379,11 +379,14 @@ declaration
                     lastFuncPair.second->setProto();
                     globalSymbolTable.removeScope();
                 }
+                currentOffset = 0;
             }
             declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
             tmpNode->typeSpec = $2->typeSpec;
 
+            //FIXME this shouldn't be here
+            //do not need size of prototype
             if (tmpNode->child[0]->child[0]->production.compare("EQUALS") == 0) {
                 tmpNode->size = tmpNode->child[0]->child[0]->size;
             }

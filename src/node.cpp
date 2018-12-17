@@ -294,6 +294,8 @@ public:
         //std::cout << name << ": " << offset << std::endl;
         if (!isArray) {
             switch(typeSpec){
+                case voidS:
+                    break;
                 case floatS:
                     *currentOffset += 8*arrayBounds;
                     break;
@@ -310,6 +312,8 @@ public:
         }
         if (isArray) {
             switch(typeSpec){
+                case voidS:
+                    break;
                 case floatS:
                     *currentOffset = 8*arrayBounds;
                     break;
