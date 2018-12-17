@@ -238,7 +238,7 @@ mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
 %type <node> parameter_type_list parameter_list parameter_declaration type_qualifier
 %type <node> specifier_qualifier_list struct_declarator_list struct_declarator
 %type <node> abstract_declarator constant_expression identifier_list type_qualifier_list
-%type <node> initializer_list pointer assignment_operator
+%type <node> initializer_list pointer assignment_operator argument_expression_list
 %type <sval> type_specifier
 
 %start translation_unit
@@ -2907,6 +2907,13 @@ postfix_expression
 	| postfix_expression OPEN CLOSE
         {
             //func call
+            funcCallNode * temp = new funcCallNode("FUNCTION CALL");
+            idNode * idN = (idNode *) $1;
+            temp->typeSpec = idN->typeSpec;
+            temp->name = idN->name;
+            temp->lineNum = lineNum;
+            $$ = temp;
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN CLOSE" << std::endl;
             }
@@ -2917,6 +2924,14 @@ postfix_expression
 	| postfix_expression OPEN argument_expression_list CLOSE
         {
             //func call with args
+            funcCallNode * temp = new funcCallNode("FUNCTION CALL");
+            idNode * idN = (idNode *) $1;
+            temp->typeSpec = idN->typeSpec;
+            temp->name = idN->name;
+            temp->lineNum = lineNum;
+            temp->addNode($3);
+            $$ = temp;
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN argument_expression_list CLOSE" << std::endl;
             }
