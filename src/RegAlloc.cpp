@@ -42,7 +42,7 @@ void freeReg(int reg) {
 int getRetReg(int temp){ //v0-v1 return vals
     int i = 2;
     while (i !=4) {
-        if(regTable[i].second == temp ){
+        if(regTable[i].second == temp){
             regTable[i].second = temp;
             freeReg(i);
             return i;

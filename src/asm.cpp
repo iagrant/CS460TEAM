@@ -5,10 +5,12 @@
 #include <fstream>
 #include "RegAlloc.cpp"
 
+int tmpRegGetter(std::string input);
+int argRegGetter(std::string input);
+int retRegGetter(std::string input);
 std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
-int argRegGetter(std::string input);
 void parseStruct ();
 void callOpHandle(std::vector<std::string> parsedLine);
 void retOpHandle(std::vector<std::string> parsedLine);
@@ -43,7 +45,7 @@ void commentOpHandle(std::vector<std::string> parsedLine);
 void exprOpHandle(std::vector<std::string> parsedLine);
 void brOpHandle(std::vector<std::string> parsedLine);
 void prologHandle(std::vector<std::string> parsedLine);
-void epilogHandle(std::vector<std::string> parsedLine);
+void epilogHandle();
 void printSrc(std::vector<std::string> parsedLine);
 int getOffSet(std::vector<std::string> parsedLine);
 std::vector<std::string> parseLine (std::string triACLine);
@@ -89,11 +91,7 @@ void parseStruct ()
         operatorHandle(parsedLine);
         i++;
     }
-    //parsedLine = lineStack.front();
-    //lineStack.pop_front();
-    //epilogHandle(parsedLine);
 }
-
 
 // Split the 3AC line into sub-strings
 std::vector<std::string> parseLine (std::string triACLine)
@@ -127,6 +125,13 @@ int argRegGetter(std::string input) {
     test.append(input);
     test.erase(0,3);
     int reg = getArgReg(std::stoi(test));
+    return reg;
+}
+int retRegGetter(std::string input) {
+    std::string test = "";
+    test.append(input);
+    test.erase(0,3);
+    int reg = getRetReg(std::stoi(test));
     return reg;
 }
 
@@ -268,11 +273,19 @@ void operatorHandle(std::vector<std::string> parsedLine)
 }
 void retOpHandle(std::vector<std::string> parsedLine)
 {
-    if (parsedLine.size() > 1) {
-    }
-    else {
-        tmpStr.append("jr\t$31");
-    }
+    tmpStr.append("jr\t$31");
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+    epilogHandle();
+}
+void retLoadOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = retRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    tmpStr.append("move\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
@@ -557,11 +570,16 @@ void prologHandle(std::vector<std::string> parsedLine) {
     tmpStr = "";
     //std::cout << std::endl;
 }
-void epilogHandle(std::vector<std::string> parsedLine) {
-
+void epilogHandle() {
     //after done with func call
+    tmpStr = "";
     actFrameStack.pop_front();
     actSize = actFrameStack.front();
+    if (actFrameStack.size() == 0){
+    tmpStr.append("exit:");
+    tmpStr.append("li\t$v0\t10\t# terminate program run and");
+    tmpStr.append("syscall\t# Exit");
+    }
 }
 
 void printASM() {
