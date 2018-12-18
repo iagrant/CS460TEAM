@@ -3350,8 +3350,8 @@ int main (int argc, char** argv)
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
   print3ac();
-  parseStruct();
-  printASM();
+  //parseStruct();
+  //printASM();
   //printTable();
   return 0;
 }
