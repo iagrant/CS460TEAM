@@ -8,7 +8,11 @@
 std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
+int argRegGetter(std::string input);
 void parseStruct ();
+void callOpHandle(std::vector<std::string> parsedLine);
+void retOpHandle(std::vector<std::string> parsedLine);
+void argLoadOpHandle(std::vector<std::string> parsedLine);
 std::vector<std::string> parseLine (std::string triACLine);
 void notHandle(std::vector<std::string> parsedLine);
 void ltOpHandle(std::vector<std::string> parsedLine);
@@ -53,11 +57,17 @@ void parseStruct ()
 
     triACLine = triACStruct[0];
     parsedLine = parseLine(triACLine);
+    int i = 0;
+    while (parsedLine[0].front() == '#') {
+        triACLine = triACStruct[i];
+        parsedLine = parseLine(triACLine);
+        i++;
+    }
     prologHandle(parsedLine);
     lineStack.push_front(parsedLine);
     tmpStr = "";
     //starts at 1 so i can steal main label
-    int i = 1;
+    i = 1;
     // Slice the struct
     // Call parse line
     while (i < triACStruct.size())
@@ -92,6 +102,7 @@ std::vector<std::string> parseLine (std::string triACLine)
 
 int getOffSet(std::vector<std::string> parsedLine) {
     actSize = actFrameStack.front();
+    std::cout << "GETOFFSET STOI" << std::endl;
     return actSize-std::stoi(parsedLine[2])-4;
 }
 
@@ -99,7 +110,17 @@ int tempRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
+    std::cout << "GETTEMPREG STOI" << std::endl;
     int reg = getTmpReg(std::stoi(test));
+    return reg;
+}
+
+int argRegGetter(std::string input) {
+    std::string test = "";
+    test.append(input);
+    test.erase(0,3);
+    std::cout << "GETARGREG STOI" << std::endl;
+    int reg = getArgReg(std::stoi(test));
     return reg;
 }
 
@@ -180,6 +201,16 @@ void operatorHandle(std::vector<std::string> parsedLine)
         bneOpHandle(parsedLine);
         lastOp = normie;
     }
+    else if (parsedLine[0].compare("ARGLOAD") == 0)
+    {
+        argLoadOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("CALL") == 0)
+    {
+        callOpHandle(parsedLine);
+        lastOp = normie;
+    }
     else if (parsedLine[0].back() == ':')
     {
         labelOpHandle(parsedLine);
@@ -214,6 +245,34 @@ void gtOpHandle(std::vector<std::string> parsedLine)
 {
     ltOpHandle(parsedLine);
     notHandle(parsedLine);
+}
+void retOpHandle(std::vector<std::string> parsedLine)
+{
+    if (parsedLine.size() > 1) {
+    }
+    else {
+        tmpStr.append("jr\t$31");
+    }
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void callOpHandle(std::vector<std::string> parsedLine)
+{
+    tmpStr.append("jal\t");
+    tmpStr.append(parsedLine[1]);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void argLoadOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = argRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    tmpStr.append("mov\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
 }
 void notHandle(std::vector<std::string> parsedLine){
     int dst = getTmpReg(-1);
@@ -450,6 +509,7 @@ void prologHandle(std::vector<std::string> parsedLine) {
     asmCode.push_back(tmpStr);
     tmpStr = "";
 
+    std::cout << "ACTIVATION STOI" << std::endl;
     actSize=std::stoi(parsedLine[1]);
     actFrameStack.push_front(actSize);
     tmpStr.append("sw\t$31,"+std::to_string(actSize-4)+"($sp)"); //sub 4 cuz ret addr is 4 large
@@ -473,7 +533,7 @@ void epilogHandle(std::vector<std::string> parsedLine) {
 
 void printASM() {
     //std::ofstream fileP(filename,std::ios::app);
-    std::ofstream fileP("output.s");
+    std::ofstream fileP("output/output.s");
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::cout.rdbuf(fileP.rdbuf()); //changes cout to print to file stream
     std::string buff = ""; //it's a strong string :)
