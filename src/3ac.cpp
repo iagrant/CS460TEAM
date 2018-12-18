@@ -890,7 +890,6 @@ void equalHandle(ASTnode * AST) {
 					tempInc();
 				}
 			}
-			/*
 			else if(arr->boundVect.size() == 2)
 			{
 				int k = 0;
@@ -1012,7 +1011,6 @@ void equalHandle(ASTnode * AST) {
 					}
 				}
 			}
-			*/
 			else
 			{
 				std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
