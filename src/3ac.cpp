@@ -465,6 +465,7 @@ void arrayHandleBottom(ASTnode * equal ) {
 
 void handleRHSArray(ASTnode * equal)
 {
+    std::cout << "HELLO" << std::endl;
     // ASSIGN VALUE O(LASTSUM)
     // RHS OF EQ IS CONSTANT VALUE
     if (equal->child[1]->nodeType == constantN) {
@@ -506,6 +507,7 @@ void handleRHSArray(ASTnode * equal)
             array2DHandleBottom(arr);
 
 
+            /*
             tempString.append("LOAD");
             tempString.append("\t");
             tempDST();
@@ -514,12 +516,20 @@ void handleRHSArray(ASTnode * equal)
             triACStruct.push_back(tempString);
             tempString = "";
             tempInc();
+            tempInc();
+            */
 
             tempString.append("STORE");
             tempString.append("\t");
             tempRHS();
             tempString.append("\t");
-            tempRHSArr();
+            if (equal->child[0]->nodeType == idN)
+            {
+                idNode * id = (idNode *) equal->child[0];
+               tempString.append("A_"+std::to_string(id->offset));
+            }
+            else
+                tempRHSArr();
         }
         else
         {
@@ -646,27 +656,48 @@ void handleRHSArray(ASTnode * equal)
             tempString = "";
             tempInc();
             }
-            //
-            // MULIPLE BY BYTESIZE OF TYPE
+            if (equal->child[0]->nodeType == arrayN && equal->child[1]->nodeType == arrayN)
+            {
+                tempUsage1 = tempStack.front();
+                tempStack.pop_front();
+                tempString.append("LOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHSArr();
+                triACStruct.push_back(tempString);
+                tempString = "";
+                tempInc();
 
-            tempUsage1 = tempStack.front();
-            tempStack.pop_front();
-            tempString.append("LOAD");
-            tempString.append("\t");
-            tempDST();
-            tempString.append("\t");
-            tempRHSArr();
-            triACStruct.push_back(tempString);
-            tempString = "";
-            tempInc();
+
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempRHS();
+                tempStack.push_front(tempUsage1);
+                tempString.append("\t");
+                tempRHSArr();
+            }
+            else if (equal->child[0]->nodeType == idN)//LHS is ID
+            {
+                idNode * id = (idNode *) equal->child[0]; 
+                tempString.append("LOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHSArr();
+                triACStruct.push_back(tempString);
+                tempString = "";
+                tempInc();
 
 
-            tempString.append("STORE");
-            tempString.append("\t");
-            tempRHS();
-            tempStack.push_front(tempUsage1);
-            tempString.append("\t");
-            tempRHSArr();
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempRHS();
+                tempString.append("\t");
+                tempString.append("A_"+std::to_string(id->offset));
+                //triACStruct.push_back(tempString);
+                //tempString = "";
+            }
         }
     }
 }
@@ -771,6 +802,7 @@ void functionHandle(ASTnode * AST) {
 // ASSIGN DST SRC
 void equalHandle(ASTnode * AST) {
     if (AST->child.size() > 0){
+        // IDNODE LHS
         if (AST->child[0]->production.compare("IDENTIFIER") == 0){
             if (AST->child[1]->nodeType == constantN) {
                 idNode * id = (idNode *) AST->child[0];
@@ -821,6 +853,7 @@ void equalHandle(ASTnode * AST) {
                 idHandle(id);
             }
         }
+        // INITIALIZER LIST
 		else if (AST->child[1]->production.compare("INITIALIZER_LIST") == 0)
 		{
 			arrayNode * arr = (arrayNode *) AST->child[0];
@@ -1038,6 +1071,7 @@ void equalHandle(ASTnode * AST) {
             // LHS 1D ARRAY
             if (arr->boundVect.size() == 1)
             {
+                std::cout << "HELLLLLL" << std::endl;
                 arrayHandleBottom(AST);
             }
             // LHS 2D ARRAY
@@ -1051,7 +1085,7 @@ void equalHandle(ASTnode * AST) {
                 std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
                 exit(1);
             }
-            handleRHSArray(AST);
+            //handleRHSArray(AST);
         }
         else if (AST->child[1]->nodeType == mathN) {
             idNode * id = (idNode *) AST->child[0];
