@@ -43,10 +43,10 @@ private:
     int scope;
     int paramNum;
     int currentParam;
-    std::list <int*> paramList;
-    std::list <int*> :: iterator paramListIter;
 
 public:
+    std::list <int*> :: iterator paramListIter;
+    std::list <int*> paramList;
     int offset;
     bool isFunction;
     bool isArray;
