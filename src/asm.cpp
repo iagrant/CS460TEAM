@@ -267,7 +267,7 @@ void argLoadOpHandle(std::vector<std::string> parsedLine)
 {
     int dst = argRegGetter(parsedLine[1]);
     int src1 = tempRegGetter(parsedLine[2]);
-    tmpStr.append("mov\t$");
+    tmpStr.append("move\t$");
     tmpStr.append(std::to_string(dst));
     tmpStr.append("\t$");
     tmpStr.append(std::to_string(src1));
