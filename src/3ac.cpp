@@ -861,6 +861,23 @@ void equalHandle(ASTnode * AST) {
             {
                 handleRHSArray(AST);
             }
+            else if (AST->child[1]->nodeType == funcCallN){
+                idNode * id = (idNode *) AST->child[0];
+                //load return into temp
+                tempString.append("RETLOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHS();
+                triACStruct.push_back(tempString);
+                tempString = "";
+                //load tmp into addr of id
+                tempString.append("STORE");
+                tempString.append("\t");
+                tempRHS();
+                tempString.append("\t");
+                idHandle(id);
+            }
         }
         // INITIALIZER LIST
 		else if (AST->child[1]->production.compare("INITIALIZER_LIST") == 0)
