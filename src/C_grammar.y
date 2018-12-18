@@ -29,6 +29,62 @@
     int whileCounter = 0;
     int ifCounter = 0;
 
+int getReturnType(ASTnode * AST) {
+    while (AST->nodeType != returnN) {
+
+        // If there are no more children
+        if (AST->child.size() == 0)
+        {
+            return -1;
+        }
+        AST = AST->child[AST->child.size()-1];
+
+    }
+    returnNode * ret = (returnNode *) AST;
+    return ret->child[0]->typeSpec;
+
+}
+
+void returnTypeCheck(ASTnode * AST) {
+    functionNode * func = (functionNode *) AST;
+    int funcReturnType = func->child[0]->typeSpec;
+    int proposedReturnType = getReturnType(AST);
+    if (proposedReturnType != funcReturnType)
+    {
+        std::cout << proposedReturnType << "Return Type does not match declared type." << std::endl;
+        exit(1);
+    }
+}
+
+void funcParamTypeCheck(ASTnode * AST) {
+
+    funcCallNode * func = (funcCallNode *) AST;
+    std::pair<bool,Node*> function =  globalSymbolTable.searchTree(func->name, false);
+    std::list<int*> paramList = function.second->paramList;
+    std::list<int*> :: iterator iter = paramList.begin();
+
+    // Iterator advances through the list of params
+    for (int i = 0; i < AST->child.size(); i++)
+    {
+        std::cout << AST->child.size() << "\n" << std::endl;
+        std::advance(iter, i);
+        int * param = *iter;
+        param += 2;
+        int paramType = * param;
+        int argumentType = func->child[i]->typeSpec;
+
+        if (argumentType == paramType)
+        {
+            std::cout << "Function Parameters Match" << argumentType << " " << paramType << std::endl;
+        }
+        else {
+            std::cout << "Function call argument type does not match parameter.\n"  << argumentType << " " << paramType << std::endl;
+
+            //exit(1);
+        }
+    }
+}
+
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
     //std::cout << rhs->typeSpec << std::endl;
@@ -298,6 +354,7 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
@@ -314,6 +371,7 @@ function_definition
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
@@ -333,6 +391,7 @@ function_definition
             int tempSize = tmpNode->activationFrameSize;
             tempSize += 8 - tempSize % 8;
             tmpNode->activationFrameSize = tempSize;
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -349,6 +408,7 @@ function_definition
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
@@ -2929,7 +2989,12 @@ postfix_expression
             temp->typeSpec = idN->typeSpec;
             temp->name = idN->name;
             temp->lineNum = lineNum;
-            temp->addNode($3);
+
+            //Steal the children of argument expression list
+            for (int i = 0; i < $3->child.size(); i++) {
+                temp->addNode($3->child[i]);    
+            }
+            funcParamTypeCheck(temp);
             $$ = temp;
 
             if (printProductions) {
@@ -3037,6 +3102,9 @@ primary_expression
 argument_expression_list
 	: assignment_expression
         {
+            ASTnode * ast = new ASTnode("TEMP");
+            ast->addNode($1);
+            $$ = ast;
             if (printProductions) {
                 std::cout << "argument_expression_list -> assignment_expression" << std::endl;
             }
@@ -3046,6 +3114,7 @@ argument_expression_list
         }
 	| argument_expression_list COMMA assignment_expression
         {
+            $$->addNode($3);
             if (printProductions) {
                 std::cout << "argument_expression_list -> argument_expression_list COMMA assignment_expression" << std::endl;
             }
