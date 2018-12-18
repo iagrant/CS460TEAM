@@ -814,83 +814,211 @@ void equalHandle(ASTnode * AST) {
                 idHandle(id);
             }
         }
-		if (AST->child[1]->production.compare("INITIALIZER_LIST") == 0){
-			ASTnode * temp = AST->child[1];
-
-			for(int i = 0; i < temp ->child.size(); i++)
+		else if (AST->child[1]->production.compare("INITIALIZER_LIST") == 0)
+		{
+			arrayNode * arr = (arrayNode *) AST->child[0];
+			if(arr->boundVect.size() == 1)
 			{
-				//Getting the base address of the array
-				arrayNode * arr = (arrayNode *) AST->child[0];
-				tempString.append("ADDR");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				tempString.append("A_"+std::to_string(arr->offset));
-				triACStruct.push_back(tempString);
-				tempString = "";
-				tempInc();
+				ASTnode * temp = AST->child[1];
+				for(int i = 0; i < temp ->child.size(); i++)
+				{
+					//Getting the base address of the array
+					tempString.append("ADDR");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					tempString.append("A_"+std::to_string(arr->offset));
+					triACStruct.push_back(tempString);
+					tempString = "";
+					tempInc();
 
-				//Putting the value from initializer list into a temp
-				tempString.append("ASSIGN");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				tempString.append(std::to_string(i));
-				triACStruct.push_back(tempString);
-				tempString = "";
-				tempInc();
+					//Putting the value from initializer list into a temp
+					tempString.append("ASSIGN");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					tempString.append(std::to_string(i));
+					triACStruct.push_back(tempString);
+					tempString = "";
+					tempInc();
 
-				// Getting the offset for putting in the values
-				tempString.append("MUL");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				tempRHS();
-				tempString.append("\t");
-				tempString.append(std::to_string(arr->determineOffset()));
-				triACStruct.push_back(tempString);
-				tempString = "";
-				tempInc();
+					// Getting the offset for putting in the values
+					tempString.append("MUL");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					tempRHS();
+					tempString.append("\t");
+					tempString.append(std::to_string(arr->determineOffset()));
+					triACStruct.push_back(tempString);
+					tempString = "";
+					tempInc();
 
-				//Add the base address
-				tempString.append("ADD");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				tempRHS();
-				tempString.append("\t");
-				tempRHS();
-				triACStruct.push_back(tempString);
-				tempString = "";
-				tempInc();
+					//Add the base address
+					tempString.append("ADD");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					tempRHS();
+					tempString.append("\t");
+					tempRHS();
+					triACStruct.push_back(tempString);
+					tempString = "";
+					tempInc();
 
-				//Putting the value from initializer list into a temp
-				tempString.append("ASSIGN");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				//Getting the value from the initalizer list
-				constantNode * cons = (constantNode *) AST->child[1]->child[i];
-				//std::cout << "NODE CONTENTS: " << cons -> intConst;
-				constantHandle(cons);
-				triACStruct.push_back(tempString);
-				tempString = "";
+					//Putting the value from initializer list into a temp
+					tempString.append("ASSIGN");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					//Getting the value from the initalizer list
+					constantNode * cons = (constantNode *) AST->child[1]->child[i];
+					constantHandle(cons);
+					triACStruct.push_back(tempString);
+					tempString = "";
 
-				//Putting the value into the array
-				tempString.append("STORE");
-				tempString.append("\t");
-				tempDST();
-				tempString.append("\t");
-				tempString.append("0(");
-				tempRHS();
-				tempString.append(")");
-				triACStruct.push_back(tempString);
-				tempString = "";
-				tempInc();
+					//Putting the value into the array
+					tempString.append("STORE");
+					tempString.append("\t");
+					tempDST();
+					tempString.append("\t");
+					tempString.append("0(");
+					tempRHS();
+					tempString.append(")");
+					triACStruct.push_back(tempString);
+					tempString = "";
+					tempInc();
+				}
+			}
+			/*
+			else if(arr->boundVect.size() == 2)
+			{
+				int k = 0;
+				for(int i = 0; i < arr->boundVect[0]; i++)
+				{
+					for(int j = 0; j < arr->boundVect[1]; j++)
+					{
+						//Get Base Address for Array
+						tempString.append("ADDR");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempString.append("A_"+std::to_string(arr->offset));
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						//Assign first bound
+						tempString.append("ASSIGN");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempString.append(std::to_string(i));
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						//Assign Second Bound
+						tempString.append("ASSIGN");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempString.append(std::to_string(j));
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						//Calculate the offset
+						tempString.append("ADD");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempRHS();
+						tempString.append("\t");
+						tempRHS();
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						//Assign max column size
+						tempString.append("ASSIGN");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempString.append(std::to_string(arr->boundVect[1]));
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						// Getting the offset for putting in the values
+						tempString.append("MUL");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempRHS();
+						tempString.append("\t");
+						tempRHS();
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						// Getting the offset for putting in the values
+						tempString.append("MUL");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempRHS();
+						tempString.append("\t");
+						tempString.append(std::to_string(arr->determineOffset()));
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						// Add the offset to the base address
+						tempString.append("ADD");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempRHS();
+						tempString.append("\t");
+						tempRHS();
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+
+						//Putting the value from initializer list into a temp
+						tempString.append("ASSIGN");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						//Getting the value from the initalizer list
+						constantNode * cons = (constantNode *) AST->child[1]->child[k];
+						k++;
+						constantHandle(cons);
+						triACStruct.push_back(tempString);
+						tempString = "";
+
+						//Putting the value into the array
+						tempString.append("STORE");
+						tempString.append("\t");
+						tempDST();
+						tempString.append("\t");
+						tempString.append("0(");
+						tempRHS();
+						tempString.append(")");
+						triACStruct.push_back(tempString);
+						tempString = "";
+						tempInc();
+					}
+				}
+			}
+			*/
+			else
+			{
+				std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
+                exit(1);
 			}
 
-			tempString = "";
-			tempInc();
 		}
 
         // ARRAY ASIGNMENT
