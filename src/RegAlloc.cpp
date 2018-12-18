@@ -63,6 +63,7 @@ int getRetReg(int temp){ //v0-v1 return vals
 }
 //$4-$7
 int getArgReg(int temp){ //a0-a3 1st four params of func call
+    return 4;
     int i = 4;
     while (i !=8) {
         if(regTable[i].second == temp){

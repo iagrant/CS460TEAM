@@ -127,6 +127,7 @@ int argRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
+    std::cout << "TEST:" << test << ":" << std::endl;
     int reg = getArgReg(std::stoi(test));
     return reg;
 }
@@ -150,7 +151,6 @@ void printSrc(std::vector<std::string> parsedLine) {
 
 void operatorHandle(std::vector<std::string> parsedLine)
 {
-    printASM();
     if (parsedLine[0].compare("LOAD") == 0)
     {
         loadOpHandle(parsedLine);
@@ -613,7 +613,7 @@ void commentOpHandle(std::vector<std::string> parsedLine)
 }
 void brOpHandle(std::vector<std::string> parsedLine){
         tmpStr = "";
-        tmpStr.append("br\t");
+        tmpStr.append("j\t");
         tmpStr.append(parsedLine[1]);
         tmpStr.append("\t");
         asmCode.push_back(tmpStr);
