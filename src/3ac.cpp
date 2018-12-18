@@ -664,8 +664,8 @@ void handleRHSArray(ASTnode * equal)
                 // Could break some glass
                 if (equal->child[0]->child[0]->child[0]->nodeType == mathN)
                 {
-                    tempUsage1 = tempStack.front();
-                    tempStack.pop_front();
+                    //tempUsage1 = tempStack.front();
+                    //tempStack.pop_front();
                 }
                 tempString.append("LOAD");
                 tempString.append("\t");
@@ -680,7 +680,7 @@ void handleRHSArray(ASTnode * equal)
                 tempString.append("\t");
                 tempRHS();
                 if (equal->child[0]->child[0]->child[0]->nodeType == mathN && equal->child[0]->child[0]->child[0]->nodeType == mathN)
-                    tempStack.push_front(tempUsage1);
+                    //tempStack.push_front(tempUsage1);
                 tempString.append("\t");
                 tempRHSArr();
             }
