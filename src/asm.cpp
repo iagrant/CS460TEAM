@@ -481,7 +481,7 @@ void loadOpHandle(std::vector<std::string> parsedLine)
         parsedLine[2].erase(0,5);
         parsedLine[2].pop_back();
         int reg1 = getTmpReg(std::stoi(parsedLine[2]));
-        tmpStr = "sw\t$" + std::to_string(reg) + "\t0($" + std::to_string(reg1) + ")";
+        tmpStr = "lw\t$" + std::to_string(reg) + "\t0($" + std::to_string(reg1) + ")";
         asmCode.push_back(tmpStr);
         tmpStr = "";
     }
