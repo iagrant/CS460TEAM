@@ -150,6 +150,7 @@ void printSrc(std::vector<std::string> parsedLine) {
 
 void operatorHandle(std::vector<std::string> parsedLine)
 {
+    printASM();
     if (parsedLine[0].compare("LOAD") == 0)
     {
         loadOpHandle(parsedLine);
@@ -469,21 +470,39 @@ void exprOpHandle(std::vector<std::string> parsedLine)
 
 void loadOpHandle(std::vector<std::string> parsedLine)
 {
-    tmpStr = "";
     int reg = tempRegGetter(parsedLine[1]);
-    parsedLine[2].erase(0,2);
-    tmpStr = "lw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
-    asmCode.push_back(tmpStr);
-    tmpStr = "";
-
+    if (parsedLine[2].front() == 'A') {
+        parsedLine[2].erase(0,2);
+        tmpStr = "lw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+    }
+    else if (parsedLine[2].front() == '0'|| parsedLine[2].front() == 'O') {
+        parsedLine[2].erase(0,5);
+        parsedLine[2].pop_back();
+        int reg1 = getTmpReg(std::stoi(parsedLine[2]));
+        tmpStr = "sw\t$" + std::to_string(reg) + "\t0($" + std::to_string(reg1) + ")";
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+    }
 }
 void storeOpHandle(std::vector<std::string> parsedLine)
 {
     int reg = tempRegGetter(parsedLine[1]);
-    parsedLine[2].erase(0,2);
-    tmpStr = "sw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
-    asmCode.push_back(tmpStr);
-    tmpStr = "";
+    if (parsedLine[2].front() == 'A') {
+        parsedLine[2].erase(0,2);
+        tmpStr = "sw\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+    }
+    else if (parsedLine[2].front() == '0' || parsedLine[2].front() == 'O') {
+        parsedLine[2].erase(0,5);
+        parsedLine[2].pop_back();
+        int reg1 = getTmpReg(std::stoi(parsedLine[2]));
+        tmpStr = "sw\t$" + std::to_string(reg) + "\t0($" + std::to_string(reg1) + ")";
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+    }
 }
 void assignHandle(std::vector<std::string> parsedLine)
 {
@@ -496,7 +515,10 @@ void assignHandle(std::vector<std::string> parsedLine)
 }
 void addrOpHandle(std::vector<std::string> parsedLine)
 {
+    tmpStr = "";
     int reg = tempRegGetter(parsedLine[1]);
+    parsedLine[2].erase(0,2);
+    std::cout << "CUNT: " << parsedLine[2] << std::endl;
     tmpStr = "la\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
     asmCode.push_back(tmpStr);
     tmpStr = "";
