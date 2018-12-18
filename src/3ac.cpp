@@ -1085,7 +1085,10 @@ void equalHandle(ASTnode * AST) {
                 std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
                 exit(1);
             }
-            //handleRHSArray(AST);
+            // Necessary when ID on LHS
+            if (arr->child[0]->child[0]->nodeType == idN)
+                std::cout << "HELLLLLL" << std::endl;
+                handleRHSArray(AST);
         }
         else if (AST->child[1]->nodeType == mathN) {
             idNode * id = (idNode *) AST->child[0];
