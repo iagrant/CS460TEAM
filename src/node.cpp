@@ -45,8 +45,8 @@ private:
     int currentParam;
 
 public:
-    std::list <int*> :: iterator paramListIter;
     std::list <int*> paramList;
+    std::list <int*> :: iterator paramListIter;
     int offset;
     bool isFunction;
     bool isArray;
