@@ -15,6 +15,7 @@ void tempInc();
 
 void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
+void functionCallHandle(ASTnode * AST);
 void mathHandle(mathNode * math);
 void idHandle(idNode * id);
 void ifHandleTop(ifNode * ifnode);
@@ -162,6 +163,10 @@ void build3ACBot (ASTnode * currentNode)
         // need to know the frame size
         // ticket counter for the function
         // return type?
+    }
+    else if (currentNode->nodeType == funcCallN)
+    {
+        functionCallHandle(currentNode);
     }
     else if (currentNode->nodeType == idN)
     {
@@ -654,6 +659,53 @@ void handleRHSArray(ASTnode * equal)
     }
 }
 
+// FUNCTION CALLS
+void functionCallHandle(ASTnode * AST) {
+    funcCallNode * func = (funcCallNode *) AST;
+
+    for (int i = 0; i < func->child.size(); i++)
+    {
+        // Cases for the args
+        // Is Constant
+        if (func->child[i]->nodeType == constantN)
+        {
+            constantNode * temp = (constantNode *) func->child[i];
+            constantHandleElec(temp);
+        }
+
+        // Is ID
+        else if (func->child[i]->nodeType == idN)
+        {
+            idNode * temp = (idNode *) func->child[i];
+            offHandle(temp);
+        }
+
+        else if (func->child[i]->nodeType == arrayN)
+        {
+            arrayNode * temp = (arrayNode *) func->child[i];
+            if (temp->boundVect.size() == 2)
+                array2DHandleBottom(temp);
+            else
+            {
+                arrayGetHandle(temp);
+            }
+        }
+        tempString.append("ARGLOAD");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
+    }
+    tempString.append("CALL");
+    tempString.append("\t");
+    tempString.append(func->name);
+    triACStruct.push_back(tempString);
+    tempString = "";
+}
+
 void functionHandle(ASTnode * AST) {
     //might kill this moved entire thing into labelHandle
     functionNode * func = (functionNode *) AST;
@@ -933,6 +985,14 @@ void array2DHandleBottom(arrayNode * arr)
         tempString = "";
         tempInc();
     }
+    tempString.append("LOAD");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHSArr();
+    triACStruct.push_back(tempString);
+    tempString = "";
+    tempInc();
 }
 
 void arrayGetHandle(arrayNode * arr) {
