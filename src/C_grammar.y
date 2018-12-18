@@ -52,7 +52,7 @@ void returnTypeCheck(ASTnode * AST) {
     if (proposedReturnType != funcReturnType)
     {
         std::cout << proposedReturnType << "Return Type does not match declared type." << std::endl;
-        exit(1);
+        //exit(1);
     }
 }
 
@@ -354,7 +354,7 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
-            returnTypeCheck(tmpNode);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
@@ -371,7 +371,7 @@ function_definition
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
-            returnTypeCheck(tmpNode);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
@@ -391,7 +391,7 @@ function_definition
             int tempSize = tmpNode->activationFrameSize;
             tempSize += 8 - tempSize % 8;
             tmpNode->activationFrameSize = tempSize;
-            returnTypeCheck(tmpNode);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -408,7 +408,7 @@ function_definition
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
-            returnTypeCheck(tmpNode);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
@@ -2992,7 +2992,7 @@ postfix_expression
 
             //Steal the children of argument expression list
             for (int i = 0; i < $3->child.size(); i++) {
-                temp->addNode($3->child[i]);    
+                temp->addNode($3->child[i]);
             }
             funcParamTypeCheck(temp);
             $$ = temp;
