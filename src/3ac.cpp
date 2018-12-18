@@ -304,8 +304,8 @@ void arrayHandleTop(ASTnode * equal) {
 
     }
     */
-    // MULT INDEX TYPESPEC
-    tempString.append("MULT");
+    // MUL INDEX TYPESPEC
+    tempString.append("MUL");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
@@ -315,7 +315,7 @@ void arrayHandleTop(ASTnode * equal) {
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ADD ADDR LASTMULT
+    // ADD ADDR LASTMUL
     tempString.append("ADD");
     tempString.append("\t");
     tempDST();
@@ -356,8 +356,8 @@ void arrayHandleBottom(ASTnode * equal ) {
     tempString = "";
     tempInc();
 
-    // MULT INDEX TYPESPEC
-    tempString.append("MULT");
+    // MUL INDEX TYPESPEC
+    tempString.append("MUL");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
@@ -367,7 +367,7 @@ void arrayHandleBottom(ASTnode * equal ) {
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ADD ADDR LASTMULT
+    // ADD ADDR LASTMUL
     tempString.append("ADD");
     tempString.append("\t");
     tempDST();
@@ -401,7 +401,7 @@ void arrayHandleBottom(ASTnode * equal ) {
         tempInc();
 
         // MULT INDEX TYPESPEC
-        tempString.append("MULT");
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -427,8 +427,8 @@ void arrayHandleBottom(ASTnode * equal ) {
     //FIXME done i belive
     else if (arr->child[0]->child[0]->nodeType == mathN) {
 
-    // MULT INDEX TYPESPEC
-    tempString.append("MULT");
+    // MUL INDEX TYPESPEC
+    tempString.append("MUL");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
@@ -448,7 +448,7 @@ void arrayHandleBottom(ASTnode * equal ) {
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-    // ADD ADDR LASTMULT
+    // ADD ADDR LASTMUL
     tempString.append("ADD");
     tempString.append("\t");
     tempDST();
@@ -552,7 +552,7 @@ void handleRHSArray(ASTnode * equal)
             tempString = "";
             tempInc();
 
-            tempString.append("MULT");
+            tempString.append("MUL");
             tempString.append("\t");
             tempDST();
             tempString.append("\t");
@@ -562,7 +562,7 @@ void handleRHSArray(ASTnode * equal)
             triACStruct.push_back(tempString);
             tempString = "";
             tempInc();
-            // ADD ADDR LASTMULT
+            // ADD ADDR LASTMUL
             tempString.append("ADD");
             tempString.append("\t");
             tempDST();
@@ -595,7 +595,7 @@ void handleRHSArray(ASTnode * equal)
             tempInc();
 
 
-            tempString.append("MULT");
+            tempString.append("MUL");
             tempString.append("\t");
             tempDST();
             tempString.append("\t");
@@ -605,7 +605,7 @@ void handleRHSArray(ASTnode * equal)
             triACStruct.push_back(tempString);
             tempString = "";
             tempInc();
-            // ADD ADDR LASTMULT
+            // ADD ADDR LASTMUL
             tempString.append("ADD");
             tempString.append("\t");
             tempDST();
@@ -624,7 +624,7 @@ void handleRHSArray(ASTnode * equal)
                 if(equal->child[0]->nodeType == arrayN)
                     tempStack.pop_front();
 
-                tempString.append("MULT");
+                tempString.append("MUL");
                 tempString.append("\t");
                 tempDST();
                 tempString.append("\t");
@@ -656,6 +656,39 @@ void handleRHSArray(ASTnode * equal)
                 triACStruct.push_back(tempString);
                 tempString = "";
                 tempInc();
+            tempUsage1 = tempStack.front();
+//            tempStack.pop_front();
+
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempStack.push_front(tempUsage1);
+            tempInc();
+
+            tempString.append("ADDR");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempString.append("A_"+std::to_string(arr->offset));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
             }
             if (equal->child[0]->nodeType == arrayN && equal->child[1]->nodeType == arrayN)
             {
@@ -684,7 +717,7 @@ void handleRHSArray(ASTnode * equal)
             }
             else if (equal->child[0]->nodeType == idN)//LHS is ID
             {
-                idNode * id = (idNode *) equal->child[0]; 
+                idNode * id = (idNode *) equal->child[0];
                 tempString.append("LOAD");
                 tempString.append("\t");
                 tempDST();
@@ -1172,12 +1205,12 @@ void array2DHandleBottom(arrayNode * arr)
         offHandle(arr->child[1]->child[0]);
     }
     // MATHNODE IN THE FIRST INDEX
-    // MULT IS HANDLED A LITTLE DIFFERENTLY WHEN MATHNODE
+    // MUL IS HANDLED A LITTLE DIFFERENTLY WHEN MATHNODE
     if (arr->child[0]->child[0]->nodeType == mathN) {
-        // MULT INDEX TYPESPEC
+        // MUL INDEX TYPESPEC
         tempUsage1 = tempStack.front();
         tempStack.pop_front();
-        tempString.append("MULT");
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -1191,8 +1224,8 @@ void array2DHandleBottom(arrayNode * arr)
 
     }
     else {
-        // MULT INDEX TYPESPEC
-        tempString.append("MULT");
+        // MUL INDEX TYPESPEC
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -1203,8 +1236,8 @@ void array2DHandleBottom(arrayNode * arr)
         tempString = "";
         tempInc();
     }
-    // MULT BY FIRST MAX BOUND
-    tempString.append("MULT");
+    // MUL BY FIRST MAX BOUND
+    tempString.append("MUL");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
@@ -1214,7 +1247,7 @@ void array2DHandleBottom(arrayNode * arr)
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ADD ADDR LASTMULT
+    // ADD ADDR LASTMUL
     tempString.append("ADD");
     tempString.append("\t");
     tempDST();
@@ -1240,8 +1273,8 @@ void array2DHandleBottom(arrayNode * arr)
         tempString = "";
         tempInc();
 
-        // MULT INDEX TYPESPEC
-        tempString.append("MULT");
+        // MUL INDEX TYPESPEC
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -1252,7 +1285,7 @@ void array2DHandleBottom(arrayNode * arr)
         tempString = "";
         tempInc();
 
-        // ADD ADDR LASTMULT
+        // ADD ADDR LASTMUL
         tempString.append("ADD");
         tempString.append("\t");
         tempDST();
@@ -1267,8 +1300,8 @@ void array2DHandleBottom(arrayNode * arr)
     // IDNODE IN 2ND INDEX OF LHS
     else if (arr->child[1]->child[0]->nodeType == idN) {
         offHandle(arr->child[1]->child[0]);
-        // MULT INDEX TYPESPEC
-        tempString.append("MULT");
+        // MUL INDEX TYPESPEC
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -1280,7 +1313,7 @@ void array2DHandleBottom(arrayNode * arr)
         tempInc();
 
         tempUsage1 = tempStack.front();
-        // ADD ADDR LASTMULT
+        // ADD ADDR LASTMUL
         tempString.append("ADD");
         tempString.append("\t");
         tempDST();
@@ -1294,10 +1327,10 @@ void array2DHandleBottom(arrayNode * arr)
     }
     // MATHNODE IN 2ND INDEX OF LHS
     else if (arr->child[1]->child[0]->nodeType == mathN) {
-        // MULT INDEX TYPESPEC
+        // MUL INDEX TYPESPEC
         tempUsage1 = tempStack.front();
         tempStack.pop_front();
-        tempString.append("MULT");
+        tempString.append("MUL");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
@@ -1309,7 +1342,7 @@ void array2DHandleBottom(arrayNode * arr)
         tempInc();
 
         tempStack.push_front(tempUsage1);
-        // ADD ADDR LASTMULT
+        // ADD ADDR LASTMUL
         tempString.append("ADD");
         tempString.append("\t");
         tempDST();
@@ -1368,8 +1401,8 @@ void arrayGetHandle(arrayNode * arr) {
         tempString = "";
         tempInc();
     }
-    // MULT INDEX TYPESPEC
-    tempString.append("MULT");
+    // MUL INDEX TYPESPEC
+    tempString.append("MUL");
     tempString.append("\t");
     tempDST();
     tempString.append("\t");
@@ -1379,7 +1412,7 @@ void arrayGetHandle(arrayNode * arr) {
     triACStruct.push_back(tempString);
     tempString = "";
     tempInc();
-    // ADD ADDR LASTMULT
+    // ADD ADDR LASTMUL
     tempString.append("ADD");
     tempString.append("\t");
     tempDST();

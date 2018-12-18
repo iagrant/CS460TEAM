@@ -7,6 +7,7 @@ int main ()
     int i;
     int j;
     int l;
+    int k;
 
 	for (i = 0; i < 9; i++)
 	{
@@ -34,5 +35,5 @@ int main ()
         printInt(array[l]);
 	}
     printNewLine();
-
+    return 0;
 }
