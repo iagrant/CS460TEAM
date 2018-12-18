@@ -24,6 +24,7 @@ C_grammar.output
 *.dot
 *.txt
 *.output
+output.s
 
 # Compiled Object files
 *.slo
