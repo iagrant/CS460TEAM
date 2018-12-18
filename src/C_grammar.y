@@ -29,6 +29,35 @@
     int whileCounter = 0;
     int ifCounter = 0;
 
+void funcParamTypeCheck(ASTnode * AST) {
+
+    funcCallNode * func = (funcCallNode *) AST;
+    std::pair<bool,Node*> function =  globalSymbolTable.searchTree(func->name, false);
+    std::list<int*> paramList = function.second->paramList;
+    std::list<int*> :: iterator iter = paramList.begin();
+
+    // Iterator advances through the list of params
+    for (int i = 0; i < AST->child.size(); i++)
+    {
+        std::cout << AST->child.size() << "\n" << std::endl;
+        std::advance(iter, i);
+        int * param = *iter;
+        param += 2;
+        int paramType = * param;
+        int argumentType = func->child[i]->typeSpec;
+
+        if (argumentType == paramType)
+        {
+            std::cout << "Function Parameters Match" << argumentType << " " << paramType << std::endl;
+        }
+        else {
+            std::cout << "Function call argument type does not match parameter.\n"  << argumentType << " " << paramType << std::endl;
+
+            //exit(1);
+        }
+    }
+}
+
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
     //std::cout << rhs->typeSpec << std::endl;
@@ -2929,7 +2958,12 @@ postfix_expression
             temp->typeSpec = idN->typeSpec;
             temp->name = idN->name;
             temp->lineNum = lineNum;
-            temp->addNode($3);
+
+            //Steal the children of argument expression list
+            for (int i = 0; i < $3->child.size(); i++) {
+                temp->addNode($3->child[i]);    
+            }
+            funcParamTypeCheck(temp);
             $$ = temp;
 
             if (printProductions) {
@@ -3037,6 +3071,9 @@ primary_expression
 argument_expression_list
 	: assignment_expression
         {
+            ASTnode * ast = new ASTnode("TEMP");
+            ast->addNode($1);
+            $$ = ast;
             if (printProductions) {
                 std::cout << "argument_expression_list -> assignment_expression" << std::endl;
             }
@@ -3046,6 +3083,7 @@ argument_expression_list
         }
 	| argument_expression_list COMMA assignment_expression
         {
+            $$->addNode($3);
             if (printProductions) {
                 std::cout << "argument_expression_list -> argument_expression_list COMMA assignment_expression" << std::endl;
             }
@@ -3282,7 +3320,7 @@ int main (int argc, char** argv)
   walkTree(globalASTnode);
   print3ac();
   parseStruct();
-  printASM();
+  //printASM();
   //printTable();
   return 0;
 }
