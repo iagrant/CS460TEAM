@@ -16,6 +16,7 @@ void tempInc();
 void walkTree(ASTnode *AST);
 void functionHandle(ASTnode * AST);
 void functionCallHandle(ASTnode * AST);
+void returnHandle(ASTnode * AST);
 void mathHandle(mathNode * math);
 void idHandle(idNode * id);
 void ifHandleTop(ifNode * ifnode);
@@ -167,6 +168,10 @@ void build3ACBot (ASTnode * currentNode)
     else if (currentNode->nodeType == funcCallN)
     {
         functionCallHandle(currentNode);
+    }
+    else if (currentNode->nodeType == returnN)
+    {
+        returnHandle(currentNode);
     }
     else if (currentNode->nodeType == idN)
     {
@@ -704,6 +709,49 @@ void functionCallHandle(ASTnode * AST) {
     tempString.append(func->name);
     triACStruct.push_back(tempString);
     tempString = "";
+}
+
+void returnHandle(ASTnode * AST)
+{
+    returnNode * ret = (returnNode*) AST;
+    // RETLOAD
+    if (ret->child[0]->nodeType == constantN)
+    {
+        constantNode * temp = (constantNode *) ret->child[0];
+        constantHandleElec(temp);
+    }
+
+    // Is ID
+    else if (ret->child[0]->nodeType == idN)
+    {
+        idNode * temp = (idNode *) ret->child[0];
+        offHandle(temp);
+    }
+
+    else if (ret->child[0]->nodeType == arrayN)
+    {
+        arrayNode * temp = (arrayNode *) ret->child[0];
+        if (temp->boundVect.size() == 2)
+            array2DHandleBottom(temp);
+        else
+        {
+            arrayGetHandle(temp);
+        }
+    }
+    
+    tempString.append("RETLOAD");
+    tempString.append("\t");
+    tempDST();
+    tempString.append("\t");
+    tempRHS();
+    triACStruct.push_back(tempString);
+    tempString = "";
+
+    // RET
+    tempString.append("RET");
+    triACStruct.push_back(tempString);
+    tempString = "";
+
 }
 
 void functionHandle(ASTnode * AST) {
