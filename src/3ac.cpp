@@ -658,37 +658,6 @@ void handleRHSArray(ASTnode * equal)
                 tempInc();
             tempUsage1 = tempStack.front();
 //            tempStack.pop_front();
-
-            tempString.append("\t");
-            tempDST();
-            tempString.append("\t");
-            tempRHS();
-            tempString.append("\t");
-            tempString.append(std::to_string(arr->determineOffset()));
-            triACStruct.push_back(tempString);
-            tempString = "";
-            tempStack.push_front(tempUsage1);
-            tempInc();
-
-            tempString.append("ADDR");
-            tempString.append("\t");
-            tempDST();
-            tempString.append("\t");
-            tempString.append("A_"+std::to_string(arr->offset));
-            triACStruct.push_back(tempString);
-            tempString = "";
-            tempInc();
-            // ADD ADDR LASTMUL
-            tempString.append("ADD");
-            tempString.append("\t");
-            tempDST();
-            tempString.append("\t");
-            tempRHS();
-            tempString.append("\t");
-            tempRHS();
-            triACStruct.push_back(tempString);
-            tempString = "";
-            tempInc();
             }
             if (equal->child[0]->nodeType == arrayN && equal->child[1]->nodeType == arrayN)
             {
@@ -893,6 +862,7 @@ void equalHandle(ASTnode * AST) {
             else if (AST->child[1]->nodeType == arrayN)
             {
                 handleRHSArray(AST);
+                std::cout << "Hello" << std::endl;
             }
             else if (AST->child[1]->nodeType == funcCallN){
                 idNode * id = (idNode *) AST->child[0];
