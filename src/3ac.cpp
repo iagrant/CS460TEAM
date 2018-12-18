@@ -738,7 +738,7 @@ void returnHandle(ASTnode * AST)
             arrayGetHandle(temp);
         }
     }
-    
+
     tempString.append("RETLOAD");
     tempString.append("\t");
     tempDST();
@@ -814,6 +814,85 @@ void equalHandle(ASTnode * AST) {
                 idHandle(id);
             }
         }
+		if (AST->child[1]->production.compare("INITIALIZER_LIST") == 0){
+			ASTnode * temp = AST->child[1];
+
+			for(int i = 0; i < temp ->child.size(); i++)
+			{
+				//Getting the base address of the array
+				arrayNode * arr = (arrayNode *) AST->child[0];
+				tempString.append("ADDR");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				tempString.append("A_"+std::to_string(arr->offset));
+				triACStruct.push_back(tempString);
+				tempString = "";
+				tempInc();
+
+				//Putting the value from initializer list into a temp
+				tempString.append("ASSIGN");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				tempString.append(std::to_string(i));
+				triACStruct.push_back(tempString);
+				tempString = "";
+				tempInc();
+
+				// Getting the offset for putting in the values
+				tempString.append("MUL");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				tempRHS();
+				tempString.append("\t");
+				tempString.append(std::to_string(arr->determineOffset()));
+				triACStruct.push_back(tempString);
+				tempString = "";
+				tempInc();
+
+				//Add the base address
+				tempString.append("ADD");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				tempRHS();
+				tempString.append("\t");
+				tempRHS();
+				triACStruct.push_back(tempString);
+				tempString = "";
+				tempInc();
+
+				//Putting the value from initializer list into a temp
+				tempString.append("ASSIGN");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				//Getting the value from the initalizer list
+				constantNode * cons = (constantNode *) AST->child[1]->child[i];
+				//std::cout << "NODE CONTENTS: " << cons -> intConst;
+				constantHandle(cons);
+				triACStruct.push_back(tempString);
+				tempString = "";
+
+				//Putting the value into the array
+				tempString.append("STORE");
+				tempString.append("\t");
+				tempDST();
+				tempString.append("\t");
+				tempString.append("0(");
+				tempRHS();
+				tempString.append(")");
+				triACStruct.push_back(tempString);
+				tempString = "";
+				tempInc();
+			}
+
+			tempString = "";
+			tempInc();
+		}
+
         // ARRAY ASIGNMENT
         else if (AST->child[0]->production.compare("ARRAY_NODE") == 0 && AST->child[1]->nodeType != mathN) {
             arrayNode * arr = (arrayNode *) AST->child[0];
