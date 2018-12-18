@@ -5,18 +5,29 @@
 #include <fstream>
 #include "RegAlloc.cpp"
 
+int tmpRegGetter(std::string input);
+int argRegGetter(std::string input);
+int retRegGetter(std::string input);
 std::vector<std::string> asmCode;
 extern std::vector<std::string> triACStruct;
 extern std::string outSrcFile;
-int argRegGetter(std::string input);
 void parseStruct ();
 void callOpHandle(std::vector<std::string> parsedLine);
 void retOpHandle(std::vector<std::string> parsedLine);
+void retLoadOpHandle(std::vector<std::string> parsedLine);
 void argLoadOpHandle(std::vector<std::string> parsedLine);
-std::vector<std::string> parseLine (std::string triACLine);
 void notHandle(std::vector<std::string> parsedLine);
+
 void ltOpHandle(std::vector<std::string> parsedLine);
 void gtOpHandle(std::vector<std::string> parsedLine);
+void leOpHandle(std::vector<std::string> parsedLine);
+void geOpHandle(std::vector<std::string> parsedLine);
+void eqOpHandle(std::vector<std::string> parsedLine);
+void neOpHandle(std::vector<std::string> parsedLine);
+void andOpHandle(std::vector<std::string> parsedLine);
+void orOpHandle(std::vector<std::string> parsedLine);
+void xorOpHandle(std::vector<std::string> parsedLine);
+
 void mathRHS(std::vector<std::string> parsedLine);
 void beqOpHandle(std::vector<std::string> parsedLine);
 void bneOpHandle(std::vector<std::string> parsedLine);
@@ -35,9 +46,10 @@ void commentOpHandle(std::vector<std::string> parsedLine);
 void exprOpHandle(std::vector<std::string> parsedLine);
 void brOpHandle(std::vector<std::string> parsedLine);
 void prologHandle(std::vector<std::string> parsedLine);
-void epilogHandle(std::vector<std::string> parsedLine);
+void epilogHandle();
 void printSrc(std::vector<std::string> parsedLine);
 int getOffSet(std::vector<std::string> parsedLine);
+std::vector<std::string> parseLine (std::string triACLine);
 void printLine(std::string line);
 void printASM();
 std::list<int> actFrameStack;
@@ -58,6 +70,9 @@ void parseStruct ()
     triACLine = triACStruct[0];
     parsedLine = parseLine(triACLine);
     int i = 0;
+    if (parsedLine[0].front() != '#') {
+        i++;
+    }
     while (parsedLine[0].front() == '#') {
         triACLine = triACStruct[i];
         parsedLine = parseLine(triACLine);
@@ -67,7 +82,6 @@ void parseStruct ()
     lineStack.push_front(parsedLine);
     tmpStr = "";
     //starts at 1 so i can steal main label
-    i = 1;
     // Slice the struct
     // Call parse line
     while (i < triACStruct.size())
@@ -80,11 +94,7 @@ void parseStruct ()
         operatorHandle(parsedLine);
         i++;
     }
-    //parsedLine = lineStack.front();
-    //lineStack.pop_front();
-    //epilogHandle(parsedLine);
 }
-
 
 // Split the 3AC line into sub-strings
 std::vector<std::string> parseLine (std::string triACLine)
@@ -102,7 +112,6 @@ std::vector<std::string> parseLine (std::string triACLine)
 
 int getOffSet(std::vector<std::string> parsedLine) {
     actSize = actFrameStack.front();
-    std::cout << "GETOFFSET STOI" << std::endl;
     return actSize-std::stoi(parsedLine[2])-4;
 }
 
@@ -110,7 +119,6 @@ int tempRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
-    std::cout << "GETTEMPREG STOI" << std::endl;
     int reg = getTmpReg(std::stoi(test));
     return reg;
 }
@@ -119,8 +127,14 @@ int argRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
-    std::cout << "GETARGREG STOI" << std::endl;
     int reg = getArgReg(std::stoi(test));
+    return reg;
+}
+int retRegGetter(std::string input) {
+    std::string test = "";
+    test.append(input);
+    test.erase(0,3);
+    int reg = getRetReg(std::stoi(test));
     return reg;
 }
 
@@ -216,17 +230,6 @@ void operatorHandle(std::vector<std::string> parsedLine)
         labelOpHandle(parsedLine);
         lastOp = normie;
     }
-    /*
-             parsedLine[0].compare("GT") == 0 ||
-             parsedLine[0].compare("GE") == 0 ||
-             parsedLine[0].compare("LE") == 0 ||
-             parsedLine[0].compare("EQ") == 0 ||
-             parsedLine[0].compare("NE") == 0 ||
-             parsedLine[0].compare("AND") == 0 ||
-             parsedLine[0].compare("OR") == 0 ||
-             parsedLine[0].compare("XOR") == 0
-             */
-    //LT GT GE LE EQ NE AND OR
     else if (parsedLine[0].compare("LT") == 0) {
         ltOpHandle(parsedLine);
         lastOp = normie;
@@ -235,24 +238,63 @@ void operatorHandle(std::vector<std::string> parsedLine)
         gtOpHandle(parsedLine);
         lastOp = normie;
     }
+    else if (parsedLine[0].compare("GE") == 0) {
+        geOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("LE") == 0) {
+        leOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("EQ") == 0) {
+        eqOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("NE") == 0) {
+        neOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("AND") == 0) {
+        andOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("OR") == 0) {
+        orOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("XOR") == 0) {
+        xorOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("RETLOAD") == 0) {
+        retLoadOpHandle(parsedLine);
+        lastOp = normie;
+    }
+    else if (parsedLine[0].compare("RET") == 0) {
+        retOpHandle(parsedLine);
+        lastOp = normie;
+    }
     else
     {
         std::cout << parsedLine[0] << "THAT'S A NONO!" << std::endl;
         lastOp = normie;
     }
 }
-void gtOpHandle(std::vector<std::string> parsedLine)
-{
-    ltOpHandle(parsedLine);
-    notHandle(parsedLine);
-}
 void retOpHandle(std::vector<std::string> parsedLine)
 {
-    if (parsedLine.size() > 1) {
-    }
-    else {
-        tmpStr.append("jr\t$31");
-    }
+    epilogHandle();
+    tmpStr.append("jr\t$31");
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void retLoadOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = retRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+    tmpStr.append("move\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
@@ -284,6 +326,19 @@ void notHandle(std::vector<std::string> parsedLine){
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
+void gtOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("sgt\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
 void ltOpHandle(std::vector<std::string> parsedLine)
 {
     int dst = tempRegGetter(parsedLine[1]);
@@ -297,7 +352,94 @@ void ltOpHandle(std::vector<std::string> parsedLine)
     asmCode.push_back(tmpStr);
     tmpStr = "";
 }
+void geOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
 
+    tmpStr.append("sge\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+
+}
+void leOpHandle(std::vector<std::string> parsedLine)
+{
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("sle\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void eqOpHandle(std::vector<std::string> parsedLine){
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("seq\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+
+void neOpHandle(std::vector<std::string> parsedLine){
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("sne\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void andOpHandle(std::vector<std::string> parsedLine){
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("and\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void orOpHandle(std::vector<std::string> parsedLine){
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("or\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
+void xorOpHandle(std::vector<std::string> parsedLine){
+    int dst = tempRegGetter(parsedLine[1]);
+    int src1 = tempRegGetter(parsedLine[2]);
+
+    tmpStr.append("xor\t$");
+    tmpStr.append(std::to_string(dst));
+    tmpStr.append("\t$");
+    tmpStr.append(std::to_string(src1));
+    mathRHS(parsedLine);
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+}
 void exprOpHandle(std::vector<std::string> parsedLine)
 {
     tmpStr.append(parsedLine[0]);
@@ -503,13 +645,12 @@ void prologHandle(std::vector<std::string> parsedLine) {
     asmCode.push_back(tmpStr);
     tmpStr = "";
 
-    tmpStr.append("addiu\t$sp,$sp");
+    tmpStr.append("addiu\t$sp\t$sp\t");
     tmpStr.append("-"+parsedLine[1]);
     //std::cout << tmpStr << std::endl;
     asmCode.push_back(tmpStr);
     tmpStr = "";
 
-    std::cout << "ACTIVATION STOI" << std::endl;
     actSize=std::stoi(parsedLine[1]);
     actFrameStack.push_front(actSize);
     tmpStr.append("sw\t$31,"+std::to_string(actSize-4)+"($sp)"); //sub 4 cuz ret addr is 4 large
@@ -524,11 +665,26 @@ void prologHandle(std::vector<std::string> parsedLine) {
     tmpStr = "";
     //std::cout << std::endl;
 }
-void epilogHandle(std::vector<std::string> parsedLine) {
-
+void epilogHandle() {
     //after done with func call
-    actFrameStack.pop_front();
+    tmpStr = "";
     actSize = actFrameStack.front();
+    tmpStr.append("addiu\t$sp\t$sp\t");
+    tmpStr.append(std::to_string(actSize));
+    asmCode.push_back(tmpStr);
+    tmpStr = "";
+    actFrameStack.pop_front();
+    if (actFrameStack.size() == 0){
+        tmpStr.append("exit:");
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+        tmpStr.append("li\t$v0\t10\t# terminate program run and");
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+        tmpStr.append("syscall\t# Exit");
+        asmCode.push_back(tmpStr);
+        tmpStr = "";
+    }
 }
 
 void printASM() {

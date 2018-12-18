@@ -42,7 +42,7 @@ void freeReg(int reg) {
 int getRetReg(int temp){ //v0-v1 return vals
     int i = 2;
     while (i !=4) {
-        if(regTable[i].second == temp ){
+        if(regTable[i].second == temp){
             regTable[i].second = temp;
             freeReg(i);
             return i;
@@ -52,7 +52,7 @@ int getRetReg(int temp){ //v0-v1 return vals
     }
     i = 2;
     while (i !=4) {
-        if(regTable[i].second != -1){
+        if(regTable[i].second == -1){
             regTable[i].second = temp;
             return i;
             i=4;
@@ -75,7 +75,7 @@ int getArgReg(int temp){ //a0-a3 1st four params of func call
     }
     i = 4;
     while (i !=8) {
-        if(std::get<1>(regTable[i])){
+        if(regTable[i].second == -1){
             regTable[i].second = temp;
             return i;
             i=8;
@@ -127,7 +127,7 @@ int getSaveReg(int temp){ //s0-s7 save regs vals preserved between func calls
     }
     i = 16;
     while (i !=24) {
-        if(std::get<1>(regTable[i])){
+        if(regTable[i].second == -1){
             regTable[i].second = temp;
             return i;
             i=24;
