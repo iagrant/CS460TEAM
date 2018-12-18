@@ -263,41 +263,41 @@ void arrayHandleTop(ASTnode * equal) {
         // Array Index Cases
     if (arr->child[0]->child[0]->nodeType == constantN) {
 
-    tempString.append("ADDR");
-    tempString.append("\t");
-    tempDST();
-    tempString.append("\t");
-    tempString.append("A_"+std::to_string(arr->offset));
-    triACStruct.push_back(tempString);
-    tempString = "";
-    tempInc();
+        tempString.append("ADDR");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempString.append("A_"+std::to_string(arr->offset));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
 
-    tempString.append("ASSIGN");
-    tempString.append("\t");
-    tempDST();
-    tempString.append("\t");
-        constantNode * tmp = (constantNode *) arr->child[0]->child[0];
-        tempString.append(std::to_string(tmp->intConst));
-    triACStruct.push_back(tempString);
-    tempString = "";
-    tempInc();
+        tempString.append("ASSIGN");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+            tempString.append(std::to_string(tmp->intConst));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
     }
     //FIXME append val of id
     else if (arr->child[0]->child[0]->nodeType == idN) {
-    tempString.append("ADDR");
-    tempString.append("\t");
-    tempDST();
-    tempString.append("\t");
-    tempString.append("A_"+std::to_string(arr->offset));
-    triACStruct.push_back(tempString);
-    tempString = "";
-    tempInc();
+        tempString.append("ADDR");
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempString.append("A_"+std::to_string(arr->offset));
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
 
-            idNode * tmp = (idNode *) arr->child[0]->child[0];
-            idInsideArrBrrk(tmp);
-    triACStruct.push_back(tempString);
-    tempString = "";
-    tempInc();
+                idNode * tmp = (idNode *) arr->child[0]->child[0];
+                idInsideArrBrrk(tmp);
+        triACStruct.push_back(tempString);
+        tempString = "";
+        tempInc();
     }
     /*
     else if (arr->child[0]->child[0]->nodeType == mathN) {
@@ -334,6 +334,7 @@ void arrayHandleBottom(ASTnode * equal ) {
     // ASSIGN INDEX
     // Array Index Cases
     //this one fine
+    //
     if (arr->child[0]->child[0]->nodeType == constantN) {
     tempString.append("ADDR");
     tempString.append("\t");
@@ -563,6 +564,7 @@ void handleRHSArray(ASTnode * equal)
             tempString = "";
             tempInc();
             }
+            // Possibly the source of the error
             else if (arr->child[0]->child[0]->nodeType == idN) {
             tempString.append("ADDR");
             tempString.append("\t");
@@ -610,7 +612,7 @@ void handleRHSArray(ASTnode * equal)
             else if (arr->child[0]->child[0]->nodeType == mathN) {
 
             tempUsage1 = tempStack.front();
-            tempStack.pop_front();
+//            tempStack.pop_front();
 
             tempString.append("MULT");
             tempString.append("\t");
@@ -647,6 +649,8 @@ void handleRHSArray(ASTnode * equal)
             //
             // MULIPLE BY BYTESIZE OF TYPE
 
+            tempUsage1 = tempStack.front();
+            tempStack.pop_front();
             tempString.append("LOAD");
             tempString.append("\t");
             tempDST();
@@ -656,9 +660,11 @@ void handleRHSArray(ASTnode * equal)
             tempString = "";
             tempInc();
 
+
             tempString.append("STORE");
             tempString.append("\t");
             tempRHS();
+            tempStack.push_front(tempUsage1);
             tempString.append("\t");
             tempRHSArr();
         }
@@ -1027,7 +1033,7 @@ void equalHandle(ASTnode * AST) {
 		}
 
         // ARRAY ASIGNMENT
-        else if (AST->child[0]->production.compare("ARRAY_NODE") == 0 && AST->child[1]->nodeType != mathN) {
+        else if (AST->child[0]->production.compare("ARRAY_NODE") == 0) {
             arrayNode * arr = (arrayNode *) AST->child[0];
             // LHS 1D ARRAY
             if (arr->boundVect.size() == 1)
@@ -1040,7 +1046,6 @@ void equalHandle(ASTnode * AST) {
                 arrayNode * arr = (arrayNode *) AST->child[0];
                 array2DHandleBottom(arr);
             }
-
             else
             {
                 std::cout << "Compiler does not support arrays larger than 2-D" << std::endl;
@@ -1056,6 +1061,12 @@ void equalHandle(ASTnode * AST) {
             tempRHS();
             tempString.append("\t");
             tempRHSArr();
+        }
+        if (AST->child[1]->nodeType == arrayN)
+        {
+            arrayNode * arr = (arrayNode *) AST;
+            handleRHSArray(arr);
+
         }
     }
     triACStruct.push_back(tempString);
