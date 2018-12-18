@@ -29,6 +29,33 @@
     int whileCounter = 0;
     int ifCounter = 0;
 
+int getReturnType(ASTnode * AST) {
+    while (AST->nodeType != returnN) {
+
+        // If there are no more children
+        if (AST->child.size() == 0)
+        {
+            return -1;
+        }
+        AST = AST->child[AST->child.size()-1];
+
+    }
+    returnNode * ret = (returnNode *) AST;
+    return ret->child[0]->typeSpec;
+
+}
+
+void returnTypeCheck(ASTnode * AST) {
+    functionNode * func = (functionNode *) AST;
+    int funcReturnType = func->child[0]->typeSpec;
+    int proposedReturnType = getReturnType(AST);
+    if (proposedReturnType != funcReturnType)
+    {
+        std::cout << proposedReturnType << "Return Type does not match declared type." << std::endl;
+        exit(1);
+    }
+}
+
 void funcParamTypeCheck(ASTnode * AST) {
 
     funcCallNode * func = (funcCallNode *) AST;
@@ -327,6 +354,7 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
@@ -343,6 +371,7 @@ function_definition
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
@@ -362,6 +391,7 @@ function_definition
             int tempSize = tmpNode->activationFrameSize;
             tempSize += 8 - tempSize % 8;
             tmpNode->activationFrameSize = tempSize;
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -378,6 +408,7 @@ function_definition
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
+            returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
@@ -3320,7 +3351,7 @@ int main (int argc, char** argv)
   walkTree(globalASTnode);
   print3ac();
   parseStruct();
-  //printASM();
+  printASM();
   //printTable();
   return 0;
 }
