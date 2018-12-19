@@ -22,6 +22,7 @@ public:
     int lineNum = -1;
     int size = 0;
     bool isArray = false;
+    std::string name;
 
     int signedB;
     int storageSpec;

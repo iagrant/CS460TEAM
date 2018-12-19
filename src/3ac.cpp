@@ -83,13 +83,18 @@ void labelHandle (ASTnode * AST) {
     switch(AST->nodeType) {
         case funcN:
             {
-            idNode * id = (idNode *) (AST->child[0]);
-            tempString = "";
-            tempString.append(id->name);
-            functionHandle(AST);
-            triACStruct.push_back(tempString);
-            tempString = "";
-            break;
+                ASTnode * tmp = AST;
+                while(tmp->child[0]->nodeType != idN)
+                {
+                    tmp = tmp->child[0];
+                }
+                idNode * id = (idNode *) tmp->child[0];
+                tempString = "";
+                tempString.append(id->name);
+                functionHandle(AST);
+                triACStruct.push_back(tempString);
+                tempString = "";
+                break;
             }
             /*
         case forN:
