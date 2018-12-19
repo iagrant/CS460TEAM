@@ -9,7 +9,7 @@ int main ()
     int l;
     int k;
 
-	for (i = 0; i < 9; i++)
+	for (i = 0; i < 10; i++)
 	{
         array[i] = 10 - i;
         printInt(array[i]);
@@ -30,7 +30,7 @@ int main ()
 		}
 	}
 
-	for (l = 0; l < 9; l++)
+	for (l = 0; l < 10; l++)
 	{
         printInt(array[l]);
 	}
