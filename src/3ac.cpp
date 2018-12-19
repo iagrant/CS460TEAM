@@ -27,7 +27,6 @@ void forHandleTop(forNode * fNode);
 void forHandleBot(forNode * fNode);
 void equalHandle(ASTnode * AST);
 void arrayHandleTop(ASTnode * equal);
-//void array1DHandleLHS(arrayNode* arr);
 void array1DHandleLHS(ASTnode* equal);
 void arrayHandleBottom(ASTnode * equal );
 void array2DHandleBottom(arrayNode * equal);
@@ -770,14 +769,15 @@ void functionCallHandle(ASTnode * AST) {
                 array2DHandleBottom(temp);
             else
             {
-                arrayGetHandle(temp);
+                array1DHandleLHS(temp);
+                //arrayGetHandle(temp);
             }
         }
         tempString.append("ARGLOAD");
         tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
         tempRHS();
+        tempString.append("\t");
+        tempDST();
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
@@ -1192,126 +1192,220 @@ void equalHandle(ASTnode * AST) {
 
 void array1DHandleLHS(ASTnode* equal)
 {
-    arrayNode * arr = (arrayNode * ) equal->child[0];
-    // ADDR OF ID
-    tempString.append("ADDR");
-    tempString.append("\t");
-    tempDST();
-    tempString.append("\t");
-    //tempString.append(arr->id);
-    tempString.append("A_"+std::to_string(arr->offset));
-    triACStruct.push_back(tempString);
-    tempString = "";
-    tempInc();
-
-    if (arr->child[0]->child[0]->nodeType == constantN) {
-        // ASSIGN FIRST INDEX
-        tempString.append("ASSIGN");
+    if (equal->nodeType == arrayN)
+    {
+        arrayNode * arr = (arrayNode * ) equal;
+        // ADDR to the base
+        // INDEX (constant, id, math)
+        // MUL by size
+        // ADD to the base offset
+        // LOAD it_# 0(it_#)
+        tempString.append("ADDR");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        constantNode * tmp = (constantNode *) arr->child[0]->child[0];
-        tempString.append(std::to_string(tmp->intConst));
+        //tempString.append(arr->id);
+        tempString.append("A_"+std::to_string(arr->offset));
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
+        
+        if (arr->child[0]->child[0]->nodeType == constantN) {
+            // ASSIGN FIRST INDEX
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+            tempString.append(std::to_string(tmp->intConst));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
 
-        // MUL INDEX TYPESPEC
-        tempString.append("MUL");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+            // MUL INDEX TYPESPEC
+            tempString.append("MUL");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
 
-        // ADD ADDR LASTMUL
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+        }
+        // IDNODE IN 1st INDEX OF LHS
+        else if (arr->child[0]->child[0]->nodeType == idN) {
+            offHandle(arr->child[0]->child[0]);
+            // MUL INDEX TYPESPEC
+            tempString.append("MUL");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            tempUsage1 = tempStack.front();
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+        }
+            tempString.append("LOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHSArr();
+            triACStruct.push_back(tempString);
+            tempString = "";
+
     }
-    // IDNODE IN 1st INDEX OF LHS
-    else if (arr->child[0]->child[0]->nodeType == idN) {
-        offHandle(arr->child[0]->child[0]);
-        // MUL INDEX TYPESPEC
-        tempString.append("MUL");
+    else
+    {
+        arrayNode * arr = (arrayNode * ) equal->child[0];
+        // ADDR OF ID
+        tempString.append("ADDR");
         tempString.append("\t");
         tempDST();
         tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
+        //tempString.append(arr->id);
+        tempString.append("A_"+std::to_string(arr->offset));
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
 
-        tempUsage1 = tempStack.front();
-        // ADD ADDR LASTMUL
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
-    }
-    // MATHNODE IN 1ST INDEX OF LHS
-    else if (arr->child[0]->child[0]->nodeType == mathN) {
-        // MUL INDEX TYPESPEC
-        int tempUsage2;
-        tempUsage1 = tempStack.front();
-        tempStack.pop_front();
+        if (arr->child[0]->child[0]->nodeType == constantN) {
+            // ASSIGN FIRST INDEX
+            tempString.append("ASSIGN");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            constantNode * tmp = (constantNode *) arr->child[0]->child[0];
+            tempString.append(std::to_string(tmp->intConst));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
 
-        // Math LHS Index and RHS math
-        if (equal->child[1]->nodeType == mathN)
-        {
-            tempUsage2 = tempStack.front();
+            // MUL INDEX TYPESPEC
+            tempString.append("MUL");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+        }
+        // IDNODE IN 1st INDEX OF LHS
+        else if (arr->child[0]->child[0]->nodeType == idN) {
+            offHandle(arr->child[0]->child[0]);
+            // MUL INDEX TYPESPEC
+            tempString.append("MUL");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+
+            tempUsage1 = tempStack.front();
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+        }
+        // MATHNODE IN 1ST INDEX OF LHS
+        else if (arr->child[0]->child[0]->nodeType == mathN) {
+            // MUL INDEX TYPESPEC
+            int tempUsage2;
+            tempUsage1 = tempStack.front();
             tempStack.pop_front();
-        }
-        std::cout << tempUsage1 << " First Popped" << std::endl;
-        std::cout << tempUsage2 << " Second Popped" << std::endl;
 
-        tempString.append("MUL");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempString.append(std::to_string(arr->determineOffset()));
-        triACStruct.push_back(tempString);
-        tempString = "";
-        // Math LHS Index and RHS math
-        if (equal->child[1]->nodeType == mathN)
-        {
-            tempStack.push_front(tempUsage2);
-        }
-        tempInc();
+            // Math LHS Index and RHS math
+            if (equal->child[1]->nodeType == mathN)
+            {
+                tempUsage2 = tempStack.front();
+                tempStack.pop_front();
+            }
+            std::cout << tempUsage1 << " First Popped" << std::endl;
+            std::cout << tempUsage2 << " Second Popped" << std::endl;
 
-        tempStack.push_front(tempUsage1);
-        // ADD ADDR LASTMUL
-        tempString.append("ADD");
-        tempString.append("\t");
-        tempDST();
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempRHS();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
+            tempString.append("MUL");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempString.append(std::to_string(arr->determineOffset()));
+            triACStruct.push_back(tempString);
+            tempString = "";
+            // Math LHS Index and RHS math
+            if (equal->child[1]->nodeType == mathN)
+            {
+                tempStack.push_front(tempUsage2);
+            }
+            tempInc();
+
+            tempStack.push_front(tempUsage1);
+            // ADD ADDR LASTMUL
+            tempString.append("ADD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
+        }
     }
 }
 
