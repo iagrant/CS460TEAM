@@ -1199,17 +1199,28 @@ direct_declarator
             if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
                 if($1->nodeType == arrayN) {
+                    bool test = true;
                     constantNode * tmpNode = (constantNode *)$3;
                     arrayNode * arNode = (arrayNode *) $1;
                     arNode->bound *= tmpNode->intConst;
                     arNode->boundVect.push_back(tmpNode->intConst);
-                    arNode->size = arNode->bound * arNode->determineOffset();
                     std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
                     if (ret.first) {
-                        ret.second->setOffset(&currentOffset,true,arNode->bound,false);
+                        if (test) {
+                        //currentOffset -= arNode->size;
+                        //std::cout << "Current Offset A: " << currentOffset << std::endl;
+                        //std::cout << "ARR SIZE: " << arNode->size << std::endl;
+                        arNode->size = arNode->bound * arNode->determineOffset();
+                        //std::cout << "ARR SIZE: " << arNode->size << std::endl;
+                        currentOffset += arNode->size;
+                        //std::cout << "Current Offset A: " << currentOffset << std::endl;
+                        //ret.second->setOffset(&currentOffset,true,arNode->bound,false);
                         ret.second->boundVect.push_back(tmpNode->intConst);
                         //arNode->boundVect = ret.second->boundVect;
+                        }
                     }
+                    if (test)
+                        test=false;
                     $$ = arNode;
                 }
                 else {
@@ -1226,8 +1237,12 @@ direct_declarator
                         sizeNode->typeSpec = tmpNode->typeSpec;
                         std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
                         if (ret.first) {
-                            ret.second->setOffset(&currentOffset,true,sizeNode->bound,false);
-                            sizeNode->offset = ret.second->getOffset();
+                            //ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
+                            currentOffset -= 4;
+                            //std::cout << "Current Offset A: " << currentOffset << std::endl;
+                            sizeNode->offset = currentOffset;
+                            ret.second->offset = currentOffset;
+                            currentOffset += sizeNode->size;
                             ret.second->boundVect.push_back(tempBound);
                             //sizeNode->boundVect = ret.second->boundVect;
                         }

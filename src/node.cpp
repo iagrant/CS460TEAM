@@ -286,12 +286,27 @@ public:
         if (!isArray) {
             arrayBounds = 1; //just in case;
         }
-        else {
-            *currentOffset -= offset;
+        if (isArray && fstTime) {
+            switch(typeSpec){
+                case voidS:
+                    break;
+                case floatS:
+                    *currentOffset -= 8;
+                    break;
+                case doubleS:
+                    *currentOffset -= 8;
+                    break;
+                case charS:
+                    *currentOffset -= 4;
+                    break;
+                default:
+                    *currentOffset -= 4;
+                    break;
+            }
         }
-        if (fstTime)
+        if (fstTime && !isArray)
             offset = *currentOffset;
-        //std::cout << name << ": " << offset << std::endl;
+        //std::cout << name << "Offset: " << offset << std::endl;
         if (!isArray) {
             switch(typeSpec){
                 case voidS:
@@ -303,7 +318,7 @@ public:
                     *currentOffset += 8*arrayBounds;
                     break;
                 case charS:
-                    *currentOffset += 1*arrayBounds;
+                    *currentOffset += 4*arrayBounds;
                     break;
                 default:
                     *currentOffset += 4*arrayBounds;
@@ -315,16 +330,16 @@ public:
                 case voidS:
                     break;
                 case floatS:
-                    *currentOffset = 8*arrayBounds;
+                    *currentOffset += 8*arrayBounds;
                     break;
                 case doubleS:
-                    *currentOffset = 8*arrayBounds;
+                    *currentOffset += 8*arrayBounds;
                     break;
                 case charS:
-                    *currentOffset = 1*arrayBounds;
+                    *currentOffset += 4*arrayBounds;
                     break;
                 default:
-                    *currentOffset = 4*arrayBounds;
+                    *currentOffset += 4*arrayBounds;
                     break;
             }
         }
