@@ -127,7 +127,6 @@ int argRegGetter(std::string input) {
     std::string test = "";
     test.append(input);
     test.erase(0,3);
-    std::cout << "TEST:" << test << ":" << std::endl;
     int reg = getArgReg(std::stoi(test));
     return reg;
 }
@@ -518,7 +517,6 @@ void addrOpHandle(std::vector<std::string> parsedLine)
     tmpStr = "";
     int reg = tempRegGetter(parsedLine[1]);
     parsedLine[2].erase(0,2);
-    std::cout << "CUNT: " << parsedLine[2] << std::endl;
     tmpStr = "la\t$" + std::to_string(reg) + "\t" + std::to_string(getOffSet(parsedLine)) + "($sp)";
     asmCode.push_back(tmpStr);
     tmpStr = "";

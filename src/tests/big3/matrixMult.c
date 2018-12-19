@@ -31,7 +31,7 @@ int main()
 		printNewLine();
 	}
 	//intilize Matrix B
-	b = 4
+	b = 4;
 	for (k = 0; k < 2; k++)
 	{
 		for (l = 0; l < 2; l++)
@@ -59,11 +59,13 @@ int main()
 		{
 			for (z = 0; z < 2; z++)
 			{
-				AB[x][y] = AB[x][y] + (A[x][z] * B[z][y]);
+				AB[x][y] = AB[x][y] + A[x][z] * B[z][y];
+			    printInt(AB[x][y]);
 			}
+		printNewLine();
 		}
+		printNewLine();
 	}
-
 
 	return 0;
 }
