@@ -7,5 +7,6 @@ int main(){
     int e = 10 % 5;
     int f = a + b - c * d / e;
     a++;
-    //a--;
+    a--;
+    return 0;
 }
