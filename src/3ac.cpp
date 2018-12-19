@@ -1721,6 +1721,7 @@ void mathHandle(mathNode * math) {
         if (arr1->boundVect.size() == 2)
         {
             array2DHandleBottom(arr1);
+            /*
             tempString.append("LOAD");
             tempString.append("\t");
             tempDST();
@@ -1729,6 +1730,7 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
+            */
 
         }
 
@@ -1740,6 +1742,7 @@ void mathHandle(mathNode * math) {
         if (arr->boundVect.size() == 2)
         {
             array2DHandleBottom(arr);
+            /*
             tempString.append("LOAD");
             tempString.append("\t");
             tempDST();
@@ -1748,6 +1751,7 @@ void mathHandle(mathNode * math) {
             tempInc();
             triACStruct.push_back(tempString);
             tempString = "";
+            */
 
         }
 
@@ -1765,6 +1769,19 @@ void mathHandle(mathNode * math) {
         tempRHS();
         tempInc();
     }
+
+    else if (math->child[0]->nodeType == arrayN &&
+               math->child[1]->nodeType == mathN)
+    {
+
+    }
+
+    else if (math->child[0]->nodeType == mathN &&
+               math->child[1]->nodeType == arrayN)
+    {
+
+    }
+
     else if (math->operation == incOp) {
         //inc by 1
         idNode * id = (idNode *) (math->child[0]);
@@ -1814,8 +1831,11 @@ void mathHandle(mathNode * math) {
         tempString.append("\t");
         idHandle(id);
     }
-    triACStruct.push_back(tempString);
-    tempString = "";
+    if (!(math->child[0]->nodeType == arrayN && math->child[1]->nodeType == arrayN))
+    {
+        triACStruct.push_back(tempString);
+        tempString = "";
+    }
 }
 void ifHandleTop(ifNode * ifnode) {
     //BRANCHES in MIPS the label comes last
