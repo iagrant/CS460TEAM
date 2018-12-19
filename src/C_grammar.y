@@ -66,7 +66,7 @@ void funcParamTypeCheck(ASTnode * AST) {
     // Iterator advances through the list of params
     for (int i = 0; i < AST->child.size(); i++)
     {
-        std::cout << AST->child.size() << "\n" << std::endl;
+        //std::cout << AST->child.size() << "\n" << std::endl;
         std::advance(iter, i);
         int * param = *iter;
         param += 2;
@@ -75,12 +75,12 @@ void funcParamTypeCheck(ASTnode * AST) {
 
         if (argumentType == paramType)
         {
-            std::cout << "Function Parameters Match" << argumentType << " " << paramType << std::endl;
+            //std::cout << "Function Parameters Match" << argumentType << " " << paramType << std::endl;
         }
         else {
             std::cout << "Function call argument type does not match parameter.\n"  << argumentType << " " << paramType << std::endl;
 
-            //exit(1);
+            exit(1);
         }
     }
 }
@@ -923,24 +923,22 @@ init_declarator
                 idNode * id = (idNode *) $1;
                 currentOffset += 4;
                 id->offset = currentOffset;
-                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                //std::cout << id->name << " Offset: " << id->offset << std::endl;
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
                 if (ret.first) {
                     ret.second->offset = currentOffset;
                 }
-                std::cout << "Cur Offset: " << currentOffset << std::endl;
             }
             else if ($1->nodeType == arrayN) {
                 arrayNode * id = (arrayNode *) $1;
                 currentOffset += id->size;
                 id->offset = currentOffset;
-                std::cout << id->id << " Offset: " << id->offset << std::endl;
+                //std::cout << id->id << " Offset: " << id->offset << std::endl;
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->id,true);
                 if (ret.first) {
                     ret.second->offset = currentOffset;
                 }
                 //currentOffset += id->size + 4;
-                std::cout << "Cur Offset: " << currentOffset << std::endl;
             }
             $$ = $1;
             if (printProductions) {
@@ -970,12 +968,11 @@ init_declarator
                 idNode * id = (idNode *) $1;
                 currentOffset += 4;
                 id->offset = currentOffset;
-                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                //std::cout << id->name << " Offset: " << id->offset << std::endl;
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
                 if (ret.first) {
                     ret.second->offset = currentOffset;
                 }
-                std::cout << "Cur Offset: " << currentOffset << std::endl;
             }
 
             $$ = tmpNode;
@@ -3381,9 +3378,9 @@ int main (int argc, char** argv)
   //not needed anymore ... for now ...
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
-  print3ac();
+  //print3ac();
   parseStruct();
-  printASM();
+  //printASM();
   //printTable();
   return 0;
 }
