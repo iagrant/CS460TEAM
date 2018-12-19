@@ -1773,13 +1773,39 @@ void mathHandle(mathNode * math) {
     else if (math->child[0]->nodeType == arrayN &&
                math->child[1]->nodeType == mathN)
     {
-
+        triACStruct.push_back(tempString);
+        tempString = "";
+        arrayNode * arr = (arrayNode *) math->child[0];
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+        }
+        tempString.append(math->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
     }
 
     else if (math->child[0]->nodeType == mathN &&
                math->child[1]->nodeType == arrayN)
     {
-
+        arrayNode * arr = (arrayNode *) math->child[1];
+        if (arr->boundVect.size() == 2)
+        {
+            array2DHandleBottom(arr);
+        }
+        tempString.append(math->production);
+        tempString.append("\t");
+        tempDST();
+        tempString.append("\t");
+        tempRHS();
+        tempString.append("\t");
+        tempRHS();
+        tempInc();
     }
 
     else if (math->operation == incOp) {
