@@ -9,12 +9,12 @@ Work Distribution
 We pair programmed together for the majority of the project.    
 Some areas of individual effort are the following:  
 
-Ian: Symbol Table, Debug Flags in Source Code, everything related to symbol table, Types in AST, AST ID & Constant Node, Type Checking, 3ac  
+Ian: Symbol Table, Debug Flags in Source Code, everything related to symbol table, Types in AST, AST ID & Constant Node, AST fors, AST funcs/calls, Type Checking, 3ac gen, asm gen
    
 
-Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument, README, wiki, AST test cases.  
+Clayton: Yacc Grammar and Parts of Lex, Main in Yacc, Implementing file parsing with command line argument, README, wiki, AST test cases, arrays in 3ac  
 
-Jared: Command Line Debug Flags, Yacc, Lex, Logging of Lex and Bision, AST Generic Node, AST Unique Nodes, Printing of AST, AST Creation in grammar productions, Type Checking, 3ac, 3ac arrays
+Jared: Command Line Debug Flags, Yacc, Lex, Logging of Lex and Bision, AST Generic Node, AST Unique Nodes, Printing of AST, AST Creation in grammar productions, Type Checking of var & type checking in functions, arrays in 3ac
 
 ## Building
 #### Dependencies
