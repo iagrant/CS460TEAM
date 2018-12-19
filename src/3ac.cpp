@@ -665,7 +665,7 @@ void handleRHSArray(ASTnode * equal)
             tempUsage1 = tempStack.front();
 //            tempStack.pop_front();
             }
-            if (equal->child[0]->nodeType == arrayN && 
+            if (equal->child[0]->nodeType == arrayN &&
                     equal->child[1]->nodeType == arrayN)
             {
                 // Could break some glass
@@ -743,7 +743,7 @@ void handleRHSArray(ASTnode * equal)
         tempStack.push_front(tempUsage1);
         tempString.append("\t");
         tempRHSArr();
-        
+
     }
 }
 
@@ -928,7 +928,6 @@ void equalHandle(ASTnode * AST) {
             else if (AST->child[1]->nodeType == arrayN)
             {
                 handleRHSArray(AST);
-                std::cout << "Hello" << std::endl;
             }
             else if (AST->child[1]->nodeType == funcCallN){
                 idNode * id = (idNode *) AST->child[0];
@@ -1160,7 +1159,7 @@ void equalHandle(ASTnode * AST) {
 			}
 
 		}
-   */ 
+   */
 
         // ARRAY ASIGNMENT
         else if (AST->child[0]->production.compare("ARRAY_NODE") == 0) {
@@ -1176,7 +1175,7 @@ void equalHandle(ASTnode * AST) {
             else if (arr->boundVect.size() == 2)
             {
                  // arr[1] = 1 needs this
-                if (AST->child[1]->nodeType == constantN || 
+                if (AST->child[1]->nodeType == constantN ||
                         AST->child[1]->nodeType == mathN ||
                         AST->child[1]->nodeType == idN)
                 {
@@ -1196,7 +1195,7 @@ void equalHandle(ASTnode * AST) {
                 exit(1);
             }
             // Necessary when ID on LHS
-            
+
             //if (arr->child[0]->child[0]->nodeType == idN)
              //   handleRHSArray(AST);
         }
@@ -1245,7 +1244,7 @@ void array1DHandleLHS(ASTnode* equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-        
+
         if (arr->child[0]->child[0]->nodeType == constantN) {
             // ASSIGN FIRST INDEX
             tempString.append("ASSIGN");
@@ -1410,8 +1409,6 @@ void array1DHandleLHS(ASTnode* equal)
                 tempUsage2 = tempStack.front();
                 tempStack.pop_front();
             }
-            std::cout << tempUsage1 << " First Popped" << std::endl;
-            std::cout << tempUsage2 << " Second Popped" << std::endl;
 
             tempString.append("MUL");
             tempString.append("\t");
