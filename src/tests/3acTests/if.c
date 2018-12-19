@@ -1,8 +1,11 @@
 int main(){
     int b = 4;
-    char c = 'c';
+    int c = 99;
     int a = b + 5;
     if (b < 5 && c > b) {
-        c = 'z';
+        c = 122;
+    }
+    else {
+        c = 420;
     }
 }

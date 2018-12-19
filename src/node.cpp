@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <iterator>
 #include <fstream>
 #include <string>
@@ -42,15 +43,16 @@ private:
     int scope;
     int paramNum;
     int currentParam;
-    int offset;
-    std::list <int*> paramList;
-    std::list <int*> :: iterator paramListIter;
 
 public:
+    std::list <int*> paramList;
+    std::list <int*> :: iterator paramListIter;
+    int offset;
     bool isFunction;
-    //bool isArray;
+    bool isArray;
     bool hasProto;
     bool hasImplementation;
+    std::vector <int> boundVect;
     Node(){
         setName("");
         setLine(-1);
@@ -60,11 +62,11 @@ public:
         setStorageSpec(noneS);
         setScope(-1);
         isFunction=false;
-        //isArray=false;
+        isArray=false;
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
-        offset=0;
+        offset=-1;
     }
 
     void writeNode(std::string filename) {
@@ -159,6 +161,7 @@ public:
         std::cout << "TYPE: ";
         printType();
         std::cout << "LINE: " << line << std::endl;
+        std::cout << "OFFSET: " << offset << std::endl;
         printFunction();
         std::cout << std::endl;
     }
@@ -229,7 +232,7 @@ public:
         hasProto=false;
         hasImplementation=false;
         paramNum=0;
-        offset=0;
+        offset=-1;
     }
     void setName(std::string nameIn) {name=nameIn;}
     std::string getName() {return name;}
@@ -276,5 +279,70 @@ public:
             paramList.pop_back();
             ptr[typeOfTypes]=type;
             paramList.push_back(ptr);
+    }
+    int getOffset(){return offset;}
+    //if not an array input arrayBounds as 1
+    void setOffset(int * currentOffset, bool isArray,int arrayBounds,bool fstTime) {
+        if (!isArray) {
+            arrayBounds = 1; //just in case;
+        }
+        if (isArray && fstTime) {
+            switch(typeSpec){
+                case voidS:
+                    break;
+                case floatS:
+                    *currentOffset -= 8;
+                    break;
+                case doubleS:
+                    *currentOffset -= 8;
+                    break;
+                case charS:
+                    *currentOffset -= 4;
+                    break;
+                default:
+                    *currentOffset -= 4;
+                    break;
+            }
+        }
+        if (fstTime && !isArray)
+            offset = *currentOffset;
+        //std::cout << name << "Offset: " << offset << std::endl;
+        if (!isArray) {
+            switch(typeSpec){
+                case voidS:
+                    break;
+                case floatS:
+                    *currentOffset += 8*arrayBounds;
+                    break;
+                case doubleS:
+                    *currentOffset += 8*arrayBounds;
+                    break;
+                case charS:
+                    *currentOffset += 4*arrayBounds;
+                    break;
+                default:
+                    *currentOffset += 4*arrayBounds;
+                    break;
+            }
+        }
+        if (isArray) {
+            switch(typeSpec){
+                case voidS:
+                    break;
+                case floatS:
+                    *currentOffset += 8*arrayBounds;
+                    break;
+                case doubleS:
+                    *currentOffset += 8*arrayBounds;
+                    break;
+                case charS:
+                    *currentOffset += 4*arrayBounds;
+                    break;
+                default:
+                    *currentOffset += 4*arrayBounds;
+                    break;
+            }
+        }
+        //std::cout << "Current Offset: " << *currentOffset << std::endl;
     }
 };

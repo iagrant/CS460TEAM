@@ -24,7 +24,7 @@ pushPopTest: tests/symbolTablePushPop.cpp
 	g++ -w -std=c++11 tests/symbolTablePushPop.cpp -o $@
 
 clean:
-	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest *.png *.dot *.txt
+	-rm -f lex.yy.* C_grammar.tab.* *.o fcc symbolDriver shadowTest RedefinitionTest pushPopTest *.png *.dot *.txt *.output
 
 graph:
 	dot -Tpng ASTnode.dot -o ASTnode.png

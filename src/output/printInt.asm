@@ -2,7 +2,7 @@
 printInt:
 
     #call print-int syscall
-    addi $v0 $zero 1
+    sgt $v0 $zero 1
     syscall
 
     #print space 

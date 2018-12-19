@@ -5,6 +5,7 @@
 	#include <stdlib.h>
 	#include <iostream>
     #include "3ac.cpp"
+    #include "asm.cpp"
 
 	extern int lineNum;
 	extern int tabNum;
@@ -23,6 +24,66 @@
     enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEqOp,greatEqOp, orOp, andOp, notOp};
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
+    int currentOffset = 4;
+    int forCounter = 0;
+    int whileCounter = 0;
+    int ifCounter = 0;
+
+int getReturnType(ASTnode * AST) {
+    while (AST->nodeType != returnN) {
+
+        // If there are no more children
+        if (AST->child.size() == 0)
+        {
+            return -1;
+        }
+        AST = AST->child[AST->child.size()-1];
+
+    }
+    returnNode * ret = (returnNode *) AST;
+    return ret->child[0]->typeSpec;
+
+}
+
+void returnTypeCheck(ASTnode * AST) {
+    functionNode * func = (functionNode *) AST;
+    int funcReturnType = func->child[0]->typeSpec;
+    int proposedReturnType = getReturnType(AST);
+    if (proposedReturnType != funcReturnType)
+    {
+        std::cout << proposedReturnType << "Return Type does not match declared type." << std::endl;
+        //exit(1);
+    }
+}
+
+void funcParamTypeCheck(ASTnode * AST) {
+
+    funcCallNode * func = (funcCallNode *) AST;
+    std::pair<bool,Node*> function =  globalSymbolTable.searchTree(func->name, false);
+    std::list<int*> paramList = function.second->paramList;
+    std::list<int*> :: iterator iter = paramList.begin();
+
+    // Iterator advances through the list of params
+    for (int i = 0; i < AST->child.size(); i++)
+    {
+        std::cout << AST->child.size() << "\n" << std::endl;
+        std::advance(iter, i);
+        int * param = *iter;
+        param += 2;
+        int paramType = * param;
+        int argumentType = func->child[i]->typeSpec;
+
+        if (argumentType == paramType)
+        {
+            std::cout << "Function Parameters Match" << argumentType << " " << paramType << std::endl;
+        }
+        else {
+            std::cout << "Function call argument type does not match parameter.\n"  << argumentType << " " << paramType << std::endl;
+
+            //exit(1);
+        }
+    }
+}
 
 ASTnode* assignmentCoercion (ASTnode* lhs, ASTnode* rhs) {
     //std::cout << lhs->typeSpec << std::endl;
@@ -233,7 +294,7 @@ mathNode* mathCoercion (ASTnode* lhs, ASTnode* rhs, mathNode* center) {
 %type <node> parameter_type_list parameter_list parameter_declaration type_qualifier
 %type <node> specifier_qualifier_list struct_declarator_list struct_declarator
 %type <node> abstract_declarator constant_expression identifier_list type_qualifier_list
-%type <node> initializer_list pointer assignment_operator
+%type <node> initializer_list pointer assignment_operator argument_expression_list
 %type <sval> type_specifier
 
 %start translation_unit
@@ -293,6 +354,7 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($1);
             tmpNode->addNode($2);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declarator compound_statment" << std::endl;
@@ -309,6 +371,7 @@ function_definition
             tmpNode->addNode($1);
             tmpNode->addNode($2);
             tmpNode->addNode($3);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_defintion -> declarator declaration_list compound_statment" << std::endl;
@@ -323,8 +386,12 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
-            tmpNode->activationFrameSize += $2->size;
-            tmpNode->activationFrameSize += $3->size;
+            //tmpNode->activationFrameSize += $2->size;
+            //tmpNode->activationFrameSize += $3->size;
+            int tempSize = currentOffset;
+            tempSize += 8 - tempSize % 8;
+            tmpNode->activationFrameSize = tempSize;
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
 
             if (printProductions) {
@@ -341,6 +408,7 @@ function_definition
             tmpNode->addNode($2);
             tmpNode->addNode($3);
             tmpNode->addNode($4);
+            //returnTypeCheck(tmpNode);
             $$ = tmpNode;
             if (printProductions) {
                 std::cout << "function_definition -> declaration_specifiers declarator declaration_list compound_statment" << std::endl;
@@ -371,11 +439,14 @@ declaration
                     lastFuncPair.second->setProto();
                     globalSymbolTable.removeScope();
                 }
+                currentOffset = 4;
             }
             declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
             tmpNode->typeSpec = $2->typeSpec;
 
+            //FIXME this shouldn't be here
+            //do not need size of prototype
             if (tmpNode->child[0]->child[0]->production.compare("EQUALS") == 0) {
                 tmpNode->size = tmpNode->child[0]->child[0]->size;
             }
@@ -383,7 +454,7 @@ declaration
                 for (int i = 0; i < tmpNode->child[0]->child.size(); i++) {
                     tmpNode->size += tmpNode->child[0]->child[i]->size;
                 }
-                tmpNode->size += -1;
+                //tmpNode->size += -1;
             }
 
 
@@ -406,7 +477,7 @@ declaration_list
                 for (int i = 0; i < tmpNode->child.size(); i++) {
                     tmpNode->size += tmpNode->child[i]->size;
                 }
-                tmpNode->size += -1;
+                //tmpNode->size += -1;
             }
             $$ = tmpNode;
             //FIXME by killing me
@@ -848,6 +919,29 @@ init_declarator_list
 init_declarator
 	: declarator
 		{
+            if ($1->nodeType == idN && $1->typeSpec != voidS) {
+                idNode * id = (idNode *) $1;
+                currentOffset += 4;
+                id->offset = currentOffset;
+                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
+            else if ($1->nodeType == arrayN) {
+                arrayNode * id = (arrayNode *) $1;
+                currentOffset += id->size;
+                id->offset = currentOffset;
+                std::cout << id->id << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->id,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                //currentOffset += id->size + 4;
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
             $$ = $1;
             if (printProductions) {
                 std::cout << "init_declarator -> declarator" << std::endl;
@@ -872,6 +966,17 @@ init_declarator
                 tmpNode->addNode(assignmentCoercion($1, $3));
             }
             tmpNode->size = tmpNode->child[0]->size;
+            if ($1->nodeType == idN && $1->typeSpec != voidS) {
+                idNode * id = (idNode *) $1;
+                currentOffset += 4;
+                id->offset = currentOffset;
+                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
 
             $$ = tmpNode;
 
@@ -1130,20 +1235,36 @@ direct_declarator
                 if($1->nodeType == arrayN) {
                     constantNode * tmpNode = (constantNode *)$3;
                     arrayNode * arNode = (arrayNode *) $1;
-                    std::cout << tmpNode->intConst;
                     arNode->bound *= tmpNode->intConst;
+                    arNode->boundVect.push_back(tmpNode->intConst);
+                    arNode->size = arNode->bound * arNode->determineOffset();
+                    std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
+                    if (ret.first) {
+                        //ret.second->setOffset(&currentOffset,true,arNode->bound,false);
+                        ret.second->boundVect.push_back(tmpNode->intConst);
+                    }
                     $$ = arNode;
                 }
                 else {
                     arrayNode *sizeNode = new arrayNode("ARRAY_NODE");
+                    sizeNode->lineNum = lineNum;
                     constantNode * tmpNode = (constantNode *)$3;
+                    int tempBound = tmpNode -> intConst;
                     sizeNode->bound *= tmpNode->intConst;
+                    sizeNode->boundVect.push_back(tmpNode->intConst);
+                    sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     if ($1->nodeType == idN) {
                         idNode * tmpNode = (idNode *)$1;
                         sizeNode->id = tmpNode->name;
                         sizeNode->typeSpec = tmpNode->typeSpec;
+                        std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
+                        if (ret.first) {
+                            //ret.second->setOffset(&currentOffset,true,sizeNode->bound,false);
+                            //sizeNode->offset = ret.second->getOffset();
+                            ret.second->boundVect.push_back(tempBound);
+                        }
                     }
-                    sizeNode->size *= tmpNode->intConst * sizeNode->determineOffset();
+                    sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
                     $$ = sizeNode;
                 }
 
@@ -1729,7 +1850,7 @@ compound_statement
         {
             ASTnode *tmpNode = new ASTnode("COMPOUND_STATEMENT");
             tmpNode->addNode($2);
-            tmpNode->sumNode();
+            tmpNode->size = $2->size;
             tmpNode->addNode($3);
             $$ = tmpNode;
             if (printProductions) {
@@ -1769,11 +1890,12 @@ statement_list
 selection_statement
 	: IF OPEN expression CLOSE statement
         {
-            ifNode *parentNode = new ifNode("IF_STATEMENT");
+            ifNode *parentNode = new ifNode("IF_STATEMENT",ifCounter);
             parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             $$ = parentNode;
+            ifCounter++;
 
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement" << std::endl;
@@ -1784,12 +1906,13 @@ selection_statement
         }
 	| IF OPEN expression CLOSE statement ELSE statement
         {
-            ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT");
+            ifNode *parentNode = new ifNode("IF_ELSE_STATEMENT",ifCounter);
             parentNode->lineNum = $3->lineNum;
             parentNode->addNode($3);
             parentNode->addNode($5);
             parentNode->addNode($7);
             $$ = parentNode;
+            ifCounter++;
             if (printProductions) {
                 std::cout << "selection_statement -> IF OPEN expression CLOSE statement ELSE statement" << std::endl;
             }
@@ -1811,7 +1934,8 @@ selection_statement
 iteration_statement
 	: WHILE OPEN expression CLOSE statement
         {
-            whileNode *tmpNode = new whileNode("WHILE");
+            whileNode *tmpNode = new whileNode("WHILE",whileCounter);
+            whileCounter++;
             tmpNode->lineNum = $3->lineNum;
             tmpNode -> addNode($3);
             if ($5 != NULL)
@@ -1826,7 +1950,8 @@ iteration_statement
         }
 	| DO statement WHILE OPEN expression CLOSE SEMI
         {
-            whileNode *iterNode = new whileNode("DO WHILE");
+            whileNode *iterNode = new whileNode("DO WHILE",whileCounter);
+            whileCounter++;
             if ($2 != NULL)
                 iterNode->lineNum = $2->lineNum;
                 iterNode->addNode($2);
@@ -1841,7 +1966,12 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->lineNum = $6->lineNum;
             if ($6 != NULL)
                 tmpNode->addNode($6);
             $$ = tmpNode;
@@ -1854,8 +1984,13 @@ iteration_statement
         }
 	| FOR OPEN SEMI SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($5);
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
+            tmpNode->lineNum = $5->lineNum;
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($5);
+            tmpNode->lineNum = $5->lineNum;
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1868,9 +2003,12 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $4 -> lineNum;
-            tmpNode->addNode($4);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($4);
+            tmpNode->exprs.push_back(NULL);
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1883,10 +2021,12 @@ iteration_statement
         }
 	| FOR OPEN SEMI expression SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $4 -> lineNum;
-            tmpNode->addNode($4);
-            tmpNode->addNode($6);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($4);
+            tmpNode->exprs.push_back($6);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1899,8 +2039,12 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($3);
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
+            tmpNode->lineNum = $3->lineNum;
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back(NULL);
             if ($7 != NULL)
                 tmpNode->addNode($7);
             $$ = tmpNode;
@@ -1913,9 +2057,12 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
-            tmpNode->addNode($3);
-            tmpNode->addNode($6);
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
+            tmpNode->lineNum = $3->lineNum;
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back(NULL);
+            tmpNode->exprs.push_back($6);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1928,10 +2075,12 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $5 -> lineNum;
-            tmpNode->addNode($3);
-            tmpNode->addNode($5);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back($5);
+            tmpNode->exprs.push_back(NULL);
             if ($8 != NULL)
                 tmpNode->addNode($8);
             $$ = tmpNode;
@@ -1944,11 +2093,12 @@ iteration_statement
         }
 	| FOR OPEN expression SEMI expression SEMI expression CLOSE statement
         {
-            forNode *tmpNode = new forNode("FOR");
+            forNode *tmpNode = new forNode("FOR",forCounter);
+            forCounter++;
             tmpNode->lineNum = $5 -> lineNum;
-            tmpNode->addNode($3);
-            tmpNode->addNode($5);
-            tmpNode->addNode($7);
+            tmpNode->exprs.push_back($3);
+            tmpNode->exprs.push_back($5);
+            tmpNode->exprs.push_back($7);
             if ($9 != NULL)
                 tmpNode->addNode($9);
             $$ = tmpNode;
@@ -1992,6 +2142,8 @@ jump_statement
         }
 	| RETURN SEMI
         {
+            returnNode * ret = new returnNode("RETURN");
+            $$ = ret;
             if (printProductions) {
                 std::cout << "jump_statement -> RETURN SEMI" << std::endl;
             }
@@ -2001,6 +2153,10 @@ jump_statement
         }
 	| RETURN expression SEMI
         {
+            returnNode * ret = new returnNode("RETURN");
+            ret->addNode($2);
+            ret->lineNum = lineNum;
+            $$ = ret;
             if (printProductions) {
                 std::cout << "jump_statement -> RETURN expression SEMI" << std::endl;
             }
@@ -2244,7 +2400,7 @@ logical_or_expression
         }
 	| logical_or_expression OR_OP logical_and_expression
         {
-            exprNode* tmpNode = new exprNode("OR_OP");
+            exprNode* tmpNode = new exprNode("OR");
             tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
@@ -2272,7 +2428,7 @@ logical_and_expression
         }
 	| logical_and_expression AND_OP inclusive_or_expression
         {
-            exprNode* tmpNode = new exprNode("AND_OP");
+            exprNode* tmpNode = new exprNode("AND");
             tmpNode -> lineNum = lineNum;
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
@@ -2366,7 +2522,7 @@ equality_expression
         }
 	| equality_expression EQ_OP relational_expression
         {
-            exprNode* tmpNode = new exprNode("EQ_OP");
+            exprNode* tmpNode = new exprNode("EQ");
             tmpNode -> addNode($1);
             tmpNode -> addNode($3);
             tmpNode -> exprType = eqOp;
@@ -2820,6 +2976,12 @@ postfix_expression
                 postNode->lineNum = tmpNode->lineNum;
                 postNode->typeSpec = $1->typeSpec;
 
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
+                if (ret.first) {
+                    //ret.second->setOffset(&currentOffset,true,postNode->bound,false);
+                    postNode->offset = ret.second->offset;
+                    postNode->boundVect = ret.second->boundVect;
+                }
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
                 bound->addNode($3);
                 postNode->addNode(bound);
@@ -2837,6 +2999,13 @@ postfix_expression
 	| postfix_expression OPEN CLOSE
         {
             //func call
+            funcCallNode * temp = new funcCallNode("FUNCTION CALL");
+            idNode * idN = (idNode *) $1;
+            temp->typeSpec = idN->typeSpec;
+            temp->name = idN->name;
+            temp->lineNum = lineNum;
+            $$ = temp;
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN CLOSE" << std::endl;
             }
@@ -2847,6 +3016,19 @@ postfix_expression
 	| postfix_expression OPEN argument_expression_list CLOSE
         {
             //func call with args
+            funcCallNode * temp = new funcCallNode("FUNCTION CALL");
+            idNode * idN = (idNode *) $1;
+            temp->typeSpec = idN->typeSpec;
+            temp->name = idN->name;
+            temp->lineNum = lineNum;
+
+            //Steal the children of argument expression list
+            for (int i = 0; i < $3->child.size(); i++) {
+                temp->addNode($3->child[i]);
+            }
+            funcParamTypeCheck(temp);
+            $$ = temp;
+
             if (printProductions) {
                 std::cout << "postfix_expression -> postfix_expression OPEN argument_expression_list CLOSE" << std::endl;
             }
@@ -2952,6 +3134,9 @@ primary_expression
 argument_expression_list
 	: assignment_expression
         {
+            ASTnode * ast = new ASTnode("TEMP");
+            ast->addNode($1);
+            $$ = ast;
             if (printProductions) {
                 std::cout << "argument_expression_list -> assignment_expression" << std::endl;
             }
@@ -2961,6 +3146,7 @@ argument_expression_list
         }
 	| argument_expression_list COMMA assignment_expression
         {
+            $$->addNode($3);
             if (printProductions) {
                 std::cout << "argument_expression_list -> argument_expression_list COMMA assignment_expression" << std::endl;
             }
@@ -3061,7 +3247,15 @@ identifier
                    }
                 }
                 globalTempNode.setScope(scope);
+                //globalTempNode.setOffset(&currentOffset,false,1,true);
                 globalSymbolTable.insertSymbol(globalTempNode);
+            }
+            if(globalSymbolTable.getMode()==lookup){
+                std::pair<bool,Node *> checkPair = globalSymbolTable.searchTree(yytext,true);
+                if (!checkPair.first) {
+                    std::cout << "\e[31;1m ERROR: \e[0m No Decl of Variable: " << yytext << " on line " << lineNum << std::endl;
+                    exit(0);
+                }
             }
 
             if (printProductions) {
@@ -3072,7 +3266,6 @@ identifier
             }
 
             idNode * tmpNode = new idNode("IDENTIFIER",globalSymbolTable.getCurrentScope());
-            //tmpNode -> d = idN;
             tmpNode->name = yytext;
             tmpNode -> lineNum = lineNum;
             std::string searchName = yytext + '\0';
@@ -3084,7 +3277,7 @@ identifier
                 tmpNode->typeQual = ret.second->getTypeQual();
                 tmpNode->typeSpec = ret.second->getTypeSpec();
                 tmpNode->size = tmpNode->determineOffset();
-                //tmpNode->offset = ret.second->getOffset();
+                tmpNode->offset = ret.second->getOffset();
             }
             $$ = tmpNode;
         }
@@ -3117,6 +3310,7 @@ int main (int argc, char** argv)
     if((tokenFlag.compare(argv[i])) == 0)
     {
       printToken = true;
+      printFile = true;
     }
     if((symbolFlag.compare(argv[i])) == 0)
     {
@@ -3135,6 +3329,7 @@ int main (int argc, char** argv)
       printLine();
       printProductions = true;
       printSource = true;
+      printFile = true;
     }
     if ((inputFlag.compare(argv[i]))==0)
     {
@@ -3187,6 +3382,8 @@ int main (int argc, char** argv)
   //clear3ac("3ac.output");
   walkTree(globalASTnode);
   print3ac();
-
+  parseStruct();
+  printASM();
+  //printTable();
   return 0;
 }

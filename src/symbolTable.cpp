@@ -1,6 +1,6 @@
 //
 // Name:    symbolTable.cpp
-// Author:  Semantic Team (Franklin, Grant, Knutson)
+// Author:  Ian Grant
 // Purpose: The symbol table is implemented as a stack of Binary Search Trees.
 //
 //          When the scanning begins a BST will be pushed onto the stack for the
