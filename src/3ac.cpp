@@ -754,6 +754,14 @@ void functionCallHandle(ASTnode * AST) {
         {
             constantNode * temp = (constantNode *) func->child[i];
             constantHandleElec(temp);
+            tempString.append("ARGLOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
         }
 
         // Is ID
@@ -761,6 +769,14 @@ void functionCallHandle(ASTnode * AST) {
         {
             idNode * temp = (idNode *) func->child[i];
             offHandle(temp);
+            tempString.append("ARGLOAD");
+            tempString.append("\t");
+            tempDST();
+            tempString.append("\t");
+            tempRHS();
+            triACStruct.push_back(tempString);
+            tempString = "";
+            tempInc();
         }
 
         else if (func->child[i]->nodeType == arrayN)
