@@ -1116,7 +1116,7 @@ void equalHandle(ASTnode * AST) {
             if (arr->child[0]->child[0]->nodeType == idN)
                 handleRHSArray(AST);
         }
-        if (AST->child[1]->nodeType == mathN) {
+        if (AST->child[0]->nodeType == arrayN && AST->child[1]->nodeType == mathN) {
             tempUsage1 = tempStack.front();
             tempStack.pop_front();
             idNode * id = (idNode *) AST->child[0];
