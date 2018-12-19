@@ -10,6 +10,9 @@ int main()
 	int m;
 	int n;
 
+	int e;
+	int f;
+
 	int x;
 	int y;
 	int z;
@@ -30,6 +33,7 @@ int main()
 		}
 		printNewLine();
 	}
+	printNewLine();
 	//intilize Matrix B
 	b = 4;
 	for (k = 0; k < 2; k++)
@@ -42,6 +46,7 @@ int main()
 		}
 		printNewLine();
 	}
+	printNewLine();
 	//initialize Matrix AB
 	for (m = 0; m < 2; m++)
 	{
@@ -60,12 +65,20 @@ int main()
 			for (z = 0; z < 2; z++)
 			{
 				AB[x][y] = AB[x][y] + A[x][z] * B[z][y];
-			    printInt(AB[x][y]);
 			}
-		printNewLine();
+		}
+	}
+	printNewLine();
+
+	for(e = 0; e < 2; e++)
+	{
+		for(f = 0; f < 2; f++)
+		{
+			printInt(AB[e][f]);
 		}
 		printNewLine();
 	}
+
 
 	return 0;
 }
