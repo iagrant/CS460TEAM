@@ -112,6 +112,7 @@ std::vector<std::string> parseLine (std::string triACLine)
 
 int getOffSet(std::vector<std::string> parsedLine) {
     actSize = actFrameStack.front();
+    //return actSize-std::stoi(parsedLine[2]);
     return actSize-std::stoi(parsedLine[2])-4;
 }
 
