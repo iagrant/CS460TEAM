@@ -232,10 +232,6 @@ void build3ACTop (ASTnode * currentNode){
         // ticket counter for the function
         // return type?
     }
-    else if (currentNode->nodeType == idN)
-    {
-        // should just return because will be handled errythang else
-    }
     else if (currentNode->production.compare("EQUALS") == 0) {
         if (currentNode->child[0]->nodeType == arrayN && currentNode->child[1]->nodeType == mathN) {
             //arrayHandleTop(currentNode);
@@ -928,7 +924,6 @@ void equalHandle(ASTnode * AST) {
             else if (AST->child[1]->nodeType == arrayN)
             {
                 handleRHSArray(AST);
-                std::cout << "Hello" << std::endl;
             }
             else if (AST->child[1]->nodeType == funcCallN){
                 idNode * id = (idNode *) AST->child[0];
@@ -1185,7 +1180,6 @@ void equalHandle(ASTnode * AST) {
                 }
                 else
                 {
-                    std::cout << "test" << std::endl;
                 // array2DHandleLHS(arr);
                     array2DHandleBottom(arr);
                 }
@@ -1410,8 +1404,6 @@ void array1DHandleLHS(ASTnode* equal)
                 tempUsage2 = tempStack.front();
                 tempStack.pop_front();
             }
-            std::cout << tempUsage1 << " First Popped" << std::endl;
-            std::cout << tempUsage2 << " Second Popped" << std::endl;
 
             tempString.append("MUL");
             tempString.append("\t");
