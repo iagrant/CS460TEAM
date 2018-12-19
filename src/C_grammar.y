@@ -24,7 +24,7 @@
     enum exprTypeEnum {lessOp,greatOp,eqOp,notEqOp,lessEqOp,greatEqOp, orOp, andOp, notOp};
     enum operationE {addOp, subOp, mulOp, divOp, incOp, decOp, modOp, shlOp, shrOp, xorOp};
     std::ofstream fileP;
-    int currentOffset = 0;
+    int currentOffset = 4;
     int forCounter = 0;
     int whileCounter = 0;
     int ifCounter = 0;
@@ -439,7 +439,7 @@ declaration
                     lastFuncPair.second->setProto();
                     globalSymbolTable.removeScope();
                 }
-                currentOffset = 0;
+                currentOffset = 4;
             }
             declNode *tmpNode = new declNode("DECLARATION");
             tmpNode->addNode($2);
@@ -919,6 +919,29 @@ init_declarator_list
 init_declarator
 	: declarator
 		{
+            if ($1->nodeType == idN && $1->typeSpec != voidS) {
+                idNode * id = (idNode *) $1;
+                currentOffset += 4;
+                id->offset = currentOffset;
+                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
+            else if ($1->nodeType == arrayN) {
+                arrayNode * id = (arrayNode *) $1;
+                currentOffset += id->size;
+                id->offset = currentOffset;
+                std::cout << id->id << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->id,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                //currentOffset += id->size + 4;
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
             $$ = $1;
             if (printProductions) {
                 std::cout << "init_declarator -> declarator" << std::endl;
@@ -943,6 +966,17 @@ init_declarator
                 tmpNode->addNode(assignmentCoercion($1, $3));
             }
             tmpNode->size = tmpNode->child[0]->size;
+            if ($1->nodeType == idN && $1->typeSpec != voidS) {
+                idNode * id = (idNode *) $1;
+                currentOffset += 4;
+                id->offset = currentOffset;
+                std::cout << id->name << " Offset: " << id->offset << std::endl;
+                std::pair<bool,Node*> ret = globalSymbolTable.searchTree(id->name,true);
+                if (ret.first) {
+                    ret.second->offset = currentOffset;
+                }
+                std::cout << "Cur Offset: " << currentOffset << std::endl;
+            }
 
             $$ = tmpNode;
 
@@ -1199,28 +1233,16 @@ direct_declarator
             if ($3->typeSpec == intS || $3->typeSpec == charS)
             {
                 if($1->nodeType == arrayN) {
-                    bool test = true;
                     constantNode * tmpNode = (constantNode *)$3;
                     arrayNode * arNode = (arrayNode *) $1;
                     arNode->bound *= tmpNode->intConst;
                     arNode->boundVect.push_back(tmpNode->intConst);
+                    arNode->size = arNode->bound * arNode->determineOffset();
                     std::pair<bool,Node*> ret = globalSymbolTable.searchTree(arNode->id,true);
                     if (ret.first) {
-                        if (test) {
-                        //currentOffset -= arNode->size;
-                        //std::cout << "Current Offset A: " << currentOffset << std::endl;
-                        //std::cout << "ARR SIZE: " << arNode->size << std::endl;
-                        arNode->size = arNode->bound * arNode->determineOffset();
-                        //std::cout << "ARR SIZE: " << arNode->size << std::endl;
-                        currentOffset += arNode->size;
-                        //std::cout << "Current Offset A: " << currentOffset << std::endl;
                         //ret.second->setOffset(&currentOffset,true,arNode->bound,false);
                         ret.second->boundVect.push_back(tmpNode->intConst);
-                        //arNode->boundVect = ret.second->boundVect;
-                        }
                     }
-                    if (test)
-                        test=false;
                     $$ = arNode;
                 }
                 else {
@@ -1237,14 +1259,9 @@ direct_declarator
                         sizeNode->typeSpec = tmpNode->typeSpec;
                         std::pair<bool,Node*> ret = globalSymbolTable.searchTree(sizeNode->id,true);
                         if (ret.first) {
-                            //ret.second->setOffset(&currentOffset,true,sizeNode->bound,true);
-                            currentOffset -= 4;
-                            //std::cout << "Current Offset A: " << currentOffset << std::endl;
-                            sizeNode->offset = currentOffset;
-                            ret.second->offset = currentOffset;
-                            currentOffset += sizeNode->size;
+                            //ret.second->setOffset(&currentOffset,true,sizeNode->bound,false);
+                            //sizeNode->offset = ret.second->getOffset();
                             ret.second->boundVect.push_back(tempBound);
-                            //sizeNode->boundVect = ret.second->boundVect;
                         }
                     }
                     sizeNode->size = sizeNode->bound * sizeNode->determineOffset();
@@ -2962,7 +2979,7 @@ postfix_expression
                 std::pair<bool,Node*> ret = globalSymbolTable.searchTree(tmpNode->name,true);
                 if (ret.first) {
                     //ret.second->setOffset(&currentOffset,true,postNode->bound,false);
-                    postNode->offset = ret.second->getOffset();
+                    postNode->offset = ret.second->offset;
                     postNode->boundVect = ret.second->boundVect;
                 }
                 ASTnode * bound = new ASTnode("ARRAY_INDEX");
@@ -3230,7 +3247,7 @@ identifier
                    }
                 }
                 globalTempNode.setScope(scope);
-                globalTempNode.setOffset(&currentOffset,false,1,true);
+                //globalTempNode.setOffset(&currentOffset,false,1,true);
                 globalSymbolTable.insertSymbol(globalTempNode);
             }
             if(globalSymbolTable.getMode()==lookup){
