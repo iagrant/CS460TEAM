@@ -721,6 +721,7 @@ void handleRHSArray(ASTnode * equal)
         tempUsage1 = tempStack.front();
         tempStack.pop_front();
 
+        /*
         tempString.append("LOAD");
         tempString.append("\t");
         tempDST();
@@ -729,7 +730,7 @@ void handleRHSArray(ASTnode * equal)
         triACStruct.push_back(tempString);
         tempString = "";
         tempInc();
-
+        */
 
         tempString.append("STORE");
         tempString.append("\t");
