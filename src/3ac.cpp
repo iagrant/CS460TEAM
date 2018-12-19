@@ -1105,7 +1105,6 @@ void equalHandle(ASTnode * AST) {
             // LHS 2D ARRAY
             else if (arr->boundVect.size() == 2)
             {
-                arrayNode * arr = (arrayNode *) AST->child[0];
                 array2DHandleBottom(arr);
             }
             else
@@ -1172,7 +1171,7 @@ void array2DHandleBottom(arrayNode * arr)
     // IDNODE IN THE FIRST INDEX
     //FIXME 1st child should be 0 i think could be wrong
     else if (arr->child[0]->child[0]->nodeType == idN) {
-        offHandle(arr->child[1]->child[0]);
+        offHandle(arr->child[0]->child[0]);
     }
     // MATHNODE IN THE FIRST INDEX
     // MUL IS HANDLED A LITTLE DIFFERENTLY WHEN MATHNODE
@@ -1780,6 +1779,10 @@ void mathHandle(mathNode * math) {
         {
             array2DHandleBottom(arr);
         }
+        else
+        {
+            arrayGetHandle(arr);
+        }
         tempString.append(math->production);
         tempString.append("\t");
         tempDST();
@@ -1793,10 +1796,16 @@ void mathHandle(mathNode * math) {
     else if (math->child[0]->nodeType == mathN &&
                math->child[1]->nodeType == arrayN)
     {
+        triACStruct.push_back(tempString);
+        tempString = "";
         arrayNode * arr = (arrayNode *) math->child[1];
         if (arr->boundVect.size() == 2)
         {
             array2DHandleBottom(arr);
+        }
+        else
+        {
+            arrayGetHandle(arr);
         }
         tempString.append(math->production);
         tempString.append("\t");
