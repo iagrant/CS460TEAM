@@ -1,11 +1,22 @@
+void printInt(int a);
+void printNewLine();
+
 int main(){
     int b = 4;
-    char c = 'c';
+    int c = 3;
     while (b < 5) {
-        c = 'z';
+        c = 122;
+        printInt(c);
+        while (c < 6) {
+            c = 121;
+            printInt(c);
+        }
+        printNewLine();
     }
     while (c < 6) {
-        c = 'x';
+        c = 121;
+        printInt(c);
     }
+    printNewLine();
 
 }
