@@ -578,6 +578,7 @@ void divOpHandle(std::vector<std::string> parsedLine)
     int src1 = tempRegGetter(parsedLine[2]);
 
     tmpStr.append("div\t$");
+    tmpStr.append(std::to_string(dst));
     tmpStr.append("\t$");
     tmpStr.append(std::to_string(src1));
     mathRHS(parsedLine);
@@ -595,6 +596,7 @@ void modOpHandle(std::vector<std::string> parsedLine)
     int src1 = tempRegGetter(parsedLine[2]);
 
     tmpStr.append("div\t$");
+    tmpStr.append(std::to_string(dst));
     tmpStr.append("\t$");
     tmpStr.append(std::to_string(src1));
     mathRHS(parsedLine);
