@@ -386,9 +386,9 @@ function_definition
             //tmpNode -> d = funcN;
             tmpNode->addNode($2);
             tmpNode->addNode($3);
-            tmpNode->activationFrameSize += $2->size;
-            tmpNode->activationFrameSize += $3->size;
-            int tempSize = tmpNode->activationFrameSize;
+            //tmpNode->activationFrameSize += $2->size;
+            //tmpNode->activationFrameSize += $3->size;
+            int tempSize = currentOffset;
             tempSize += 8 - tempSize % 8;
             tmpNode->activationFrameSize = tempSize;
             //returnTypeCheck(tmpNode);
