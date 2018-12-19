@@ -4,7 +4,7 @@ int main () {
     int c;
     int d;
     int arr[5];
-    int e[3][4];
+    int e[6][7];
 
 // ID LHS
     // LHS = CONSTANT
@@ -12,7 +12,7 @@ int main () {
 
     // LHS = ID
     a = a;
-    
+
     // LHS = ARRAY[CONSTANT]
     a = arr[1];
 
@@ -25,7 +25,7 @@ int main () {
     // LHS = MATH
     a = a + 1;
     // LHS = 2D
-    a = b[3][4];
+    a = e[3][4];
 // ARRAY[] LHS
     // LHS = CONSTANT
     arr[1] = 1;
@@ -40,7 +40,7 @@ int main () {
     arr[a+2] = a;
     arr[2+2] = a;
     arr[a+a] = a;
-     
+
     // LHS = ARRAY[CONSTANT]
     arr[1] = arr[1];
     arr[a] = arr[1];
@@ -70,11 +70,11 @@ int main () {
     arr[a+a] = a + 1;
 
     // LHS = 2D
-    arr[1] = b[3][4];
-    arr[a] = b[3][4];
-    arr[a+2] = b[3][4];
-    arr[2+2] = b[3][4];
-    arr[a+a] = b[3][4];
+    arr[1] = e[3][4];
+    arr[a] = e[3][4];
+    arr[a+2] = e[3][4];
+    arr[2+2] = e[3][4];
+    arr[a+a] = e[3][4];
     /*
 */
     //e[a][a] = e[b][b] + e[c][c] * e[d][d];
