@@ -767,21 +767,32 @@ void functionCallHandle(ASTnode * AST) {
         {
             arrayNode * temp = (arrayNode *) func->child[i];
             if (temp->boundVect.size() == 2)
+            {
                 array2DHandleBottom(temp);
+
+                tempString.append("ARGLOAD");
+                tempString.append("\t");
+                tempDST();
+                tempString.append("\t");
+                tempRHS();
+                triACStruct.push_back(tempString);
+                tempString = "";
+                tempInc();
+            }
             else
             {
                 array1DHandleLHS(temp);
                 //arrayGetHandle(temp);
+                tempString.append("ARGLOAD");
+                tempString.append("\t");
+                tempRHS();
+                tempString.append("\t");
+                tempDST();
+                triACStruct.push_back(tempString);
+                tempString = "";
+                tempInc();
             }
         }
-        tempString.append("ARGLOAD");
-        tempString.append("\t");
-        tempRHS();
-        tempString.append("\t");
-        tempDST();
-        triACStruct.push_back(tempString);
-        tempString = "";
-        tempInc();
     }
     tempString.append("CALL");
     tempString.append("\t");
@@ -1144,13 +1155,16 @@ void equalHandle(ASTnode * AST) {
             else if (arr->boundVect.size() == 2)
             {
                  // arr[1] = 1 needs this
-                if (AST->child[1]->nodeType == constantN)
+                if (AST->child[1]->nodeType == constantN || 
+                        AST->child[1]->nodeType == mathN ||
+                        AST->child[1]->nodeType == idN)
                 {
                     array2DHandleLHS(arr);
                     handleRHSArray(AST);
                 }
                 else
                 {
+                    std::cout << "test" << std::endl;
                 // array2DHandleLHS(arr);
                     array2DHandleBottom(arr);
                 }
